@@ -1,0 +1,75 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Dict
+
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from .aggregator import compute_corr20
+from .utils import copy_file, ensure_dir, read_json, write_json, write_text
+
+
+def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
+    data_dir = root_dir / "data"
+    docs_dir = root_dir / "docs"
+
+    ensure_dir(docs_dir)
+    write_text(docs_dir / ".nojekyll", "")
+
+    env = Environment(
+        loader=FileSystemLoader(str(root_dir / "templates")),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    site_cfg = cfg.get("site", {}) or {}
+    base_path = (site_cfg.get("base_path") or "").rstrip("/")
+
+    latest = read_json(data_dir / "latest.json", default={"symbols": [], "date": "", "updated_at": ""})
+
+    index_tpl = env.get_template("index.html.j2")
+    index_html = index_tpl.render(site=site_cfg, base_path=base_path, latest=latest)
+    write_text(docs_dir / "index.html", index_html)
+
+    detail_tpl = env.get_template("detail.html.j2")
+    ensure_dir(docs_dir / "s")
+
+    # API copies
+    ensure_dir(docs_dir / "api")
+    write_json(docs_dir / "api" / "latest.json", latest)
+    ensure_dir(docs_dir / "api" / "symbols")
+    ensure_dir(docs_dir / "api" / "exports")
+
+    # static
+    ensure_dir(docs_dir / "static")
+    copy_file(root_dir / "static" / "app.js", docs_dir / "static" / "app.js")
+    copy_file(root_dir / "static" / "styles.css", docs_dir / "static" / "styles.css")
+
+    for sym in latest.get("symbols", []) or []:
+        sym_id = sym["id"]
+        sym_name = sym["name"]
+        history = read_json(data_dir / "symbols" / sym_id / "history.json", default={"symbol": sym, "days": []})
+        corr20 = compute_corr20(history.get("days", []) or [])
+        meta = {
+            "symbol": {"id": sym_id, "name": sym_name},
+            "updated_at": latest.get("updated_at", ""),
+            "corr20": round(float(corr20), 3),
+            "days": history.get("days", []) or [],
+        }
+
+        sym_api_dir = docs_dir / "api" / "symbols" / sym_id
+        ensure_dir(sym_api_dir / "days")
+        write_json(sym_api_dir / "index.json", meta)
+
+        # daily payloads (for calendar/news)
+        for d in meta["days"]:
+            date = d["date"]
+            day_payload = read_json(data_dir / "symbols" / sym_id / "days" / f"{date}.json", default=None)
+            if day_payload:
+                write_json(sym_api_dir / "days" / f"{date}.json", day_payload)
+
+        export_src = data_dir / "exports" / f"{sym_id}.csv"
+        if export_src.exists():
+            copy_file(export_src, docs_dir / "api" / "exports" / f"{sym_id}.csv")
+
+        detail_html = detail_tpl.render(site=site_cfg, base_path=base_path, symbol={"id": sym_id, "name": sym_name})
+        write_text(docs_dir / "s" / f"{sym_id}.html", detail_html)

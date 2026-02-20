@@ -1,0 +1,46 @@
+site:
+  title: "期货情绪分析"
+  base_path: ""  # GitHub Pages 通常留空；如部署在子路径可填写 /repo
+
+data:
+  timezone: "Asia/Shanghai"
+  lookback_days: 180
+  kline_days_default: 30
+  max_news_per_day: 12
+
+symbols:
+  - id: "gold"
+    name: "黄金"
+    keywords: ["黄金", "金价", "COMEX", "央行购金", "避险"]
+    enabled: true
+  - id: "crude"
+    name: "原油"
+    keywords: ["原油", "WTI", "布伦特", "OPEC", "库存"]
+    enabled: true
+  - id: "rebar"
+    name: "螺纹钢"
+    keywords: ["螺纹钢", "钢材", "基建", "房地产"]
+    enabled: true
+  - id: "if"
+    name: "沪深300股指"
+    keywords: ["沪深300", "股指期货", "A股", "政策"]
+    enabled: true
+  - id: "meal"
+    name: "豆粕"
+    keywords: ["豆粕", "大豆", "饲料", "南美天气", "美豆"]
+    enabled: true
+
+news:
+  provider: "mock"  # mock | rss
+  rss:
+    # 可后续替换为你有权限/允许抓取的 RSS/聚合源
+    urls: []
+
+price:
+  provider: "mock"  # mock | tushare | akshare (后续接入)
+
+analysis:
+  provider: "lexicon"  # lexicon | openai (后续接入)
+  openai:
+    model: "gpt-4.1-mini"
+    timeout_seconds: 30

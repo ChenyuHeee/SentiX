@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ site.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{ base_path }}/static/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg border-bottom">
+      <div class="container-fluid">
+        <span class="navbar-brand">{{ site.title }}</span>
+        <div class="d-flex gap-2 align-items-center">
+          <small class="text-body-secondary" id="updatedAt">{{ latest.updated_at }}</small>
+          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" type="button">暗色模式</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-3">
+      <div class="mb-2 text-body-secondary">{{ latest.date }} 更新</div>
+
+      <div class="row g-3 d-none d-md-flex" id="cardsDesktop">
+        {% for s in latest.symbols %}
+          <div class="col-12 col-md-6 col-lg-4">
+            <a class="text-decoration-none" href="{{ base_path }}/s/{{ s.id }}.html">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div class="h5 mb-2">{{ s.name }}</div>
+                    <span class="badge text-bg-secondary">{{ s.id }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-end">
+                    <div>
+                      <div class="small text-body-secondary">情绪</div>
+                      <div class="fs-4 fw-semibold sentiment-{{ s.sentiment_band }}">{{ '%.2f'|format(s.sentiment_index) }}</div>
+                    </div>
+                    <div class="text-end">
+                      <div class="small text-body-secondary">涨跌幅</div>
+                      <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="d-md-none">
+        <div class="d-flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2" id="cardsMobile">
+          {% for s in latest.symbols %}
+            <a class="text-decoration-none" href="{{ base_path }}/s/{{ s.id }}.html" style="min-width: 75vw;">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div class="h5 mb-2">{{ s.name }}</div>
+                    <span class="badge text-bg-secondary">{{ s.id }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-end">
+                    <div>
+                      <div class="small text-body-secondary">情绪</div>
+                      <div class="fs-4 fw-semibold sentiment-{{ s.sentiment_band }}">{{ '%.2f'|format(s.sentiment_index) }}</div>
+                    </div>
+                    <div class="text-end">
+                      <div class="small text-body-secondary">涨跌幅</div>
+                      <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if not latest.symbols %}
+        <div class="card mt-3">
+          <div class="card-body">
+            <div class="placeholder-glow">
+              <span class="placeholder col-6"></span>
+              <span class="placeholder col-4"></span>
+              <span class="placeholder col-8"></span>
+            </div>
+            <div class="text-body-secondary mt-2">数据更新中</div>
+          </div>
+        </div>
+      {% endif %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>window.__BASE_PATH__ = {{ base_path|tojson }};</script>
+    <script src="{{ base_path }}/static/app.js"></script>
+  </body>
+</html>
