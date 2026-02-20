@@ -385,12 +385,15 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
 
     # Fallback 3: 直接走 HTTP 版 100ppi（绕过 https SSLError）
     try:
-        item = _fetch_spot_basis_100ppi_http(
-            date_compact=date_compact,
-            variety=variety.strip().upper(),
-            symbol_name=symbol_name,
-        )
-        if item:
+        for d in _date_candidates(date_compact):
+            item = _fetch_spot_basis_100ppi_http(
+                date_compact=d,
+                variety=variety.strip().upper(),
+                symbol_name=symbol_name,
+            )
+            if not item:
+                continue
+
             spot = item.get("spot_price")
             dom_basis = item.get("dom_basis")
             summary = None
@@ -401,7 +404,11 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
                 "hint": "现货/基差（100ppi http fallback）",
                 "summary": summary,
                 "items": [item],
-                "params": {"date": item.get("date"), "source": "100ppi_http"},
+                "params": {
+                    "asof": date_compact,
+                    "picked": item.get("date"),
+                    "source": "100ppi_http",
+                },
             }
     except Exception as e:
         last_exc = e
@@ -445,61 +452,94 @@ def _fetch_spot_basis_100ppi_http(*, date_compact: str, variety: str, symbol_nam
     except Exception:
         return None
 
+    def _col_text(c: Any) -> str:
+        if isinstance(c, tuple):
+            parts = [str(x).strip() for x in c if str(x).strip() and str(x).strip().lower() != "nan"]
+            return " ".join(parts)
+        return str(c).strip()
+
     # Find a table that contains spot and main futures info
     target_row = None
+    chosen_cols = {}
     for t in tables:
-        cols = [str(c).strip() for c in getattr(t, "columns", [])]
-        if not cols:
+        df = t.copy()
+        if getattr(df, "empty", False):
             continue
 
-        # Common columns from 100ppi pages
-        has_spot = any(c in cols for c in ["现货价格", "现货", "现货价"])
-        has_main = any(c in cols for c in ["主力合约价格", "主力合约", "主力"])
-        has_goods = any(c in cols for c in ["商品", "品种", "商品名称"])
+        col_texts = [_col_text(c) for c in getattr(df, "columns", [])]
+        if not col_texts:
+            continue
+
+        has_goods = any(("商品" in c) or ("品种" in c) for c in col_texts)
+        has_spot = any("现货" in c for c in col_texts)
+        has_main = any("主力" in c for c in col_texts)
         if not (has_goods and (has_spot or has_main)):
             continue
 
-        # Normalize columns
-        df = t.copy()
+        goods_col = None
+        spot_col = None
+        dom_price_col = None
+        dom_basis_col = None
         for c in df.columns:
-            if str(c).strip() == "商品名称":
-                df.rename(columns={c: "商品"}, inplace=True)
-            if str(c).strip() == "品种":
-                df.rename(columns={c: "商品"}, inplace=True)
+            ct = _col_text(c)
+            if goods_col is None and ("商品" in ct or "品种" in ct):
+                goods_col = c
+            if spot_col is None and ("现货" in ct and "价格" in ct):
+                spot_col = c
+            if dom_price_col is None and ("主力" in ct and "价格" in ct):
+                dom_price_col = c
+            if dom_basis_col is None and ("现期差2" in ct or ("主力" in ct and "现期差" in ct)):
+                dom_basis_col = c
 
-        if "商品" not in df.columns:
+        # Fallback matching: pick non-code spot/main columns if exact '价格' columns are missing
+        if spot_col is None:
+            for c in df.columns:
+                ct = _col_text(c)
+                if "现货" in ct and "代码" not in ct:
+                    spot_col = c
+                    break
+        if dom_price_col is None:
+            for c in df.columns:
+                ct = _col_text(c)
+                if "主力" in ct and "代码" not in ct and "现期差" not in ct:
+                    dom_price_col = c
+                    break
+
+        if goods_col is None or (spot_col is None and dom_price_col is None):
             continue
 
-        # Match by chinese name first, then variety code
         for _, row in df.iterrows():
-            goods = str(row.get("商品", "")).strip()
+            goods = str(row.get(goods_col, "")).strip()
             if not goods:
                 continue
             if symbol_name and goods == symbol_name:
                 target_row = row
-                break
-            if variety and _norm_text(goods) == _norm_text(variety):
+            elif variety and _norm_text(goods) == _norm_text(variety):
                 target_row = row
-                break
+            else:
+                continue
+
+            chosen_cols = {
+                "goods": goods_col,
+                "spot": spot_col,
+                "dom_price": dom_price_col,
+                "dom_basis": dom_basis_col,
+            }
+            break
+
         if target_row is not None:
             break
 
     if target_row is None:
         return None
 
-    spot = _num(target_row.get("现货价格") or target_row.get("现货") or target_row.get("现货价"))
-    dom_price = _num(
-        target_row.get("主力合约价格")
-        or target_row.get("主力合约")
-        or target_row.get("主力")
-        or target_row.get("期货价格")
-    )
-    dom_basis = _num(
-        target_row.get("主力合约基差")
-        or target_row.get("主力基差")
-        or target_row.get("基差")
-        or target_row.get("主力合约基差值")
-    )
+    spot_col = chosen_cols.get("spot")
+    dom_price_col = chosen_cols.get("dom_price")
+    dom_basis_col = chosen_cols.get("dom_basis")
+
+    spot = _num(target_row.get(spot_col)) if spot_col is not None else None
+    dom_price = _num(target_row.get(dom_price_col)) if dom_price_col is not None else None
+    dom_basis = _num(target_row.get(dom_basis_col)) if dom_basis_col is not None else None
     if dom_basis is None and spot is not None and dom_price is not None:
         dom_basis = spot - dom_price
 
