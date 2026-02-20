@@ -15,7 +15,12 @@ from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date
 
 
 def _symbol_to_dict(s) -> Dict[str, Any]:
-    return {"id": s.id, "name": s.name, "keywords": s.keywords}
+    d: Dict[str, Any] = {"id": s.id, "name": s.name, "keywords": s.keywords}
+    if getattr(s, "akshare_symbol", None):
+        d["akshare_symbol"] = s.akshare_symbol
+    if getattr(s, "tushare_ts_code", None):
+        d["tushare_ts_code"] = s.tushare_ts_code
+    return d
 
 
 def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:

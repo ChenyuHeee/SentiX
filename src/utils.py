@@ -109,10 +109,18 @@ class Symbol:
     id: str
     name: str
     keywords: list[str]
+    akshare_symbol: str | None = None
+    tushare_ts_code: str | None = None
 
 
 def iter_enabled_symbols(cfg: Dict[str, Any]) -> Iterable[Symbol]:
     for s in cfg.get("symbols", []) or []:
         if not s.get("enabled", True):
             continue
-        yield Symbol(id=s["id"], name=s["name"], keywords=list(s.get("keywords", []) or []))
+        yield Symbol(
+            id=s["id"],
+            name=s["name"],
+            keywords=list(s.get("keywords", []) or []),
+            akshare_symbol=(s.get("akshare_symbol") or None),
+            tushare_ts_code=(s.get("tushare_ts_code") or None),
+        )

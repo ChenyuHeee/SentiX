@@ -17,6 +17,11 @@ def _seed(symbol_id: str) -> int:
 
 def fetch_kline(cfg: Dict[str, Any], symbol: Dict[str, Any], end_date: str, days: int) -> List[Dict[str, Any]]:
     provider = (cfg.get("price", {}) or {}).get("provider", "mock")
+    if provider == "akshare":
+        try:
+            return fetch_kline_akshare(cfg, symbol, end_date=end_date, days=days)
+        except Exception as e:
+            logging.warning("AKShare price fetch failed for %s: %s; fallback to mock", symbol.get("id"), e)
     if provider == "tushare":
         try:
             return fetch_kline_tushare(cfg, symbol, end_date=end_date, days=days)
@@ -59,6 +64,80 @@ def fetch_kline(cfg: Dict[str, Any], symbol: Dict[str, Any], end_date: str, days
         )
         price = c
     return out
+
+
+def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date: str, days: int) -> List[Dict[str, Any]]:
+    # AKShare: 新浪-期货-主力连续合约历史数据
+    # 接口: ak.futures_main_sina(symbol="IF0", start_date="YYYYMMDD", end_date="YYYYMMDD")
+    # 输出字段(常见): 日期, 开盘价, 最高价, 最低价, 收盘价, 成交量, 持仓量, 动态结算价
+    ak_symbol = (symbol.get("akshare_symbol") or "").strip()
+    if not ak_symbol:
+        raise RuntimeError(f"missing akshare_symbol for symbol {symbol.get('id')}")
+
+    end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+    start_dt = end_dt - timedelta(days=days * 3)
+    start_compact = start_dt.strftime("%Y%m%d")
+    end_compact = end_dt.strftime("%Y%m%d")
+
+    try:
+        import akshare as ak  # type: ignore
+    except Exception as e:
+        raise RuntimeError(f"akshare not available: {e}")
+
+    df = ak.futures_main_sina(symbol=ak_symbol, start_date=start_compact, end_date=end_compact)
+    if df is None:
+        raise RuntimeError("empty akshare response")
+
+    # Avoid importing pandas explicitly; rely on DataFrame API.
+    try:
+        records = df.to_dict("records")
+    except Exception as e:
+        raise RuntimeError(f"unexpected akshare dataframe: {e}")
+    if not records:
+        raise RuntimeError("empty futures_main_sina")
+
+    def _to_float(v: Any) -> float:
+        if v is None:
+            return 0.0
+        if isinstance(v, (int, float)):
+            return float(v)
+        s = str(v).strip().replace(",", "")
+        if s in {"", "nan", "None"}:
+            return 0.0
+        return float(s)
+
+    def _to_int(v: Any) -> int:
+        return int(_to_float(v))
+
+    out: List[Dict[str, Any]] = []
+    for r in records:
+        date_raw = r.get("日期") or r.get("date") or r.get("Date")
+        if not date_raw:
+            continue
+        date_iso = str(date_raw)
+        # common formats: YYYY-MM-DD, YYYY/MM/DD, datetime
+        date_iso = date_iso.split(" ")[0].replace("/", "-")
+        if len(date_iso) == 8 and date_iso.isdigit():
+            date_iso = f"{date_iso[0:4]}-{date_iso[4:6]}-{date_iso[6:8]}"
+        if len(date_iso) != 10:
+            continue
+
+        out.append(
+            {
+                "date": date_iso,
+                "open": _to_float(r.get("开盘价") or r.get("open")),
+                "high": _to_float(r.get("最高价") or r.get("high")),
+                "low": _to_float(r.get("最低价") or r.get("low")),
+                "close": _to_float(r.get("收盘价") or r.get("close")),
+                "volume": _to_int(r.get("成交量") or r.get("volume")),
+                "open_interest": _to_int(r.get("持仓量") or r.get("open_interest") or r.get("oi")),
+            }
+        )
+
+    out.sort(key=lambda x: x["date"])
+    # Keep within range and last N trading bars
+    out = [x for x in out if x["date"] <= end_date]
+    return out[-days:]
 
 
 def _tushare_post(token: str, api_name: str, params: Dict[str, Any], fields: str) -> Dict[str, Any]:

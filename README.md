@@ -15,6 +15,9 @@
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+
+# 如需启用 AKShare 真实价格抓取（推荐在 GitHub Actions 上启用）
+pip install -r requirements-akshare.txt
 ```
 
 2) 生成数据与站点
@@ -42,19 +45,22 @@ python -m http.server -d docs 8000
 
 核心配置在 `config.yaml`：品种、新闻源、价格源、分析策略等。
 
-> 提示：接入真实数据与 LLM 时，把密钥放到 GitHub Secrets（如 `OPENAI_API_KEY`、`NEWSAPI_KEY`、`TUSHARE_TOKEN`），不要写进仓库。
+> 提示：接入真实数据与 LLM 时，把密钥放到 GitHub Secrets（如 `OPENAI_API_KEY`、`NEWSAPI_KEY`），不要写进仓库。
 
-## 接入 Tushare 价格数据（优先链路）
+## 接入 AKShare 价格数据（优先链路）
 
-1) 在 GitHub Secrets / 本地环境变量配置 `TUSHARE_TOKEN`
+本项目默认使用 AKShare 的“新浪-期货-主力连续合约历史数据”接口（不需要 Token）。
 
-2) 修改 `config.yaml`
-- `price.provider: "tushare"`
-- 为每个品种填写 `tushare_ts_code`（这里应填写“主力/连续合约代码”，程序会用 `fut_mapping` 映射到当日主力月合约并拼接成连续K线）
+1) 修改 `config.yaml`
+- `price.provider: "akshare"`
+- 为每个品种填写 `akshare_symbol`（如 `IF0`、`RB0`、`SC0`、`AU0`）
+	- 可用列表：`ak.futures_display_main_sina()`
 
-3) 运行
+2) 运行
 
 ```bash
 python -m src.cli --config config.yaml update-data
 python -m src.cli --config config.yaml build-site
 ```
+
+> 备注：AKShare 依赖较多，你本地如果是 Python 3.14 可能会遇到安装问题；不安装也不影响跑通（会自动降级为 mock，站点仍可生成与部署）。
