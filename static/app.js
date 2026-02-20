@@ -106,6 +106,15 @@
       line.className = 'text-body-secondary';
       line.textContent = `- ${hint}（${status}）`;
       box.appendChild(line);
+      const summary = (mod && mod.summary) ? String(mod.summary) : '';
+      const count = (mod && Array.isArray(mod.items)) ? mod.items.length : 0;
+      const tail = summary ? ` · ${summary}` : (count ? ` · ${count} items` : '');
+      if (tail) {
+        const tailLine = document.createElement('div');
+        tailLine.className = 'text-body-secondary';
+        tailLine.textContent = tail;
+        box.appendChild(tailLine);
+      }
     }
   }
 
