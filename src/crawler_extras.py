@@ -353,20 +353,20 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
             last_exc = e
 
     # Fallback 2: 99 期货期现走势（时间序列，取 <= asof 最近一条）
+    # NOTE: 在 GitHub Actions 等环境中 www.99qh.com 可能出现自签证书链导致 SSLError；
+    # 这里遇到 SSLError 时自动降级为 verify=False 以保证数据可用。
     if symbol_name:
         try:
-            qh_df = ak.spot_price_qh(symbol=symbol_name)
-            qh_recs = _to_records(qh_df)
+            qh_recs, used_insecure_ssl = _fetch_spot_trend_99qh(symbol_name)
+
             best = None
             best_date = None
             for r in qh_recs:
-                k = r.get("日期") or r.get("date")
-                if k is None:
+                k = r.get("date")
+                if not k:
                     continue
-                k_str = str(k).split(" ")[0]
-                # 支持 YYYY-MM-DD 或 date 对象字符串
                 try:
-                    k_dt = datetime.strptime(k_str, "%Y-%m-%d").date()
+                    k_dt = datetime.strptime(str(k), "%Y-%m-%d").date()
                 except Exception:
                     continue
                 if asof_dt and k_dt > asof_dt:
@@ -374,9 +374,10 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
                 if best_date is None or k_dt > best_date:
                     best_date = k_dt
                     best = r
+
             if best and best_date:
-                spot = _num(best.get("现货价格") or best.get("spot"))
-                fut_close = _num(best.get("期货收盘价") or best.get("futures_close") or best.get("期货"))
+                spot = _num(best.get("spot_price"))
+                fut_close = _num(best.get("futures_close"))
                 dom_basis = None
                 if spot is not None and fut_close is not None:
                     dom_basis = spot - fut_close
@@ -386,14 +387,15 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
                     "spot_price": spot,
                     "dom_contract_price": fut_close,
                     "dom_basis": dom_basis,
-                    "source": "spot_price_qh",
+                    "source": "99qh",
                 }
                 summary = None
                 if spot is not None:
                     summary = f"现货 {spot} · 基差 {dom_basis}"
+                suffix = "（verify=False）" if used_insecure_ssl else ""
                 return {
                     "status": "ok",
-                    "hint": "现货/基差（AKShare spot_price_qh）",
+                    "hint": f"现货/基差（99qh{suffix}）",
                     "summary": summary,
                     "items": [item],
                     "params": {"asof": date_compact, "picked": item["date"]},
@@ -441,6 +443,109 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
             "params": {"date": date_compact},
         }
     return {"status": "empty", "hint": "现货/基差（AKShare futures_spot_price）", "items": [], "params": {"date": date_compact}}
+
+
+def _fetch_spot_trend_99qh(symbol_name: str) -> Tuple[List[Dict[str, Any]], bool]:
+    """Fetch spot trend series from 99qh.
+
+    Returns (records, used_insecure_ssl).
+
+    Each record has keys: date(YYYY-MM-DD), spot_price, futures_close.
+    """
+
+    import json
+    import re
+
+    import requests
+
+    # Only disable warnings if we actually go insecure.
+    used_insecure_ssl = False
+
+    def _get(session: requests.Session, url: str, *, headers: Dict[str, str] | None = None, params: Dict[str, Any] | None = None):
+        nonlocal used_insecure_ssl
+        try:
+            return session.get(url, headers=headers, params=params, timeout=20)
+        except requests.exceptions.SSLError:
+            used_insecure_ssl = True
+            try:
+                from urllib3.exceptions import InsecureRequestWarning
+
+                requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)  # type: ignore[attr-defined]
+            except Exception:
+                pass
+            return session.get(url, headers=headers, params=params, timeout=20, verify=False)
+
+    with requests.Session() as s:
+        # 1) get productId mapping
+        html = _get(s, "https://www.99qh.com/data/spotTrend").text
+        m = re.search(r'<script[^>]+id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.S)
+        if not m:
+            raise RuntimeError("99qh: missing __NEXT_DATA__")
+        data = json.loads(m.group(1))
+        variety_list = (
+            data.get("props", {})
+            .get("pageProps", {})
+            .get("data", {})
+            .get("varietyListData", [])
+        )
+        products: List[Dict[str, Any]] = []
+        for it in variety_list:
+            products.extend(it.get("productList") or [])
+        name_to_id = {
+            str(p.get("name")): p.get("productId")
+            for p in products
+            if p.get("name") and p.get("productId")
+        }
+        product_id = name_to_id.get(symbol_name)
+        if not product_id:
+            # fuzzy match to tolerate naming differences
+            for n, pid in name_to_id.items():
+                if symbol_name in n or n in symbol_name:
+                    product_id = pid
+                    break
+        if not product_id:
+            raise RuntimeError(f"99qh: unknown symbol {symbol_name}")
+
+        # 2) get token from v.js response header
+        headers = {
+            "Origin": "https://www.99qh.com",
+            "Referer": "https://www.99qh.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        }
+        v = _get(s, "https://centerapi.fx168api.com/app/common/v.js", headers=headers)
+        pcc = v.headers.get("_pcc")
+        if not pcc:
+            raise RuntimeError("99qh: missing _pcc token")
+
+        # 3) fetch trend list
+        trend_headers = dict(headers)
+        trend_headers["_pcc"] = pcc
+        params = {
+            "productId": str(product_id),
+            "pageNo": "1",
+            "pageSize": "50000",
+            "startDate": "",
+            "endDate": "2050-01-01",
+            "appCategory": "web",
+        }
+        r = _get(
+            s,
+            "https://centerapi.fx168api.com/app/qh/api/spot/trend",
+            headers=trend_headers,
+            params=params,
+        )
+        j = r.json()
+        lst = (j.get("data") or {}).get("list") or []
+        out: List[Dict[str, Any]] = []
+        for it in lst:
+            out.append(
+                {
+                    "date": it.get("date"),
+                    "futures_close": it.get("fp"),
+                    "spot_price": it.get("sp"),
+                }
+            )
+        return out, used_insecure_ssl
 
 
 def _fetch_spot_basis_100ppi_http(*, date_compact: str, variety: str, symbol_name: str) -> Dict[str, Any] | None:
