@@ -14,6 +14,7 @@ def fetch_extras(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> Dict
 
     _ = cfg
     variety = _infer_variety(symbol)
+    symbol_name = (symbol.get("name") or "").strip()
     if not variety:
         return {
             "status": "unavailable",
@@ -44,10 +45,12 @@ def fetch_extras(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> Dict
     modules: Dict[str, Any] = {}
 
     # Inventory (Eastmoney) - often limited to certain varieties
-    modules["inventory"] = _fetch_inventory(ak, variety=variety)
+    modules["inventory"] = _fetch_inventory(ak, variety=variety, symbol_name=symbol_name)
 
     # Spot & basis (needs trading date)
-    modules["spot_basis"] = _fetch_spot_basis(ak, variety=variety, date_compact=date_compact)
+    modules["spot_basis"] = _fetch_spot_basis(
+        ak, variety=variety, symbol_name=symbol_name, date_compact=date_compact
+    )
 
     # Roll yield (needs trading date)
     modules["roll_yield"] = _fetch_roll_yield(ak, variety=variety, date_compact=date_compact)
@@ -135,48 +138,71 @@ def _num(v: Any) -> float | None:
         return None
 
 
-def _fetch_inventory(ak: Any, *, variety: str) -> Dict[str, Any]:
-    try:
-        df = ak.futures_inventory_em(symbol=variety)
-        recs = _to_records(df)
-        items = []
-        for r in recs[-60:]:
-            d = r.get("日期") or r.get("date")
-            inv = _num(r.get("库存") or r.get("inventory"))
-            chg = _num(r.get("增减") or r.get("change"))
-            if not d:
+def _fetch_inventory(ak: Any, *, variety: str, symbol_name: str) -> Dict[str, Any]:
+    last_exc: Exception | None = None
+    candidates = []
+    if variety:
+        candidates.append(variety)
+    if symbol_name and symbol_name not in candidates:
+        candidates.append(symbol_name)
+
+    for cand in candidates:
+        try:
+            df = ak.futures_inventory_em(symbol=cand)
+            recs = _to_records(df)
+            items = []
+            for r in recs[-60:]:
+                d = r.get("日期") or r.get("date")
+                inv = _num(r.get("库存") or r.get("inventory"))
+                chg = _num(r.get("增减") or r.get("change"))
+                if not d:
+                    continue
+                items.append(
+                    {
+                        "date": str(d).split(" ")[0].replace("/", "-"),
+                        "inventory": inv,
+                        "change": chg,
+                    }
+                )
+            if not items:
                 continue
-            items.append({"date": str(d).split(" ")[0].replace("/", "-"), "inventory": inv, "change": chg})
-        summary = None
-        if items:
             last = items[-1]
             summary = f"最新库存 {last.get('inventory')}，增减 {last.get('change')}"
-        return {
-            "status": "ok" if items else "empty",
-            "hint": "仓单/库存（AKShare futures_inventory_em）",
-            "summary": summary,
-            "items": items,
-        }
-    except Exception as e:
+            return {
+                "status": "ok",
+                "hint": "仓单/库存（AKShare futures_inventory_em）",
+                "summary": summary,
+                "items": items,
+                "params": {"symbol": cand},
+            }
+        except Exception as e:
+            last_exc = e
+            continue
+
+    if last_exc is not None:
         return {
             "status": "unavailable",
-            "hint": f"仓单/库存（无数据或接口异常：{type(e).__name__}）",
+            "hint": f"仓单/库存（无数据或接口异常：{type(last_exc).__name__}）",
             "items": [],
         }
+    return {"status": "empty", "hint": "仓单/库存（AKShare futures_inventory_em）", "items": []}
 
 
-def _fetch_spot_basis(ak: Any, *, variety: str, date_compact: str) -> Dict[str, Any]:
+def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: str) -> Dict[str, Any]:
     if not date_compact:
         return _mod_unavailable("现货/基差", "missing date")
     last_exc: Exception | None = None
+    variety_norm = variety.strip().upper()
+    name_norm = symbol_name.strip()
     for d in _date_candidates(date_compact):
         try:
             df = ak.futures_spot_price(d)
             recs = _to_records(df)
             target = None
             for r in recs:
-                sym = (r.get("symbol") or r.get("品种") or "").strip().upper()
-                if sym == variety:
+                sym_raw = (r.get("symbol") or r.get("品种") or "").strip()
+                sym_norm = sym_raw.upper()
+                if sym_norm == variety_norm or (name_norm and sym_raw == name_norm):
                     target = r
                     break
             if not target:
@@ -227,7 +253,17 @@ def _fetch_roll_yield(ak: Any, *, variety: str, date_compact: str) -> Dict[str, 
     last_exc: Exception | None = None
     for d in _date_candidates(date_compact):
         try:
-            df = ak.get_roll_yield(date=d, var=variety)
+            df = None
+            # Some AKShare versions expect lowercase variety
+            for v in [variety, variety.lower()]:
+                try:
+                    df = ak.get_roll_yield(date=d, var=v)
+                    break
+                except Exception as e:
+                    last_exc = e
+                    df = None
+            if df is None:
+                continue
             recs = _to_records(df)
             items = recs[:]
             if not items:
