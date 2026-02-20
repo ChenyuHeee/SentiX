@@ -9,6 +9,7 @@ from typing import Any, Dict
 from .analyzer import analyze_news_items
 from .crawler_news import fetch_news
 from .crawler_price import fetch_kline
+from .crawler_extras import fetch_extras
 from .aggregator import upsert_symbol_day, write_latest
 from .generator import build_site
 from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date, setup_logging
@@ -39,12 +40,14 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
         kline = fetch_kline(cfg, sym, end_date=date, days=kline_days)
         news = fetch_news(cfg, sym, date)
         analyzed = analyze_news_items(cfg, news)
+        extras = fetch_extras(cfg, sym, date)
         upsert_symbol_day(
             data_dir=data_dir,
             symbol=sym,
             date=date,
             kline=kline,
             analyzed_news=analyzed,
+            extras=extras,
             tz_label=tz_label,
         )
 

@@ -30,6 +30,7 @@ def upsert_symbol_day(
     date: str,
     kline: List[Dict[str, Any]],
     analyzed_news: List[Dict[str, Any]],
+    extras: Dict[str, Any] | None,
     tz_label: str,
 ) -> Dict[str, Any]:
     symbol_dir = data_dir / "symbols" / symbol["id"]
@@ -60,6 +61,7 @@ def upsert_symbol_day(
         },
         "news": analyzed_news,
         "kline": kline,
+        "extras": extras or {"status": "missing", "asof": date, "modules": {}},
     }
     write_json(symbol_dir / "days" / f"{date}.json", day_payload)
 
