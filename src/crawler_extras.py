@@ -383,6 +383,29 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
         except Exception as e:
             last_exc = e
 
+    # Fallback 3: 直接走 HTTP 版 100ppi（绕过 https SSLError）
+    try:
+        item = _fetch_spot_basis_100ppi_http(
+            date_compact=date_compact,
+            variety=variety.strip().upper(),
+            symbol_name=symbol_name,
+        )
+        if item:
+            spot = item.get("spot_price")
+            dom_basis = item.get("dom_basis")
+            summary = None
+            if spot is not None:
+                summary = f"现货 {spot} · 基差 {dom_basis}"
+            return {
+                "status": "ok",
+                "hint": "现货/基差（100ppi http fallback）",
+                "summary": summary,
+                "items": [item],
+                "params": {"date": item.get("date"), "source": "100ppi_http"},
+            }
+    except Exception as e:
+        last_exc = e
+
     if last_exc is not None:
         return {
             "status": "unavailable",
@@ -391,6 +414,103 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
             "params": {"date": date_compact},
         }
     return {"status": "empty", "hint": "现货/基差（AKShare futures_spot_price）", "items": [], "params": {"date": date_compact}}
+
+
+def _fetch_spot_basis_100ppi_http(*, date_compact: str, variety: str, symbol_name: str) -> Dict[str, Any] | None:
+    """Parse 100ppi daily spot/basis page via HTTP.
+
+    This is a fallback for environments where https requests fail with SSLError.
+    """
+
+    import requests
+    from io import StringIO
+
+    try:
+        date_iso = datetime.strptime(date_compact, "%Y%m%d").strftime("%Y-%m-%d")
+    except Exception:
+        return None
+
+    url = f"http://www.100ppi.com/sf/day-{date_iso}.html"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+    r = requests.get(url, headers=headers, timeout=20)
+    r.encoding = r.apparent_encoding or "utf-8"
+    tables = []
+    try:
+        import pandas as pd
+
+        tables = pd.read_html(StringIO(r.text))
+    except Exception:
+        return None
+
+    # Find a table that contains spot and main futures info
+    target_row = None
+    for t in tables:
+        cols = [str(c).strip() for c in getattr(t, "columns", [])]
+        if not cols:
+            continue
+
+        # Common columns from 100ppi pages
+        has_spot = any(c in cols for c in ["现货价格", "现货", "现货价"])
+        has_main = any(c in cols for c in ["主力合约价格", "主力合约", "主力"])
+        has_goods = any(c in cols for c in ["商品", "品种", "商品名称"])
+        if not (has_goods and (has_spot or has_main)):
+            continue
+
+        # Normalize columns
+        df = t.copy()
+        for c in df.columns:
+            if str(c).strip() == "商品名称":
+                df.rename(columns={c: "商品"}, inplace=True)
+            if str(c).strip() == "品种":
+                df.rename(columns={c: "商品"}, inplace=True)
+
+        if "商品" not in df.columns:
+            continue
+
+        # Match by chinese name first, then variety code
+        for _, row in df.iterrows():
+            goods = str(row.get("商品", "")).strip()
+            if not goods:
+                continue
+            if symbol_name and goods == symbol_name:
+                target_row = row
+                break
+            if variety and _norm_text(goods) == _norm_text(variety):
+                target_row = row
+                break
+        if target_row is not None:
+            break
+
+    if target_row is None:
+        return None
+
+    spot = _num(target_row.get("现货价格") or target_row.get("现货") or target_row.get("现货价"))
+    dom_price = _num(
+        target_row.get("主力合约价格")
+        or target_row.get("主力合约")
+        or target_row.get("主力")
+        or target_row.get("期货价格")
+    )
+    dom_basis = _num(
+        target_row.get("主力合约基差")
+        or target_row.get("主力基差")
+        or target_row.get("基差")
+        or target_row.get("主力合约基差值")
+    )
+    if dom_basis is None and spot is not None and dom_price is not None:
+        dom_basis = spot - dom_price
+
+    return {
+        "date": date_compact,
+        "symbol": variety,
+        "spot_price": spot,
+        "dom_contract_price": dom_price,
+        "dom_basis": dom_basis,
+        "source": "100ppi_http",
+    }
 
 
 def _fetch_roll_yield(ak: Any, *, variety: str, symbol_name: str, date_compact: str) -> Dict[str, Any]:
