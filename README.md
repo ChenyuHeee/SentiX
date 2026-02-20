@@ -50,7 +50,7 @@ python -m http.server -d docs 8000
 
 2) 修改 `config.yaml`
 - `price.provider: "tushare"`
-- 为每个品种填写 `tushare_ts_code`
+- 为每个品种填写 `tushare_ts_code`（这里应填写“主力/连续合约代码”，程序会用 `fut_mapping` 映射到当日主力月合约并拼接成连续K线）
 
 3) 运行
 
