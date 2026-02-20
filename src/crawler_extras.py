@@ -448,7 +448,7 @@ def _fetch_spot_basis_100ppi_http(*, date_compact: str, variety: str, symbol_nam
     try:
         import pandas as pd
 
-        tables = pd.read_html(StringIO(r.text))
+        tables = pd.read_html(StringIO(r.text), flavor="lxml")
     except Exception:
         return None
 
