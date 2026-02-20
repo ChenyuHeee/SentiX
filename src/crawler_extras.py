@@ -205,7 +205,11 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
     targets.discard("")
     for d in _date_candidates(date_compact):
         try:
-            df = ak.futures_spot_price(d)
+            # Prefer passing vars_list to avoid default filtering dropping some varieties.
+            try:
+                df = ak.futures_spot_price(d, vars_list=[variety.strip().upper()])
+            except TypeError:
+                df = ak.futures_spot_price(d)
             recs = _to_records(df)
             target = None
             for r in recs:
@@ -282,7 +286,7 @@ def _fetch_roll_yield(ak: Any, *, variety: str, symbol_name: str, date_compact: 
     last_exc: Exception | None = None
     for d in _date_candidates(date_compact):
         try:
-            df = None
+            res = None
             # Some AKShare versions expect lowercase variety
             for v in [
                 variety,
@@ -295,32 +299,49 @@ def _fetch_roll_yield(ak: Any, *, variety: str, symbol_name: str, date_compact: 
                 if not v or not str(v).strip():
                     continue
                 try:
-                    df = ak.get_roll_yield(date=d, var=v)
+                    res = ak.get_roll_yield(date=d, var=v)
                     break
                 except Exception as e:
                     last_exc = e
-                    df = None
-            if df is None:
-                continue
-            recs = _to_records(df)
-            items = recs[:]
-            if not items:
+                    res = None
+
+            if not res:
                 continue
 
-            summary = None
-            r0 = items[0]
+            # AKShare returns (roll_yield, near_by, deferred) in many versions.
+            if isinstance(res, (tuple, list)) and len(res) >= 3:
+                ry, near_by, deferred = res[0], res[1], res[2]
+                ry_num = _num(ry)
+                item = {
+                    "date": d,
+                    "var": variety,
+                    "roll_yield": ry_num,
+                    "near_by": str(near_by),
+                    "deferred": str(deferred),
+                }
+                return {
+                    "status": "ok",
+                    "hint": "展期收益率（AKShare get_roll_yield）",
+                    "summary": f"展期收益率 {ry_num}",
+                    "items": [item],
+                    "params": {"date": d, "var": variety},
+                }
+
+            # Fallback: if a DataFrame-like is returned
+            recs = _to_records(res)
+            if not recs:
+                continue
+            r0 = recs[0]
             val = None
-            for k in ["roll_yield", "展期收益率", "yield", "value"]:
+            for k in ["roll_yield", "ry", "展期收益率", "yield", "value"]:
                 if k in r0:
                     val = _num(r0.get(k))
                     break
-            if val is not None:
-                summary = f"展期收益率 {val}"
             return {
                 "status": "ok",
                 "hint": "展期收益率（AKShare get_roll_yield）",
-                "summary": summary,
-                "items": items,
+                "summary": f"展期收益率 {val}" if val is not None else None,
+                "items": recs,
                 "params": {"date": d, "var": variety},
             }
         except Exception as e:
