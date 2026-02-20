@@ -111,19 +111,33 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
         "symbols": [],
     }
     for sym in symbols:
-        day_path = data_dir / "symbols" / sym["id"] / "days" / f"{date}.json"
+        sym_id = sym["id"]
+        day_date = date
+        stale = False
+
+        day_path = data_dir / "symbols" / sym_id / "days" / f"{date}.json"
         day = read_json(day_path, default=None)
+        if not day:
+            # Fail-soft: keep the latest available day
+            hist = read_json(data_dir / "symbols" / sym_id / "history.json", default=None) or {}
+            hist_days = hist.get("days", []) or []
+            if hist_days:
+                day_date = hist_days[-1]["date"]
+                day = read_json(data_dir / "symbols" / sym_id / "days" / f"{day_date}.json", default=None)
+                stale = True
         if not day:
             continue
         latest["symbols"].append(
             {
-                "id": sym["id"],
+                "id": sym_id,
                 "name": sym["name"],
                 "sentiment_index": day["sentiment"]["index"],
                 "sentiment_band": day["sentiment"]["band"],
                 "pct_change": day["price"]["pct_change"],
                 "close": day["price"]["close"],
                 "updated_at": tz_label,
+                "data_date": day_date,
+                "is_stale": stale,
             }
         )
     write_json(data_dir / "latest.json", latest)

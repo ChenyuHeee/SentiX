@@ -43,3 +43,18 @@ python -m http.server -d docs 8000
 核心配置在 `config.yaml`：品种、新闻源、价格源、分析策略等。
 
 > 提示：接入真实数据与 LLM 时，把密钥放到 GitHub Secrets（如 `OPENAI_API_KEY`、`NEWSAPI_KEY`、`TUSHARE_TOKEN`），不要写进仓库。
+
+## 接入 Tushare 价格数据（优先链路）
+
+1) 在 GitHub Secrets / 本地环境变量配置 `TUSHARE_TOKEN`
+
+2) 修改 `config.yaml`
+- `price.provider: "tushare"`
+- 为每个品种填写 `tushare_ts_code`
+
+3) 运行
+
+```bash
+python -m src.cli --config config.yaml update-data
+python -m src.cli --config config.yaml build-site
+```
