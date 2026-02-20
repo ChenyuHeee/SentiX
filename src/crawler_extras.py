@@ -53,7 +53,9 @@ def fetch_extras(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> Dict
     )
 
     # Roll yield (needs trading date)
-    modules["roll_yield"] = _fetch_roll_yield(ak, variety=variety, date_compact=date_compact)
+    modules["roll_yield"] = _fetch_roll_yield(
+        ak, variety=variety, symbol_name=symbol_name, date_compact=date_compact
+    )
 
     # Positions rank (needs trading date)
     modules["positions_rank"] = _fetch_positions_rank(ak, variety=variety, date_compact=date_compact)
@@ -124,6 +126,13 @@ def _to_records(df: Any) -> List[Dict[str, Any]]:
         return []
 
 
+def _norm_text(s: Any) -> str:
+    if s is None:
+        return ""
+    t = str(s).strip().replace(" ", "").replace("\t", "")
+    return t.upper()
+
+
 def _num(v: Any) -> float | None:
     if v is None:
         return None
@@ -192,18 +201,38 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
     if not date_compact:
         return _mod_unavailable("现货/基差", "missing date")
     last_exc: Exception | None = None
-    variety_norm = variety.strip().upper()
-    name_norm = symbol_name.strip()
+    targets = {_norm_text(variety), _norm_text(symbol_name)}
+    targets.discard("")
     for d in _date_candidates(date_compact):
         try:
             df = ak.futures_spot_price(d)
             recs = _to_records(df)
             target = None
             for r in recs:
-                sym_raw = (r.get("symbol") or r.get("品种") or "").strip()
-                sym_norm = sym_raw.upper()
-                if sym_norm == variety_norm or (name_norm and sym_raw == name_norm):
-                    target = r
+                # Prefer well-known columns, then fall back to scanning all string fields.
+                candidates = []
+                for k in [
+                    "symbol",
+                    "品种",
+                    "品种名称",
+                    "品种名",
+                    "var",
+                    "VAR",
+                    "代码",
+                    "品种代码",
+                ]:
+                    if k in r and r.get(k) is not None:
+                        candidates.append(r.get(k))
+                if not candidates:
+                    for v in r.values():
+                        if isinstance(v, str) and v.strip():
+                            candidates.append(v)
+
+                for c in candidates:
+                    if _norm_text(c) in targets:
+                        target = r
+                        break
+                if target:
                     break
             if not target:
                 continue
@@ -247,7 +276,7 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
     return {"status": "empty", "hint": "现货/基差（AKShare futures_spot_price）", "items": [], "params": {"date": date_compact}}
 
 
-def _fetch_roll_yield(ak: Any, *, variety: str, date_compact: str) -> Dict[str, Any]:
+def _fetch_roll_yield(ak: Any, *, variety: str, symbol_name: str, date_compact: str) -> Dict[str, Any]:
     if not date_compact:
         return _mod_unavailable("展期收益率", "missing date")
     last_exc: Exception | None = None
@@ -255,7 +284,16 @@ def _fetch_roll_yield(ak: Any, *, variety: str, date_compact: str) -> Dict[str, 
         try:
             df = None
             # Some AKShare versions expect lowercase variety
-            for v in [variety, variety.lower()]:
+            for v in [
+                variety,
+                variety.lower(),
+                variety.strip(),
+                variety.strip().lower(),
+                symbol_name,
+                symbol_name.strip(),
+            ]:
+                if not v or not str(v).strip():
+                    continue
                 try:
                     df = ak.get_roll_yield(date=d, var=v)
                     break
