@@ -203,6 +203,10 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
     last_exc: Exception | None = None
     targets = {_norm_text(variety), _norm_text(symbol_name)}
     targets.discard("")
+    try:
+        asof_dt = datetime.strptime(date_compact, "%Y%m%d").date()
+    except Exception:
+        asof_dt = None
     for d in _date_candidates(date_compact):
         try:
             # Prefer passing vars_list to avoid default filtering dropping some varieties.
@@ -269,6 +273,115 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
         except Exception as e:
             last_exc = e
             continue
+
+    # Fallback 1: 生意社现期图（时间序列，取 <= asof 最近一条）
+    if symbol_name:
+        try:
+            price_df = ak.futures_spot_sys(symbol=symbol_name, indicator="市场价格")
+            basis_df = ak.futures_spot_sys(symbol=symbol_name, indicator="主力基差")
+            price_recs = _to_records(price_df)
+            basis_recs = _to_records(basis_df)
+            basis_by_date = {}
+            for r in basis_recs:
+                k = r.get("日期") or r.get("date")
+                if k is None:
+                    continue
+                basis_by_date[str(k).split(" ")[0]] = r
+
+            best = None
+            best_date = None
+            for r in price_recs:
+                k = r.get("日期") or r.get("date")
+                if k is None:
+                    continue
+                k_str = str(k).split(" ")[0]
+                try:
+                    k_dt = datetime.strptime(k_str, "%Y-%m-%d").date()
+                except Exception:
+                    continue
+                if asof_dt and k_dt > asof_dt:
+                    continue
+                if best_date is None or k_dt > best_date:
+                    best_date = k_dt
+                    best = r
+
+            if best and best_date:
+                k_str = best_date.strftime("%Y-%m-%d")
+                b = basis_by_date.get(k_str, {})
+                spot = _num(best.get("现货价格") or best.get("spot") or best.get("现货"))
+                fut = _num(best.get("主力合约") or best.get("dom") or best.get("主力"))
+                dom_basis = _num(b.get("主力基差") or b.get("dom_basis") or b.get("基差"))
+                if dom_basis is None and spot is not None and fut is not None:
+                    dom_basis = spot - fut
+                item = {
+                    "date": best_date.strftime("%Y%m%d"),
+                    "symbol": variety,
+                    "spot_price": spot,
+                    "dom_contract_price": fut,
+                    "dom_basis": dom_basis,
+                    "source": "futures_spot_sys",
+                }
+                summary = None
+                if spot is not None:
+                    summary = f"现货 {spot} · 主力基差 {dom_basis}"
+                return {
+                    "status": "ok",
+                    "hint": "现货/基差（AKShare futures_spot_sys）",
+                    "summary": summary,
+                    "items": [item],
+                    "params": {"asof": date_compact, "picked": item["date"]},
+                }
+        except Exception as e:
+            last_exc = e
+
+    # Fallback 2: 99 期货期现走势（时间序列，取 <= asof 最近一条）
+    if symbol_name:
+        try:
+            qh_df = ak.spot_price_qh(symbol=symbol_name)
+            qh_recs = _to_records(qh_df)
+            best = None
+            best_date = None
+            for r in qh_recs:
+                k = r.get("日期") or r.get("date")
+                if k is None:
+                    continue
+                k_str = str(k).split(" ")[0]
+                # 支持 YYYY-MM-DD 或 date 对象字符串
+                try:
+                    k_dt = datetime.strptime(k_str, "%Y-%m-%d").date()
+                except Exception:
+                    continue
+                if asof_dt and k_dt > asof_dt:
+                    continue
+                if best_date is None or k_dt > best_date:
+                    best_date = k_dt
+                    best = r
+            if best and best_date:
+                spot = _num(best.get("现货价格") or best.get("spot"))
+                fut_close = _num(best.get("期货收盘价") or best.get("futures_close") or best.get("期货"))
+                dom_basis = None
+                if spot is not None and fut_close is not None:
+                    dom_basis = spot - fut_close
+                item = {
+                    "date": best_date.strftime("%Y%m%d"),
+                    "symbol": variety,
+                    "spot_price": spot,
+                    "dom_contract_price": fut_close,
+                    "dom_basis": dom_basis,
+                    "source": "spot_price_qh",
+                }
+                summary = None
+                if spot is not None:
+                    summary = f"现货 {spot} · 基差 {dom_basis}"
+                return {
+                    "status": "ok",
+                    "hint": "现货/基差（AKShare spot_price_qh）",
+                    "summary": summary,
+                    "items": [item],
+                    "params": {"asof": date_compact, "picked": item["date"]},
+                }
+        except Exception as e:
+            last_exc = e
 
     if last_exc is not None:
         return {
