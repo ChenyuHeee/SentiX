@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>黄金 - 期货情绪分析</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar border-bottom">
+      <div class="container-fluid">
+        <a class="btn btn-link" href="/index.html">&lt; 返回</a>
+        <span class="navbar-brand mb-0 h1">黄金</span>
+        <div class="d-flex gap-2 align-items-center">
+          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" type="button">暗色模式</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-3">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <input class="form-control" style="max-width: 180px;" type="date" id="datePicker" />
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="toggleSentiment" checked />
+              <label class="form-check-label" for="toggleSentiment">显示情绪折线</label>
+            </div>
+            <a class="btn btn-outline-primary btn-sm" id="csvLink" href="#" download>下载历史数据 CSV</a>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body" id="summaryCard">
+              <div class="placeholder-glow">
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-6"></span>
+                <span class="placeholder col-8"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-2 fw-semibold">K 线</div>
+              <canvas id="klineChart" height="220"></canvas>
+              <hr />
+              <div class="mb-2 fw-semibold">成交量 + 情绪</div>
+              <canvas id="volChart" height="160"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="fw-semibold">情绪与次日涨跌幅相关性 (20 日)</div>
+              <div class="fs-5" id="corr20">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="fw-semibold mb-2">相关新闻</div>
+              <div id="newsList" class="vstack gap-2"></div>
+              <div id="newsEmpty" class="text-body-secondary d-none">数据更新中</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.umd.min.js"></script>
+    <script>window.__BASE_PATH__ = ""; window.__SYMBOL__ = {"id": "gold", "name": "\u9ec4\u91d1"};</script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
