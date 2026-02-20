@@ -475,6 +475,13 @@ def _fetch_spot_trend_99qh(symbol_name: str) -> Tuple[List[Dict[str, Any]], bool
                 pass
             return session.get(url, headers=headers, params=params, timeout=20, verify=False)
 
+    # Small alias set for names that differ across data sources.
+    alias = {
+        "沪深300股指": "沪深300",
+        "沪深300指数": "沪深300",
+    }
+    symbol_qh = alias.get(symbol_name, symbol_name)
+
     with requests.Session() as s:
         # 1) get productId mapping
         html = _get(s, "https://www.99qh.com/data/spotTrend").text
@@ -496,11 +503,11 @@ def _fetch_spot_trend_99qh(symbol_name: str) -> Tuple[List[Dict[str, Any]], bool
             for p in products
             if p.get("name") and p.get("productId")
         }
-        product_id = name_to_id.get(symbol_name)
+        product_id = name_to_id.get(symbol_qh)
         if not product_id:
             # fuzzy match to tolerate naming differences
             for n, pid in name_to_id.items():
-                if symbol_name in n or n in symbol_name:
+                if symbol_qh in n or n in symbol_qh:
                     product_id = pid
                     break
         if not product_id:
@@ -534,8 +541,35 @@ def _fetch_spot_trend_99qh(symbol_name: str) -> Tuple[List[Dict[str, Any]], bool
             headers=trend_headers,
             params=params,
         )
-        j = r.json()
-        lst = (j.get("data") or {}).get("list") or []
+        j: Any = r.json()
+        # Some environments may return a JSON-encoded string (even double-encoded).
+        for _ in range(0, 2):
+            if not isinstance(j, str):
+                break
+            try:
+                j = json.loads(j)
+            except Exception:
+                break
+        if isinstance(j, str):
+            raise RuntimeError(f"99qh: unexpected json string: {j[:200]}")
+        if not isinstance(j, dict):
+            raise RuntimeError(f"99qh: unexpected json type {type(j).__name__}")
+
+        code = j.get("code")
+        if code not in (0, "0", None):
+            msg = j.get("message")
+            raise RuntimeError(f"99qh: api code {code} {msg}")
+
+        data_obj: Any = j.get("data")
+        if isinstance(data_obj, str):
+            for _ in range(0, 2):
+                if not isinstance(data_obj, str):
+                    break
+                try:
+                    data_obj = json.loads(data_obj)
+                except Exception:
+                    break
+        lst = (data_obj or {}).get("list") if isinstance(data_obj, dict) else []
         out: List[Dict[str, Any]] = []
         for it in lst:
             out.append(
