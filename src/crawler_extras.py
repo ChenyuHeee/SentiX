@@ -207,41 +207,52 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
         asof_dt = datetime.strptime(date_compact, "%Y%m%d").date()
     except Exception:
         asof_dt = None
+    def _find_target(recs: List[Dict[str, Any]]) -> Dict[str, Any] | None:
+        for r in recs:
+            candidates: List[Any] = []
+            for k in [
+                "symbol",
+                "品种",
+                "品种名称",
+                "品种名",
+                "var",
+                "VAR",
+                "代码",
+                "品种代码",
+            ]:
+                if k in r and r.get(k) is not None:
+                    candidates.append(r.get(k))
+            if not candidates:
+                for v in r.values():
+                    if isinstance(v, str) and v.strip():
+                        candidates.append(v)
+
+            for c in candidates:
+                if _norm_text(c) in targets:
+                    return r
+        return None
+
     for d in _date_candidates(date_compact):
         try:
-            # Prefer passing vars_list to avoid default filtering dropping some varieties.
+            # Prefer passing vars_list to avoid default filtering dropping some varieties,
+            # but if it yields no match, retry without vars_list to search the full table.
+            df_filtered = None
             try:
-                df = ak.futures_spot_price(d, vars_list=[variety.strip().upper()])
+                df_filtered = ak.futures_spot_price(d, vars_list=[variety.strip().upper()])
             except TypeError:
-                df = ak.futures_spot_price(d)
-            recs = _to_records(df)
-            target = None
-            for r in recs:
-                # Prefer well-known columns, then fall back to scanning all string fields.
-                candidates = []
-                for k in [
-                    "symbol",
-                    "品种",
-                    "品种名称",
-                    "品种名",
-                    "var",
-                    "VAR",
-                    "代码",
-                    "品种代码",
-                ]:
-                    if k in r and r.get(k) is not None:
-                        candidates.append(r.get(k))
-                if not candidates:
-                    for v in r.values():
-                        if isinstance(v, str) and v.strip():
-                            candidates.append(v)
+                df_filtered = None
 
-                for c in candidates:
-                    if _norm_text(c) in targets:
-                        target = r
-                        break
-                if target:
-                    break
+            if df_filtered is not None:
+                recs = _to_records(df_filtered)
+                target = _find_target(recs)
+                if target is None:
+                    # retry full table
+                    df_all = ak.futures_spot_price(d)
+                    target = _find_target(_to_records(df_all))
+            else:
+                df_all = ak.futures_spot_price(d)
+                target = _find_target(_to_records(df_all))
+
             if not target:
                 continue
 
@@ -414,9 +425,11 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
         last_exc = e
 
     if last_exc is not None:
+        msg = str(last_exc).strip()
+        detail = f"{type(last_exc).__name__}" + (f": {msg}" if msg else "")
         return {
             "status": "unavailable",
-            "hint": f"现货/基差（接口异常：{type(last_exc).__name__}）",
+            "hint": f"现货/基差（接口异常：{detail}）",
             "items": [],
             "params": {"date": date_compact},
         }
