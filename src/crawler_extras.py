@@ -228,8 +228,15 @@ def _fetch_spot_basis(ak: Any, *, variety: str, symbol_name: str, date_compact: 
                         candidates.append(v)
 
             for c in candidates:
-                if _norm_text(c) in targets:
-                    return r
+                c_norm = _norm_text(c)
+                if not c_norm:
+                    continue
+                for t in targets:
+                    if not t:
+                        continue
+                    # Support exact and fuzzy contains matching.
+                    if c_norm == t or (t in c_norm) or (c_norm in t):
+                        return r
         return None
 
     for d in _date_candidates(date_compact):
