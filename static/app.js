@@ -85,6 +85,30 @@
     }
   }
 
+  function renderExtras(day) {
+    const box = document.getElementById('extrasBox');
+    const empty = document.getElementById('extrasEmpty');
+    if (!box || !empty) return;
+
+    box.innerHTML = '';
+    const modules = (day.extras && day.extras.modules) ? day.extras.modules : null;
+    if (!modules || Object.keys(modules).length === 0) {
+      empty.classList.remove('d-none');
+      return;
+    }
+    empty.classList.add('d-none');
+
+    const entries = Object.entries(modules);
+    for (const [key, mod] of entries) {
+      const status = (mod && mod.status) ? String(mod.status) : 'unknown';
+      const hint = (mod && mod.hint) ? String(mod.hint) : key;
+      const line = document.createElement('div');
+      line.className = 'text-body-secondary';
+      line.textContent = `- ${hint}（${status}）`;
+      box.appendChild(line);
+    }
+  }
+
   function buildKlineChart(canvas, days) {
     if (!canvas || !window.Chart) return null;
     const data = days.map(d => ({
@@ -186,11 +210,14 @@
         const day = await fetchJson(`${basePath}/api/symbols/${sym.id}/days/${date}.json`);
         renderSummary(day);
         renderNews(day);
+        renderExtras(day);
       } catch (e) {
         const el = document.getElementById('summaryCard');
         if (el) el.innerHTML = `<div class="text-body-secondary">数据更新中</div>`;
         const empty = document.getElementById('newsEmpty');
         if (empty) empty.classList.remove('d-none');
+        const extrasEmpty = document.getElementById('extrasEmpty');
+        if (extrasEmpty) extrasEmpty.classList.remove('d-none');
       }
     }
 
