@@ -1,19 +1,11 @@
 from __future__ import annotations
 
-import hashlib
-import random
 import urllib.parse
-from datetime import datetime
 from typing import Any, Dict, List
 
 import feedparser
 
 from .cleaner import clean_text
-
-
-def _seed(symbol_id: str, date: str) -> int:
-    h = hashlib.sha256(f"{symbol_id}:{date}".encode("utf-8")).hexdigest()
-    return int(h[:8], 16)
 
 
 def _parse_entry_source(title: str) -> str:
@@ -136,9 +128,6 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
             return items[:max_n]
 
         # Explicitly do not fallback to mock when RSS isn't configured.
-        return []
-
-    if provider == "mock":
         return []
 
     return []
