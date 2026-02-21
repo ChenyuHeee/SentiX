@@ -6,7 +6,7 @@ data:
   timezone: "Asia/Shanghai"
   lookback_days: 180
   kline_days_default: 30
-  max_news_per_day: 12
+  max_news_per_day: 20
 
 symbols:
   - id: "gold"
@@ -36,7 +36,17 @@ symbols:
     enabled: true
 
 news:
-  provider: "mock"  # mock | rss
+  provider: "gnews"  # gnews | rss
+  gnews:
+    # language: zh | en | both
+    language: "both"
+    # Google News RSS locale params
+    zh_hl: "zh-CN"
+    zh_gl: "CN"
+    zh_ceid: "CN:zh-Hans"
+    en_hl: "en-US"
+    en_gl: "US"
+    en_ceid: "US:en"
   rss:
     # 可后续替换为你有权限/允许抓取的 RSS/聚合源
     urls: []
