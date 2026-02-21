@@ -26,14 +26,18 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
     # Default to relative paths so the site works both at domain root and under
     # a GitHub Pages project path (e.g. /<repo>/).
     if raw_base_path in ("", "/"):
-        base_path = "."
+        base_path_root = "."
     else:
-        base_path = raw_base_path.rstrip("/")
+        base_path_root = raw_base_path.rstrip("/")
+
+    # Detail pages live under docs/s/*.html; when using relative paths we need
+    # to go up one directory so ./api doesn't become /s/api.
+    base_path_detail = ".." if base_path_root == "." else base_path_root
 
     latest = read_json(data_dir / "latest.json", default={"symbols": [], "date": "", "updated_at": ""})
 
     index_tpl = env.get_template("index.html.j2")
-    index_html = index_tpl.render(site=site_cfg, base_path=base_path, latest=latest)
+    index_html = index_tpl.render(site=site_cfg, base_path=base_path_root, latest=latest)
     write_text(docs_dir / "index.html", index_html)
 
     detail_tpl = env.get_template("detail.html.j2")
@@ -77,5 +81,9 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
         if export_src.exists():
             copy_file(export_src, docs_dir / "api" / "exports" / f"{sym_id}.csv")
 
-        detail_html = detail_tpl.render(site=site_cfg, base_path=base_path, symbol={"id": sym_id, "name": sym_name})
+        detail_html = detail_tpl.render(
+            site=site_cfg,
+            base_path=base_path_detail,
+            symbol={"id": sym_id, "name": sym_name},
+        )
         write_text(docs_dir / "s" / f"{sym_id}.html", detail_html)
