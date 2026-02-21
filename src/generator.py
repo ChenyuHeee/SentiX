@@ -22,7 +22,13 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
         autoescape=select_autoescape(["html", "xml"]),
     )
     site_cfg = cfg.get("site", {}) or {}
-    base_path = (site_cfg.get("base_path") or "").rstrip("/")
+    raw_base_path = str(site_cfg.get("base_path") or "").strip()
+    # Default to relative paths so the site works both at domain root and under
+    # a GitHub Pages project path (e.g. /<repo>/).
+    if raw_base_path in ("", "/"):
+        base_path = "."
+    else:
+        base_path = raw_base_path.rstrip("/")
 
     latest = read_json(data_dir / "latest.json", default={"symbols": [], "date": "", "updated_at": ""})
 
