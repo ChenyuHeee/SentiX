@@ -30,55 +30,114 @@ def upsert_symbol_day(
     date: str,
     kline: List[Dict[str, Any]],
     analyzed_news: List[Dict[str, Any]],
-    extras: Dict[str, Any] | None,
+    extras: Dict[str, Any] | None = None,
+    agents: Dict[str, Any] | None = None,
+    plans: Dict[str, Any] | None = None,
     tz_label: str,
 ) -> Dict[str, Any]:
     symbol_dir = data_dir / "symbols" / symbol["id"]
     ensure_dir(symbol_dir / "days")
 
     sentiment_index, sentiment_counts = _compute_daily_sentiment(analyzed_news)
-    today_bar = next((x for x in reversed(kline) if x.get("date") == date), kline[-1] if kline else None)
-    if not today_bar:
-        raise RuntimeError("missing kline")
-    prev_bar = kline[-2] if len(kline) >= 2 else None
-    pct = 0.0
-    if prev_bar and float(prev_bar["close"]) != 0.0:
-        pct = (float(today_bar["close"]) - float(prev_bar["close"])) / float(prev_bar["close"]) * 100.0
+    kline_dates = {x.get("date") for x in (kline or []) if x.get("date")}
+    is_trading_day = bool(kline) and (date in kline_dates)
+    today_bar: Dict[str, Any] | None = None
+    price_asof = ""
+    is_price_stale = False
+    pct: float | None = None
+
+    if kline:
+        today_bar = next((x for x in reversed(kline) if x.get("date") == date), kline[-1])
+        price_asof = str(today_bar.get("date") or "")
+        is_price_stale = (not is_trading_day) and bool(price_asof) and (price_asof != date)
+        if is_price_stale:
+            logging.info(
+                "Market closed on %s for %s; keep news but use price asof %s",
+                date,
+                symbol.get("id"),
+                price_asof,
+            )
+
+        prev_bar = kline[-2] if len(kline) >= 2 else None
+        if price_asof:
+            # Find the previous trading bar for pct_change.
+            for i in range(len(kline) - 1, 0, -1):
+                if kline[i].get("date") == price_asof:
+                    prev_bar = kline[i - 1]
+                    break
+        if prev_bar and float(prev_bar.get("close") or 0.0) != 0.0:
+            pct = (float(today_bar.get("close") or 0.0) - float(prev_bar.get("close") or 0.0)) / float(prev_bar.get("close") or 1.0) * 100.0
 
     day_payload = {
         "symbol": {"id": symbol["id"], "name": symbol["name"]},
         "date": date,
         "updated_at": tz_label,
+        "is_stale": bool(is_price_stale),
+        "agents": agents,
+        "plans": plans,
         "sentiment": {
             "index": sentiment_index,
             "band": sentiment_band(sentiment_index),
             "counts": sentiment_counts,
             "news_total": len(analyzed_news),
         },
-        "price": {
-            **{k: today_bar[k] for k in ["open", "high", "low", "close", "volume", "open_interest", "date"]},
-            "pct_change": round(pct, 2),
-        },
+        "price": (
+            {
+                "status": "ok",
+                **{k: (today_bar or {}).get(k) for k in ["open", "high", "low", "close", "volume", "open_interest", "date"]},
+                "is_stale": bool(is_price_stale),
+                "pct_change": None if pct is None else round(float(pct), 2),
+            }
+            if kline
+            else {
+                "status": "unavailable",
+                "reason": "missing kline",
+                "is_stale": False,
+                "pct_change": None,
+                "date": "",
+                "open": None,
+                "high": None,
+                "low": None,
+                "close": None,
+                "volume": None,
+                "open_interest": None,
+            }
+        ),
         "news": analyzed_news,
-        "kline": kline,
+        "kline": kline or [],
         "extras": extras or {"status": "missing", "asof": date, "modules": {}},
     }
+    # Always write the requested date so non-trading days can still show news.
     write_json(symbol_dir / "days" / f"{date}.json", day_payload)
 
     history_path = symbol_dir / "history.json"
     history = read_json(history_path, default={"symbol": {"id": symbol["id"], "name": symbol["name"]}, "days": []})
-    days = {d["date"]: d for d in (history.get("days", []) or [])}
-    days[date] = {
-        "date": date,
-        "sentiment": sentiment_index,
-        "open": float(today_bar["open"]),
-        "high": float(today_bar["high"]),
-        "low": float(today_bar["low"]),
-        "close": float(today_bar["close"]),
-        "volume": int(today_bar["volume"]),
-        "open_interest": int(today_bar["open_interest"]),
-        "pct_change": round(pct, 2),
-    }
+    existing_days = history.get("days", []) or []
+    # Cleanup: drop previously written non-trading dates within the fetched
+    # kline window. Keep older history outside the current window.
+    if kline_dates:
+        min_kline_date = min(kline_dates)
+        existing_days = [
+            d
+            for d in existing_days
+            if (str(d.get("date") or "") < min_kline_date) or (d.get("date") in kline_dates)
+        ]
+    days = {d["date"]: d for d in existing_days}
+
+    # Only update trading-day history/CSV. Non-trading days keep their day.json
+    # (news/sentiment) but do not add a new bar into history.
+    if is_trading_day and today_bar is not None:
+        days[date] = {
+            "date": date,
+            "sentiment": sentiment_index,
+            "open": float(today_bar.get("open") or 0.0),
+            "high": float(today_bar.get("high") or 0.0),
+            "low": float(today_bar.get("low") or 0.0),
+            "close": float(today_bar.get("close") or 0.0),
+            "volume": int(today_bar.get("volume") or 0),
+            "open_interest": int(today_bar.get("open_interest") or 0),
+            "pct_change": 0.0 if pct is None else round(float(pct), 2),
+        }
     history["days"] = sorted(days.values(), key=lambda x: x["date"])
     write_json(history_path, history)
 
@@ -129,14 +188,26 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
                 stale = True
         if not day:
             continue
+
+        # If day exists but price is stale (market closed), expose it.
+        try:
+            stale = bool(stale or day.get("is_stale") or ((day.get("price") or {}).get("is_stale")))
+        except Exception:
+            pass
+
+        price = day.get("price") or {}
+        price_status = str(price.get("status") or "ok")
+        close = price.get("close", None)
+        pct_change = price.get("pct_change", None)
         latest["symbols"].append(
             {
                 "id": sym_id,
                 "name": sym["name"],
                 "sentiment_index": day["sentiment"]["index"],
                 "sentiment_band": day["sentiment"]["band"],
-                "pct_change": day["price"]["pct_change"],
-                "close": day["price"]["close"],
+                "price_status": price_status,
+                "pct_change": pct_change,
+                "close": close,
                 "updated_at": tz_label,
                 "data_date": day_date,
                 "is_stale": stale,

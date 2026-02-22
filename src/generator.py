@@ -59,11 +59,25 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
         sym_name = sym["name"]
         history = read_json(data_dir / "symbols" / sym_id / "history.json", default={"symbol": sym, "days": []})
         corr20 = compute_corr20(history.get("days", []) or [])
+
+        # Prefer loading today's payload (even if market closed) so the detail
+        # page can display fresh news; price may be marked stale.
+        global_latest_date = str(latest.get("date") or "")
+        latest_day_payload = None
+        if global_latest_date:
+            latest_day_payload = read_json(
+                data_dir / "symbols" / sym_id / "days" / f"{global_latest_date}.json",
+                default=None,
+            )
+        latest_date_for_symbol = global_latest_date if latest_day_payload else (history.get("days", []) or [])[-1]["date"] if (history.get("days") or []) else ""
+        latest_is_stale = bool((latest_day_payload or {}).get("is_stale") or (((latest_day_payload or {}).get("price") or {}).get("is_stale")))
         meta = {
             "symbol": {"id": sym_id, "name": sym_name},
             "updated_at": latest.get("updated_at", ""),
             "corr20": round(float(corr20), 3),
             "days": history.get("days", []) or [],
+            "latest_date": latest_date_for_symbol,
+            "latest_is_stale": latest_is_stale,
         }
 
         sym_api_dir = docs_dir / "api" / "symbols" / sym_id
@@ -76,6 +90,10 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
             day_payload = read_json(data_dir / "symbols" / sym_id / "days" / f"{date}.json", default=None)
             if day_payload:
                 write_json(sym_api_dir / "days" / f"{date}.json", day_payload)
+
+        # Also copy today's payload even if it's not a trading day (not in history).
+        if global_latest_date and latest_day_payload:
+            write_json(sym_api_dir / "days" / f"{global_latest_date}.json", latest_day_payload)
 
         export_src = data_dir / "exports" / f"{sym_id}.csv"
         if export_src.exists():

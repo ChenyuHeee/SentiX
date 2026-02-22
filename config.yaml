@@ -36,7 +36,20 @@ symbols:
     enabled: true
 
 news:
-  provider: "gnews"  # gnews | rss
+  provider: "multi"  # gnews | rss | web | multi
+  # 全局宏观新闻池：会合并到每个品种（用于“关税/美联储”等对所有资产都可能有影响的事件）
+  global:
+    enabled: true
+    # 每个品种最多混入多少条全局新闻
+    max_items: 6
+    # Google News 查询词（用 OR 拼接）
+    terms:
+      - "特朗普 关税"
+      - "美联储 利率"
+      - "通胀"
+      - "美元指数"
+      - "地缘冲突"
+      - "OPEC 原油"
   gnews:
     # language: zh | en | both
     language: "both"
@@ -51,11 +64,39 @@ news:
     # 可后续替换为你有权限/允许抓取的 RSS/聚合源
     urls: []
 
+  # 额外网页来源（失败则忽略，不会 mock）
+  web:
+    jin10:
+      urls:
+        - "https://xnews.jin10.com/"
+      # 可选：只保留符合正则的文章链接
+      url_allow: "xnews\\.jin10\\.com/"
+      timeout_seconds: 15
+    qhrb:
+      urls:
+        - "https://www.qhrb.com.cn/"
+      url_allow: "qhrb\\.com\\.cn"
+      timeout_seconds: 15
+    eastmoney_futures:
+      urls:
+        - "https://futures.eastmoney.com/"
+      url_allow: "eastmoney\\.com/a/\\d{16,}\\.html"
+      timeout_seconds: 15
+
 price:
-  provider: "akshare"  # mock | akshare
+  provider: "akshare"  # akshare | tushare
 
 analysis:
-  provider: "lexicon"  # lexicon | openai (后续接入)
-  openai:
-    model: "gpt-4.1-mini"
-    timeout_seconds: 30
+  provider: "lexicon"  # lexicon | deepseek
+  # 三 Agent 权重：宏观/品种新闻/市场数据
+  weights:
+    macro: 0.3
+    symbol: 0.3
+    market: 0.4
+  # DeepSeek（OpenAI-compatible）可选：设置环境变量后把 provider 改为 deepseek 即可启用
+  deepseek:
+    api_key_env: "DEEPSEEK_API_KEY"
+    base_url: "https://api.deepseek.com"
+    model: "deepseek-chat"
+    temperature: 0.2
+    max_tokens: 1200

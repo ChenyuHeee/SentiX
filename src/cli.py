@@ -7,10 +7,11 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .analyzer import analyze_news_items
-from .crawler_news import fetch_news
+from .crawler_news import fetch_news_bundle
 from .crawler_price import fetch_kline
 from .crawler_extras import fetch_extras
 from .aggregator import upsert_symbol_day, write_latest
+from .agents import combine_final, macro_agent, market_agent, symbol_news_agent, trade_plan
 from .generator import build_site
 from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date, setup_logging
 
@@ -29,25 +30,88 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
     tz = data_cfg.get("timezone", "Asia/Shanghai")
     tz_label = iso_datetime_now(tz)
     kline_days = int(data_cfg.get("lookback_days", 180) or 180)
+    max_news = int(data_cfg.get("max_news_per_day", 12) or 12)
 
     data_dir = root_dir / "data"
     symbols = [_symbol_to_dict(s) for s in iter_enabled_symbols(cfg)]
     if not symbols:
         raise SystemExit("No enabled symbols in config.yaml")
 
+    analysis_cfg = cfg.get("analysis", {}) or {}
+    weights = analysis_cfg.get("weights", None) or {"macro": 0.3, "symbol": 0.3, "market": 0.4}
+
     for sym in symbols:
         logging.info("Updating %s %s", sym["id"], date)
         kline = fetch_kline(cfg, sym, end_date=date, days=kline_days)
-        news = fetch_news(cfg, sym, date)
-        analyzed = analyze_news_items(cfg, news)
+        bundle = fetch_news_bundle(cfg, sym, date=date, max_items=max_news)
+
+        analyzed_global = analyze_news_items(cfg, bundle.get("global", []) or [])
+        analyzed_symbol = analyze_news_items(cfg, bundle.get("symbol", []) or [])
+        analyzed_merged = analyze_news_items(cfg, bundle.get("merged", []) or [])
+
+        macro = macro_agent(cfg, date=date, analyzed_global_news=analyzed_global)
+        sym_news = symbol_news_agent(cfg, symbol=sym, date=date, analyzed_symbol_news=analyzed_symbol)
+        market = None if (not kline) else market_agent(cfg, kline=kline, date=date)
+
+        agents_payload: Dict[str, Any] = {
+            "weights": {"macro": float(weights.get("macro", 0.3)), "symbol": float(weights.get("symbol", 0.3)), "market": float(weights.get("market", 0.4))},
+            "macro": {
+                "status": "ok",
+                "index": macro.index,
+                "band": macro.band,
+                "confidence": macro.confidence,
+                "mode": macro.mode,
+                "rationale": macro.rationale,
+            },
+            "symbol": {
+                "status": "ok",
+                "index": sym_news.index,
+                "band": sym_news.band,
+                "confidence": sym_news.confidence,
+                "mode": sym_news.mode,
+                "rationale": sym_news.rationale,
+            },
+        }
+
+        plans_payload: Dict[str, Any] | None = None
+        if not kline:
+            agents_payload["market"] = {"status": "unavailable", "reason": "missing kline"}
+            agents_payload["final"] = {"status": "unavailable", "reason": "missing market signal"}
+            plans_payload = {"status": "unavailable", "reason": "missing kline"}
+        elif market is None:
+            agents_payload["market"] = {"status": "skipped", "reason": "market closed / non-trading day"}
+            agents_payload["final"] = {"status": "skipped", "reason": "market closed / non-trading day"}
+            plans_payload = {"status": "skipped", "reason": "market closed / non-trading day"}
+        else:
+            agents_payload["market"] = {
+                "status": "ok",
+                "index": market.index,
+                "band": market.band,
+                "confidence": market.confidence,
+                "mode": market.mode,
+                "rationale": market.rationale,
+            }
+            final = combine_final(macro=macro, symbol_news=sym_news, market=market, weights=weights)
+            agents_payload["final"] = {
+                "status": "ok",
+                "index": final.index,
+                "band": final.band,
+                "confidence": final.confidence,
+                "mode": final.mode,
+                "rationale": final.rationale,
+            }
+            plans_payload = trade_plan(symbol=sym, kline=kline, final_score=final)
+
         extras = fetch_extras(cfg, sym, date)
         upsert_symbol_day(
             data_dir=data_dir,
             symbol=sym,
             date=date,
             kline=kline,
-            analyzed_news=analyzed,
+            analyzed_news=analyzed_merged,
             extras=extras,
+            agents=agents_payload,
+            plans=plans_payload,
             tz_label=tz_label,
         )
 

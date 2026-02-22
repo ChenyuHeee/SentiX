@@ -43,7 +43,11 @@
                     </div>
                     <div class="text-end">
                       <div class="small text-body-secondary">涨跌幅</div>
-                      <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                      {% if s.pct_change is not none %}
+                        <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                      {% else %}
+                        <div class="fs-5 fw-semibold text-body-secondary">--</div>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -75,7 +79,11 @@
                     </div>
                     <div class="text-end">
                       <div class="small text-body-secondary">涨跌幅</div>
-                      <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                      {% if s.pct_change is not none %}
+                        <div class="fs-5 fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</div>
+                      {% else %}
+                        <div class="fs-5 fw-semibold text-body-secondary">--</div>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
