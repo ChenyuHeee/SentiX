@@ -1,5 +1,21 @@
 (function () {
-  const basePath = (window.__BASE_PATH__ || '').replace(/\/$/, '');
+  function inferBasePathFromLocation() {
+    try {
+      const p = String(window.location.pathname || '');
+      if (!p) return '';
+      if (p.includes('/s/')) return p.split('/s/')[0];
+      if (p.includes('/api/')) return p.split('/api/')[0];
+      if (p.endsWith('/index.html')) return p.slice(0, -'/index.html'.length);
+      // If served as /<repo>/ (directory index), keep without trailing slash
+      if (p.endsWith('/')) return p.replace(/\/$/, '');
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  const explicitBasePath = (window.__BASE_PATH__ || '').replace(/\/$/, '');
+  const basePath = (explicitBasePath || inferBasePathFromLocation()).replace(/\/$/, '');
 
   function getTheme() {
     return localStorage.getItem('theme') || 'light';
