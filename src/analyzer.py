@@ -19,6 +19,11 @@ def analyze_news_items(cfg: Dict[str, Any], items: List[Dict[str, Any]]) -> List
     for it in items:
         title = clean_text(it.get("title", ""))
         text = title + " " + clean_text(it.get("content", ""))
+        try:
+            w = float(it.get("weight", 1.0) or 1.0)
+        except Exception:
+            w = 1.0
+        w = float(max(0.0, min(1.0, w)))
         pos = sum(1 for w in POS_WORDS if w in text)
         neg = sum(1 for w in NEG_WORDS if w in text)
         score = pos - neg
@@ -31,6 +36,9 @@ def analyze_news_items(cfg: Dict[str, Any], items: List[Dict[str, Any]]) -> List
 
         confidence = 0.55
         confidence += 0.1 * min(3, abs(score))
+        # Very stale items should carry lower confidence even if matched keywords.
+        # (Actual weighting is applied downstream via the `weight` field.)
+        confidence *= float(0.85 + 0.15 * w)
         confidence = clamp(confidence, 0.5, 0.95)
         out.append(
             {

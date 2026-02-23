@@ -12,19 +12,53 @@ from .utils import clamp, sentiment_band
 
 
 def _avg_conf(items: List[Dict[str, Any]]) -> float:
-    vals = [float(it.get("confidence", 0.0)) for it in items if it.get("confidence") is not None]
-    if not vals:
+    ws: List[float] = []
+    cs: List[float] = []
+    for it in items:
+        if it.get("confidence") is None:
+            continue
+        try:
+            w = float(it.get("weight", 1.0) or 1.0)
+        except Exception:
+            w = 1.0
+        w = float(max(0.0, min(1.0, w)))
+        if w <= 0:
+            continue
+        ws.append(w)
+        cs.append(float(it.get("confidence", 0.0) or 0.0))
+    if not ws:
         return 0.55
-    return float(sum(vals) / len(vals))
+    tot = float(sum(ws))
+    if tot <= 0:
+        return 0.55
+    return float(sum(c * w for c, w in zip(cs, ws)) / tot)
 
 
 def sentiment_from_analyzed(items: List[Dict[str, Any]]) -> Tuple[float, Dict[str, int], float]:
     if not items:
         return 0.0, {"bull": 0, "bear": 0, "neutral": 0}, 0.55
-    bull = sum(float(it.get("confidence", 0.0)) for it in items if it.get("sentiment") == "bull")
-    bear = sum(float(it.get("confidence", 0.0)) for it in items if it.get("sentiment") == "bear")
-    total = len(items)
-    idx = (bull - bear) / float(total)
+    bull = 0.0
+    bear = 0.0
+    total_w = 0.0
+    for it in items:
+        try:
+            w = float(it.get("weight", 1.0) or 1.0)
+        except Exception:
+            w = 1.0
+        w = float(max(0.0, min(1.0, w)))
+        if w <= 0:
+            continue
+        total_w += w
+        conf = float(it.get("confidence", 0.0) or 0.0)
+        if it.get("sentiment") == "bull":
+            bull += w * conf
+        elif it.get("sentiment") == "bear":
+            bear += w * conf
+
+    if total_w <= 0:
+        return 0.0, {"bull": 0, "bear": 0, "neutral": 0}, 0.55
+
+    idx = (bull - bear) / float(total_w)
     idx = float(max(-1.0, min(1.0, idx)))
     counts = {
         "bull": sum(1 for it in items if it.get("sentiment") == "bull"),

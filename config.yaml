@@ -37,8 +37,21 @@ symbols:
 
 news:
   provider: "multi"  # gnews | rss | web | multi
-  # 只保留距分析日期最近 N 天的新闻，避免 RSS 返回过旧内容影响当日情绪
+  # 旧新闻不会被硬过滤；会按发布时间做衰减降权。
+  # 该值用于推导默认衰减速度（也可在 news.weighting.half_life_days 显式指定）。
   max_age_days: 30
+  weighting:
+    # 半衰期（天）：每过 half_life_days 天，权重减半
+    # half_life_days: 10
+    # 权重下限：避免极端情况下完全没有参考，但会非常小
+    min_weight: 0.0005
+    # 最新新闻加成：近 N 天乘以 fresh_boost
+    fresh_boost_days: 1
+    fresh_boost: 1.25
+  supersede:
+    # 对少数“会被最新相反动作覆盖”的主题（如加息/降息、上调/下调关税）
+    # 若检测到最新方向与旧方向相反，则旧新闻权重会被置为 0
+    enabled: true
   # 全局宏观新闻池：会合并到每个品种（用于“关税/美联储”等对所有资产都可能有影响的事件）
   global:
     enabled: true

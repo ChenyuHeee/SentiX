@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date as _date
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+import math
 import re
 import time
 import urllib.parse
@@ -120,6 +121,61 @@ def _get_news_max_age_days(cfg: Dict[str, Any]) -> int:
     return min(days, 365)
 
 
+def _get_news_weighting_half_life_days(cfg: Dict[str, Any]) -> int:
+    ncfg = (cfg.get("news", {}) or {})
+    wcfg = (ncfg.get("weighting", {}) or {})
+    v = wcfg.get("half_life_days", None)
+    try:
+        if v is not None:
+            d = int(v)
+            return max(1, min(d, 365))
+    except Exception:
+        pass
+
+    # Backward compatible default: derive from max_age_days.
+    # If max_age_days=30, half-life defaults to ~10 days.
+    max_age = _get_news_max_age_days(cfg)
+    if max_age <= 0:
+        return 10
+    return max(1, min(int(round(max_age / 3.0)), 365))
+
+
+def _get_news_weighting_params(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    ncfg = (cfg.get("news", {}) or {})
+    wcfg = (ncfg.get("weighting", {}) or {})
+
+    half_life_days = _get_news_weighting_half_life_days(cfg)
+
+    try:
+        min_weight = float(wcfg.get("min_weight", 0.0005) or 0.0005)
+    except Exception:
+        min_weight = 0.0005
+    min_weight = float(max(0.0, min(min_weight, 1.0)))
+
+    try:
+        fresh_boost_days = int(wcfg.get("fresh_boost_days", 1) or 1)
+    except Exception:
+        fresh_boost_days = 1
+    fresh_boost_days = max(0, min(fresh_boost_days, 30))
+
+    try:
+        fresh_boost = float(wcfg.get("fresh_boost", 1.25) or 1.25)
+    except Exception:
+        fresh_boost = 1.25
+    fresh_boost = float(max(1.0, min(fresh_boost, 3.0)))
+
+    scfg = (ncfg.get("supersede", {}) or {})
+    supersede_enabled = bool(scfg.get("enabled", True))
+
+    return {
+        "half_life_days": half_life_days,
+        "min_weight": min_weight,
+        "fresh_boost_days": fresh_boost_days,
+        "fresh_boost": fresh_boost,
+        "supersede_enabled": supersede_enabled,
+    }
+
+
 def _parse_published_date(published_at: str) -> _date | None:
     s = (published_at or "").strip()
     if not s:
@@ -152,32 +208,156 @@ def _parse_published_date(published_at: str) -> _date | None:
     except Exception:
         return None
 
-
-def _filter_items_by_recency(cfg: Dict[str, Any], items: list[Dict[str, Any]], *, date: str) -> list[Dict[str, Any]]:
-    max_age_days = _get_news_max_age_days(cfg)
-    if max_age_days <= 0:
-        return items
+def _compute_recency_weight(cfg: Dict[str, Any], *, published_at: str, date: str) -> tuple[float, int | None]:
+    params = _get_news_weighting_params(cfg)
+    half_life_days = float(params["half_life_days"])
+    min_weight = float(params["min_weight"])
+    fresh_boost_days = int(params["fresh_boost_days"])
+    fresh_boost = float(params["fresh_boost"])
 
     try:
         target = _date.fromisoformat(str(date))
     except Exception:
+        return 1.0, None
+
+    pub = _parse_published_date(published_at)
+    if pub is None:
+        # Unknown timestamp: keep, but do not let it dominate.
+        return 0.25, None
+
+    age_days = (target - pub).days
+    if age_days < 0:
+        age_days = 0
+
+    # Exponential decay with half-life.
+    # w = 0.5^(age/half_life)
+    w = math.pow(0.5, float(age_days) / max(1.0, half_life_days))
+    if fresh_boost_days > 0 and age_days <= fresh_boost_days:
+        w *= fresh_boost
+
+    w = float(min(1.0, max(min_weight, w)))
+    return w, int(age_days)
+
+
+def _classify_supersede_topic(title: str) -> tuple[str, int] | None:
+    """Classify a headline into (topic_key, direction).
+
+    Only for a few macro policy-like topics where newer opposite actions
+    can supersede older ones (e.g., rate hike -> later rate cut).
+    """
+    t = clean_text(title).lower()
+    if not t:
+        return None
+
+    # Policy rate: many CN headlines only say "加息/降息" without "利率".
+    rate_markers = ["利率", "rates", "rate ", "rate-", "rate", "加息", "降息", "升息"]
+    has_rate = any(k in t for k in rate_markers)
+    if has_rate:
+        up = any(k in t for k in ["加息", "升息", "上调", "提高", "raise", "hike", "tighten"])
+        down = any(k in t for k in ["降息", "下调", "降低", "cut", "lower", "ease"])
+        if up ^ down:
+            direction = 1 if up else -1
+            entity = "rate"
+            if any(k in t for k in ["美联储", "fed", "fomc"]):
+                entity = "fed"
+            elif any(k in t for k in ["欧洲央行", "ecb"]):
+                entity = "ecb"
+            elif any(k in t for k in ["人民银行", "央行", "pboc"]):
+                entity = "pboc"
+            return f"{entity}:policy_rate", direction
+
+    # Tariff: require tariff keyword and directional cue
+    if any(k in t for k in ["关税", "tariff"]):
+        up = any(k in t for k in ["加征", "上调", "提高", "raise", "impose", "increase"])
+        down = any(k in t for k in ["取消", "下调", "降低", "reduce", "cut", "suspend", "roll back"])
+        if up ^ down:
+            direction = 1 if up else -1
+            return "global:tariff", direction
+
+    return None
+
+
+def _apply_supersede(cfg: Dict[str, Any], items: list[Dict[str, Any]], *, date: str) -> list[Dict[str, Any]]:
+    params = _get_news_weighting_params(cfg)
+    if not params.get("supersede_enabled", True):
         return items
 
-    # Allow a small grace for timezone differences (item may appear "tomorrow" in UTC).
-    latest_allowed = target + timedelta(days=1)
-    oldest_allowed = target - timedelta(days=max_age_days)
+    # Find the latest item per topic; if latest direction differs from an older one,
+    # we consider the older one superseded and set its weight to 0.
+    latest: dict[str, dict[str, Any]] = {}
+    latest_dir: dict[str, int] = {}
+    latest_pub: dict[str, _date] = {}
+    for it in items:
+        cls = _classify_supersede_topic(str((it or {}).get("title") or ""))
+        if not cls:
+            continue
+        topic, direction = cls
+        pub = _parse_published_date(str((it or {}).get("published_at") or ""))
+        if pub is None:
+            continue
+        prev = latest_pub.get(topic)
+        if prev is None or pub > prev:
+            latest_pub[topic] = pub
+            latest[topic] = it
+            latest_dir[topic] = direction
+
+    if not latest_pub:
+        return items
 
     out: list[Dict[str, Any]] = []
     for it in items:
-        pub = _parse_published_date(str((it or {}).get("published_at") or ""))
-        if pub is None:
-            # If we can't parse a date, keep it rather than dropping potentially relevant items.
+        cls = _classify_supersede_topic(str((it or {}).get("title") or ""))
+        if not cls:
             out.append(it)
             continue
-        if pub < oldest_allowed or pub > latest_allowed:
+        topic, direction = cls
+        pub = _parse_published_date(str((it or {}).get("published_at") or ""))
+        if pub is None:
+            out.append(it)
+            continue
+        latest_p = latest_pub.get(topic)
+        if latest_p and pub < latest_p and latest_dir.get(topic) is not None and direction != int(latest_dir[topic]):
+            it2 = {**it}
+            it2["weight"] = 0.0
+            it2["superseded"] = True
+            out.append(it2)
             continue
         out.append(it)
     return out
+
+
+def _annotate_and_rank_items(cfg: Dict[str, Any], items: list[Dict[str, Any]], *, date: str, max_items: int) -> list[Dict[str, Any]]:
+    if not items:
+        return []
+    max_items = max(0, int(max_items))
+    if max_items == 0:
+        return []
+
+    tmp: list[Dict[str, Any]] = []
+    for it in items:
+        it2 = {**(it or {})}
+        w, age_days = _compute_recency_weight(cfg, published_at=str(it2.get("published_at") or ""), date=date)
+        it2["weight"] = float(it2.get("weight") or w)
+        if age_days is not None:
+            it2["age_days"] = int(age_days)
+        tmp.append(it2)
+
+    tmp = _apply_supersede(cfg, tmp, date=date)
+
+    tmp = [it for it in tmp if float(it.get("weight") or 0.0) > 0.0]
+
+    def _sort_key(x: Dict[str, Any]):
+        w = float(x.get("weight") or 0.0)
+        age = x.get("age_days")
+        try:
+            agei = int(age) if age is not None else 10**9
+        except Exception:
+            agei = 10**9
+        # Higher weight first; then newer first.
+        return (-w, agei)
+
+    tmp.sort(key=_sort_key)
+    return tmp[:max_items]
 
 
 def _web_items_from_links(
@@ -412,8 +592,8 @@ def _fetch_global_gnews(cfg: Dict[str, Any], *, max_items: int) -> list[Dict[str
 def fetch_global_news(cfg: Dict[str, Any], *, date: str, max_items: int) -> list[Dict[str, Any]]:
     """Fetch macro news that should be shared across all symbols."""
     items = _fetch_global_gnews(cfg, max_items=max_items)
-    items = _filter_items_by_recency(cfg, items, date=date)
-    return items[:max_items]
+    items = _dedup_items(items)
+    return _annotate_and_rank_items(cfg, items, date=date, max_items=max_items)
 
 
 def fetch_symbol_news(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str, max_items: int) -> list[Dict[str, Any]]:
@@ -456,8 +636,7 @@ def fetch_symbol_news(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str,
             pass
 
     items = _dedup_items(items)
-    items = _filter_items_by_recency(cfg, items, date=date)
-    return items[:max_items]
+    return _annotate_and_rank_items(cfg, items, date=date, max_items=max_items)
 
 
 def fetch_news_bundle(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str, max_items: int) -> Dict[str, Any]:
@@ -476,8 +655,7 @@ def fetch_news_bundle(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str,
         merged.append({**it, "scope": "symbol"})
 
     merged = _dedup_items(merged)
-    merged = _filter_items_by_recency(cfg, merged, date=date)
-    merged = merged[:max_items]
+    merged = _annotate_and_rank_items(cfg, merged, date=date, max_items=max_items)
     return {"global": global_items, "symbol": symbol_items, "merged": merged}
 
 
@@ -522,8 +700,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 seen.add(k)
                 items.append(it)
                 if len(items) >= max_n:
-                    items = _filter_items_by_recency(cfg, items, date=date)
-                    return items[:max_n]
+                    items = _dedup_items(items)
+                    return _annotate_and_rank_items(cfg, items, date=date, max_items=max_n)
 
         if want_lang in {"en", "both", "us", "en-us"}:
             hl = str(gcfg.get("en_hl", "en-US"))
@@ -536,8 +714,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 seen.add(k)
                 items.append(it)
                 if len(items) >= max_n:
-                    items = _filter_items_by_recency(cfg, items, date=date)
-                    return items[:max_n]
+                    items = _dedup_items(items)
+                    return _annotate_and_rank_items(cfg, items, date=date, max_items=max_n)
 
         # Optionally mix global macro news even in pure gnews mode.
         global_cap = int((((cfg.get("news", {}) or {}).get("global", {}) or {}).get("max_items", 0)) or 0)
@@ -546,8 +724,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 items = _dedup_items(_fetch_global_gnews(cfg, max_items=min(global_cap, max_n)) + items)
             except Exception:
                 pass
-        items = _filter_items_by_recency(cfg, items, date=date)
-        return items[:max_n]
+        items = _dedup_items(items)
+        return _annotate_and_rank_items(cfg, items, date=date, max_items=max_n)
 
     if provider == "rss":
         urls = ((cfg.get("news", {}) or {}).get("rss", {}) or {}).get("urls", []) or []
@@ -571,8 +749,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                             "content": "",
                         }
                     )
-            items = _filter_items_by_recency(cfg, items, date=date)
-            return items[:max_n]
+            items = _dedup_items(items)
+            return _annotate_and_rank_items(cfg, items, date=date, max_items=max_n)
 
         # Explicitly do not fallback to mock when RSS isn't configured.
         return []
