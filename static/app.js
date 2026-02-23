@@ -1,4 +1,19 @@
 (function () {
+  function resolveBasePath(raw) {
+    const s = String(raw || '').trim();
+    if (!s) return '';
+    try {
+      if (s.startsWith('/')) return s.replace(/\/$/, '');
+      if (s.startsWith('http://') || s.startsWith('https://')) {
+        return new URL(s).pathname.replace(/\/$/, '');
+      }
+      const u = new URL(s.replace(/\/?$/, '/'), window.location.href);
+      return u.pathname.replace(/\/$/, '');
+    } catch (e) {
+      return '';
+    }
+  }
+
   function inferBasePathFromLocation() {
     try {
       const p = String(window.location.pathname || '');
@@ -14,7 +29,7 @@
     }
   }
 
-  const explicitBasePath = (window.__BASE_PATH__ || '').replace(/\/$/, '');
+  const explicitBasePath = resolveBasePath(window.__BASE_PATH__ || '');
   const basePath = (explicitBasePath || inferBasePathFromLocation()).replace(/\/$/, '');
 
   function getTheme() {
