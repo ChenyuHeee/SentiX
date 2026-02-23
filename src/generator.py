@@ -45,7 +45,59 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
     )
 
     index_tpl = env.get_template("index.html.j2")
-    index_html = index_tpl.render(site=site_cfg, base_path=base_path_root, latest=latest, build_version=build_version)
+
+    macro_summary = None
+    global_latest_date = str(latest.get("date") or "")
+    if global_latest_date:
+        for sym in latest.get("symbols", []) or []:
+            sym_id = sym.get("id")
+            if not sym_id:
+                continue
+            payload = read_json(
+                data_dir / "symbols" / sym_id / "days" / f"{global_latest_date}.json",
+                default=None,
+            )
+            if not payload:
+                continue
+            agents = payload.get("agents") or {}
+            macro = agents.get("macro") or {}
+            status = str(macro.get("status") or "").strip() or "unknown"
+            if status != "ok":
+                macro_summary = {
+                    "status": status,
+                    "reason": macro.get("reason") or status,
+                    "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
+                }
+                break
+
+            macro_news = [it for it in (payload.get("news") or []) if (it or {}).get("scope") == "macro"]
+            counts = {"bull": 0, "bear": 0, "neutral": 0}
+            for it in macro_news:
+                s = (it or {}).get("sentiment")
+                if s in counts:
+                    counts[s] += 1
+                else:
+                    counts["neutral"] += 1
+
+            macro_summary = {
+                "status": "ok",
+                "index": macro.get("index"),
+                "band": macro.get("band") or "neutral",
+                "confidence": macro.get("confidence"),
+                "mode": macro.get("mode") or "heuristic",
+                "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
+                "news_total": len(macro_news),
+                "counts": counts,
+            }
+            break
+
+    index_html = index_tpl.render(
+        site=site_cfg,
+        base_path=base_path_root,
+        latest=latest,
+        build_version=build_version,
+        macro=macro_summary,
+    )
     write_text(docs_dir / "index.html", index_html)
 
     detail_tpl = env.get_template("detail.html.j2")
@@ -70,7 +122,6 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
 
         # Prefer loading today's payload (even if market closed) so the detail
         # page can display fresh news; price may be marked stale.
-        global_latest_date = str(latest.get("date") or "")
         latest_day_payload = None
         if global_latest_date:
             latest_day_payload = read_json(

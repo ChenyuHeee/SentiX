@@ -21,11 +21,42 @@
     <main class="container py-3">
       <div class="mb-2 text-body-secondary">{{ latest.date }} 更新</div>
 
+      {% if macro %}
+        <div class="row g-3 mb-1">
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
+                  <div>
+                    <div class="small text-body-secondary">当日宏观新闻交易情绪</div>
+                    {% if macro.status == 'ok' %}
+                      <div class="fs-3 fw-semibold sentiment-{{ macro.band }}">{{ '%.2f'|format(macro.index) }}</div>
+                      <div class="small text-body-secondary">
+                        宏观新闻 {{ macro.news_total }} 条（多 {{ macro.counts.bull }} / 空 {{ macro.counts.bear }} / 中 {{ macro.counts.neutral }}）
+                      </div>
+                    {% else %}
+                      <div class="text-body-secondary">数据更新中：{{ macro.reason }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="text-end">
+                    <div class="small text-body-secondary">更新</div>
+                    <div class="fw-semibold">{{ macro.updated_at }}</div>
+                    {% if macro.status == 'ok' %}
+                      <div class="small text-body-secondary">置信度 {{ '%.2f'|format(macro.confidence) }} · {{ macro.mode }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
       <div class="row g-3 d-none d-md-flex" id="cardsDesktop">
         {% for s in latest.symbols %}
           <div class="col-12 col-md-6 col-lg-4">
             <a class="text-decoration-none" href="s/{{ s.id }}.html">
-              <div class="card h-100">
+              <div class="card h-100 shadow-sm">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
                     <div class="h5 mb-2">{{ s.name }}</div>
@@ -61,7 +92,7 @@
         <div class="d-flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2" id="cardsMobile">
           {% for s in latest.symbols %}
             <a class="text-decoration-none" href="s/{{ s.id }}.html" style="min-width: 75vw;">
-              <div class="card">
+              <div class="card shadow-sm">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
                     <div class="h5 mb-2">{{ s.name }}</div>
