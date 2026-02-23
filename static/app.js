@@ -14,6 +14,45 @@
     }
   }
 
+  function tryRegisterFinancial() {
+    const Chart = window.Chart;
+    if (!Chart || typeof Chart.register !== 'function') return;
+
+    const candidates = [
+      window.ChartFinancial,
+      window.chartjsChartFinancial,
+      window.chartjs_chart_financial,
+      window['chartjs-chart-financial'],
+    ].filter(Boolean);
+
+    for (const mod of candidates) {
+      try {
+        const CandlestickController = mod.CandlestickController;
+        const CandlestickElement = mod.CandlestickElement;
+        const OhlcController = mod.OhlcController;
+        const OhlcElement = mod.OhlcElement;
+        const FinancialController = mod.FinancialController;
+        const FinancialElement = mod.FinancialElement;
+
+        const parts = [
+          CandlestickController,
+          CandlestickElement,
+          OhlcController,
+          OhlcElement,
+          FinancialController,
+          FinancialElement,
+        ].filter(Boolean);
+
+        if (parts.length) {
+          Chart.register(...parts);
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
   function inferBasePathFromLocation() {
     try {
       const p = String(window.location.pathname || '');
@@ -269,23 +308,27 @@
       l: d.low,
       c: d.close,
     }));
-    return new Chart(canvas.getContext('2d'), {
-      type: 'candlestick',
-      data: {
-        datasets: [{
-          label: 'K线',
-          data,
-        }]
-      },
-      options: {
-        parsing: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { maxRotation: 0, autoSkip: true } },
-          y: { position: 'right' }
+    try {
+      return new Chart(canvas.getContext('2d'), {
+        type: 'candlestick',
+        data: {
+          datasets: [{
+            label: 'K线',
+            data,
+          }]
+        },
+        options: {
+          parsing: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { maxRotation: 0, autoSkip: true } },
+            y: { position: 'right' }
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      return null;
+    }
   }
 
   function buildVolChart(canvas, days, showSentiment) {
@@ -385,6 +428,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    tryRegisterFinancial();
     initThemeToggle();
     initDetailPage().catch(() => {});
   });
