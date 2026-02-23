@@ -36,8 +36,16 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
 
     latest = read_json(data_dir / "latest.json", default={"symbols": [], "date": "", "updated_at": ""})
 
+    raw_build_version = str(latest.get("updated_at") or latest.get("date") or "").strip()
+    build_version = (
+        raw_build_version.replace("-", "")
+        .replace(":", "")
+        .replace(" ", "T")
+        .replace("/", "")
+    )
+
     index_tpl = env.get_template("index.html.j2")
-    index_html = index_tpl.render(site=site_cfg, base_path=base_path_root, latest=latest)
+    index_html = index_tpl.render(site=site_cfg, base_path=base_path_root, latest=latest, build_version=build_version)
     write_text(docs_dir / "index.html", index_html)
 
     detail_tpl = env.get_template("detail.html.j2")
@@ -103,5 +111,6 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
             site=site_cfg,
             base_path=base_path_detail,
             symbol={"id": sym_id, "name": sym_name},
+            build_version=build_version,
         )
         write_text(docs_dir / "s" / f"{sym_id}.html", detail_html)
