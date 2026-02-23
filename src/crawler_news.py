@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from datetime import date as _date
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 import re
 import time
 import urllib.parse
@@ -98,6 +101,81 @@ def _dedup_items(items: list[Dict[str, Any]]) -> list[Dict[str, Any]]:
         if not k or k in seen:
             continue
         seen.add(k)
+        out.append(it)
+    return out
+
+
+def _get_news_max_age_days(cfg: Dict[str, Any]) -> int:
+    ncfg = (cfg.get("news", {}) or {})
+    dcfg = (cfg.get("data", {}) or {})
+    v = ncfg.get("max_age_days", None)
+    if v is None:
+        v = dcfg.get("news_max_age_days", None)
+    try:
+        days = int(v) if v is not None else 30
+    except Exception:
+        days = 30
+    if days < 0:
+        return 0
+    return min(days, 365)
+
+
+def _parse_published_date(published_at: str) -> _date | None:
+    s = (published_at or "").strip()
+    if not s:
+        return None
+    # Common cases:
+    # - RFC2822: "Fri, 20 Feb 2026 23:30:02 GMT"
+    # - ISO date: "2026-02-23"
+    # - ISO datetime: "2026-02-23T09:06:00"
+    try:
+        if len(s) == 10 and s[4] == "-" and s[7] == "-":
+            return _date.fromisoformat(s)
+    except Exception:
+        pass
+
+    try:
+        dt = parsedate_to_datetime(s)
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).date()
+    except Exception:
+        pass
+
+    try:
+        dt2 = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt2.tzinfo is None:
+            dt2 = dt2.replace(tzinfo=timezone.utc)
+        return dt2.astimezone(timezone.utc).date()
+    except Exception:
+        return None
+
+
+def _filter_items_by_recency(cfg: Dict[str, Any], items: list[Dict[str, Any]], *, date: str) -> list[Dict[str, Any]]:
+    max_age_days = _get_news_max_age_days(cfg)
+    if max_age_days <= 0:
+        return items
+
+    try:
+        target = _date.fromisoformat(str(date))
+    except Exception:
+        return items
+
+    # Allow a small grace for timezone differences (item may appear "tomorrow" in UTC).
+    latest_allowed = target + timedelta(days=1)
+    oldest_allowed = target - timedelta(days=max_age_days)
+
+    out: list[Dict[str, Any]] = []
+    for it in items:
+        pub = _parse_published_date(str((it or {}).get("published_at") or ""))
+        if pub is None:
+            # If we can't parse a date, keep it rather than dropping potentially relevant items.
+            out.append(it)
+            continue
+        if pub < oldest_allowed or pub > latest_allowed:
+            continue
         out.append(it)
     return out
 
@@ -333,9 +411,9 @@ def _fetch_global_gnews(cfg: Dict[str, Any], *, max_items: int) -> list[Dict[str
 
 def fetch_global_news(cfg: Dict[str, Any], *, date: str, max_items: int) -> list[Dict[str, Any]]:
     """Fetch macro news that should be shared across all symbols."""
-    # date is currently used only for downstream labeling.
-    _ = date
-    return _fetch_global_gnews(cfg, max_items=max_items)
+    items = _fetch_global_gnews(cfg, max_items=max_items)
+    items = _filter_items_by_recency(cfg, items, date=date)
+    return items[:max_items]
 
 
 def fetch_symbol_news(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str, max_items: int) -> list[Dict[str, Any]]:
@@ -377,7 +455,9 @@ def fetch_symbol_news(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str,
         except Exception:
             pass
 
-    return _dedup_items(items)[:max_items]
+    items = _dedup_items(items)
+    items = _filter_items_by_recency(cfg, items, date=date)
+    return items[:max_items]
 
 
 def fetch_news_bundle(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str, max_items: int) -> Dict[str, Any]:
@@ -395,7 +475,9 @@ def fetch_news_bundle(cfg: Dict[str, Any], symbol: Dict[str, Any], *, date: str,
     for it in symbol_items:
         merged.append({**it, "scope": "symbol"})
 
-    merged = _dedup_items(merged)[:max_items]
+    merged = _dedup_items(merged)
+    merged = _filter_items_by_recency(cfg, merged, date=date)
+    merged = merged[:max_items]
     return {"global": global_items, "symbol": symbol_items, "merged": merged}
 
 
@@ -440,7 +522,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 seen.add(k)
                 items.append(it)
                 if len(items) >= max_n:
-                    return items
+                    items = _filter_items_by_recency(cfg, items, date=date)
+                    return items[:max_n]
 
         if want_lang in {"en", "both", "us", "en-us"}:
             hl = str(gcfg.get("en_hl", "en-US"))
@@ -453,7 +536,8 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 seen.add(k)
                 items.append(it)
                 if len(items) >= max_n:
-                    return items
+                    items = _filter_items_by_recency(cfg, items, date=date)
+                    return items[:max_n]
 
         # Optionally mix global macro news even in pure gnews mode.
         global_cap = int((((cfg.get("news", {}) or {}).get("global", {}) or {}).get("max_items", 0)) or 0)
@@ -462,6 +546,7 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                 items = _dedup_items(_fetch_global_gnews(cfg, max_items=min(global_cap, max_n)) + items)
             except Exception:
                 pass
+        items = _filter_items_by_recency(cfg, items, date=date)
         return items[:max_n]
 
     if provider == "rss":
@@ -486,6 +571,7 @@ def fetch_news(cfg: Dict[str, Any], symbol: Dict[str, Any], date: str) -> List[D
                             "content": "",
                         }
                     )
+            items = _filter_items_by_recency(cfg, items, date=date)
             return items[:max_n]
 
         # Explicitly do not fallback to mock when RSS isn't configured.
