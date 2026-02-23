@@ -430,6 +430,18 @@
   document.addEventListener('DOMContentLoaded', () => {
     tryRegisterFinancial();
     initThemeToggle();
-    initDetailPage().catch(() => {});
+    initDetailPage().catch((e) => {
+      try {
+        // Keep the page usable even if some module fails.
+        console.error(e);
+        const el = document.getElementById('summaryCard');
+        if (el) {
+          const msg = (e && e.message) ? String(e.message) : String(e || 'unknown');
+          el.innerHTML = `<div class="text-danger">页面脚本错误：${msg}</div>`;
+        }
+      } catch (_ignore) {
+        // ignore
+      }
+    });
   });
 })();
