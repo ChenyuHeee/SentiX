@@ -12,8 +12,9 @@ from .crawler_price import fetch_kline
 from .crawler_extras import fetch_extras
 from .aggregator import upsert_symbol_day, write_latest
 from .agents import combine_final, macro_agent, market_agent, symbol_news_agent, trade_plan
+from .fundamentals import update_fundamentals
 from .generator import build_site
-from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date, setup_logging
+from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date, read_json, setup_logging
 
 
 def _symbol_to_dict(s) -> Dict[str, Any]:
@@ -40,9 +41,48 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
     analysis_cfg = cfg.get("analysis", {}) or {}
     weights = analysis_cfg.get("weights", None) or {"macro": 0.3, "symbol": 0.3, "market": 0.4}
 
+    def _fallback_kline(sym_id: str, day_date: str) -> list[dict[str, Any]]:
+        # Prefer the previously persisted full kline (from day payload).
+        day = read_json(data_dir / "symbols" / sym_id / "days" / f"{day_date}.json", default=None)
+        if isinstance(day, dict):
+            k = day.get("kline")
+            if isinstance(k, list) and k:
+                return [x for x in k if isinstance(x, dict)]
+
+        # Fallback to history bars if present (trading days only).
+        hist = read_json(data_dir / "symbols" / sym_id / "history.json", default=None)
+        if isinstance(hist, dict):
+            hs = hist.get("days")
+            if isinstance(hs, list) and hs:
+                out: list[dict[str, Any]] = []
+                for r in hs[-400:]:
+                    if not isinstance(r, dict):
+                        continue
+                    d = r.get("date")
+                    if not d:
+                        continue
+                    out.append(
+                        {
+                            "date": d,
+                            "open": r.get("open"),
+                            "high": r.get("high"),
+                            "low": r.get("low"),
+                            "close": r.get("close"),
+                            "volume": r.get("volume"),
+                            "open_interest": r.get("open_interest"),
+                        }
+                    )
+                return out
+        return []
+
     for sym in symbols:
         logging.info("Updating %s %s", sym["id"], date)
         kline = fetch_kline(cfg, sym, end_date=date, days=kline_days)
+        if not kline:
+            fb = _fallback_kline(sym["id"], date)
+            if fb:
+                logging.info("Using fallback kline for %s (%d bars)", sym["id"], len(fb))
+                kline = fb
         bundle = fetch_news_bundle(cfg, sym, date=date, max_items=max_news)
 
         analyzed_global = analyze_news_items(cfg, bundle.get("global", []) or [])
@@ -102,7 +142,12 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
             }
             plans_payload = trade_plan(symbol=sym, kline=kline, final_score=final)
 
-        extras = fetch_extras(cfg, sym, date)
+        # Many AKShare "extras" datasets (basis, roll yield, rank tables) are
+        # published on trading days. When market is closed or the kline source
+        # is delayed, align extras to the latest available trading bar.
+        extras_asof = (kline[-1].get("date") if kline else None) or date
+        extras = fetch_extras(cfg, sym, extras_asof)
+        update_fundamentals(data_dir=data_dir, symbol=sym, extras=extras, tz_label=tz_label)
         upsert_symbol_day(
             data_dir=data_dir,
             symbol=sym,

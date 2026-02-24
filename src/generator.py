@@ -143,6 +143,11 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
         ensure_dir(sym_api_dir / "days")
         write_json(sym_api_dir / "index.json", meta)
 
+        # fundamentals dataset (optional)
+        fundamentals_src = data_dir / "symbols" / sym_id / "fundamentals.json"
+        if fundamentals_src.exists():
+            copy_file(fundamentals_src, sym_api_dir / "fundamentals.json")
+
         # daily payloads (for calendar/news)
         for d in meta["days"]:
             date = d["date"]

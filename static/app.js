@@ -299,6 +299,148 @@
     }
   }
 
+  function buildLineChart(canvas, labels, data, label, yMin, yMax) {
+    if (!canvas || !window.Chart) return null;
+    try {
+      return new window.Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data,
+            tension: 0.25,
+            pointRadius: 1,
+          }]
+        },
+        options: {
+          plugins: { legend: { display: true } },
+          scales: {
+            y: {
+              position: 'right',
+              min: (typeof yMin === 'number') ? yMin : undefined,
+              max: (typeof yMax === 'number') ? yMax : undefined,
+            }
+          }
+        }
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function buildBarChart(canvas, labels, data, label) {
+    if (!canvas || !window.Chart) return null;
+    try {
+      return new window.Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data,
+          }]
+        },
+        options: {
+          plugins: { legend: { display: true } },
+          scales: {
+            y: { position: 'right' }
+          }
+        }
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function renderFundamentals(fund) {
+    const box = document.getElementById('fundBox');
+    const empty = document.getElementById('fundEmpty');
+    const updatedAt = document.getElementById('fundUpdatedAt');
+    const summary = document.getElementById('fundSummary');
+    if (!box || !empty) return;
+    box.innerHTML = '';
+
+    if (!fund || !fund.symbol) {
+      empty.classList.remove('d-none');
+      if (summary) summary.textContent = '';
+      return;
+    }
+    empty.classList.add('d-none');
+    if (updatedAt) updatedAt.textContent = fund.updated_at ? `更新：${fund.updated_at}` : '';
+
+    function oneLine(title, obj) {
+      const status = obj && obj.status ? String(obj.status) : 'unknown';
+      const hint = obj && obj.hint ? String(obj.hint) : '';
+      const text = obj && obj.summary ? String(obj.summary) : '';
+      return `${title}：${status}${hint ? `（${hint}）` : ''}${text ? ` · ${text}` : ''}`;
+    }
+
+    const lines = [];
+    if (fund.inventory) lines.push(oneLine('库存', fund.inventory));
+    if (fund.spot_basis) lines.push(oneLine('基差', fund.spot_basis));
+    if (fund.roll_yield) lines.push(oneLine('展期', fund.roll_yield));
+    if (fund.positions_rank) lines.push(oneLine('持仓', fund.positions_rank));
+    if (summary) summary.textContent = lines.join(' | ');
+
+    function addChartBlock(title, canvasId, buildFn) {
+      const wrap = document.createElement('div');
+      wrap.className = 'border rounded p-2';
+      wrap.innerHTML = `<div class="fw-semibold mb-2">${title}</div><canvas id="${canvasId}" height="160"></canvas>`;
+      box.appendChild(wrap);
+      const canvas = wrap.querySelector('canvas');
+      buildFn(canvas);
+    }
+
+    const invSeries = (fund.inventory && Array.isArray(fund.inventory.series)) ? fund.inventory.series : [];
+    if (invSeries.length >= 2) {
+      const s = invSeries.slice(-60);
+      addChartBlock('库存（近 60 点）', 'invChart', (canvas) => {
+        buildLineChart(canvas, s.map(x => x.date), s.map(x => x.inventory), '库存', null, null);
+      });
+    }
+
+    const basisSeries = (fund.spot_basis && Array.isArray(fund.spot_basis.series)) ? fund.spot_basis.series : [];
+    if (basisSeries.length >= 2) {
+      const s = basisSeries.slice(-60);
+      addChartBlock('主力基差（近 60 点）', 'basisChart', (canvas) => {
+        buildLineChart(canvas, s.map(x => x.date), s.map(x => x.dom_basis), '主力基差', null, null);
+      });
+    }
+
+    const rySeries = (fund.roll_yield && Array.isArray(fund.roll_yield.series)) ? fund.roll_yield.series : [];
+    if (rySeries.length >= 2) {
+      const s = rySeries.slice(-60);
+      addChartBlock('展期收益率（近 60 点）', 'ryChart', (canvas) => {
+        buildLineChart(canvas, s.map(x => x.date), s.map(x => x.roll_yield), '展期收益率', null, null);
+      });
+    }
+
+    const posSeries = (fund.positions_rank && Array.isArray(fund.positions_rank.series)) ? fund.positions_rank.series : [];
+    if (posSeries.length >= 2) {
+      const s = posSeries.slice(-60);
+      addChartBlock('净持仓（近 60 点）', 'posChart', (canvas) => {
+        buildBarChart(canvas, s.map(x => x.date), s.map(x => x.net), '净持仓');
+      });
+    }
+
+    const preview = (fund.positions_rank && Array.isArray(fund.positions_rank.latest_preview)) ? fund.positions_rank.latest_preview : [];
+    if (preview.length) {
+      const wrap = document.createElement('div');
+      wrap.className = 'border rounded p-2';
+      wrap.innerHTML = `<div class="fw-semibold mb-2">持仓排名（预览）</div>`;
+      const pre = document.createElement('pre');
+      pre.className = 'mb-0 small';
+      try {
+        pre.textContent = JSON.stringify(preview, null, 2);
+      } catch (e) {
+        pre.textContent = String(preview);
+      }
+      wrap.appendChild(pre);
+      box.appendChild(wrap);
+    }
+  }
+
   function buildKlineChart(canvas, days) {
     if (!canvas || !window.Chart) return null;
     tryRegisterFinancial();
@@ -397,6 +539,15 @@
 
     const meta = await fetchJson(`${basePath}/api/symbols/${sym.id}/index.json`);
     if (corr20El) corr20El.textContent = String(meta.corr20);
+
+    // fundamentals
+    try {
+      const fund = await fetchJson(`${basePath}/api/symbols/${sym.id}/fundamentals.json`);
+      renderFundamentals(fund);
+    } catch (e) {
+      const empty = document.getElementById('fundEmpty');
+      if (empty) empty.classList.remove('d-none');
+    }
 
     const days = (meta.days || []).slice(-30);
     const klineCanvas = document.getElementById('klineChart');

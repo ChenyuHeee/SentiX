@@ -110,6 +110,63 @@ def upsert_symbol_day(
     # Always write the requested date so non-trading days can still show news.
     write_json(symbol_dir / "days" / f"{date}.json", day_payload)
 
+    # Backfill a small window of recent trading-day payloads with price-only
+    # stubs. This keeps charts usable and avoids 404s when users pick an older
+    # date from the chart range.
+    # NOTE: We intentionally do NOT backfill news/agents/extras for past days.
+    STUB_BACKFILL_BARS = 60
+
+    def _pct_changes(series: List[Dict[str, Any]]) -> Dict[str, float]:
+        out: Dict[str, float] = {}
+        prev_close: float | None = None
+        for b in sorted(series, key=lambda x: str(x.get("date") or "")):
+            d = str(b.get("date") or "").strip()
+            if not d:
+                continue
+            c = float(b.get("close") or 0.0)
+            pct0 = 0.0
+            if prev_close is not None and float(prev_close) != 0.0:
+                pct0 = (c - float(prev_close)) / float(prev_close) * 100.0
+            out[d] = round(float(pct0), 2)
+            prev_close = c
+        return out
+
+    pct_by_date = _pct_changes(kline or [])
+    if kline:
+        recent = (kline or [])[-STUB_BACKFILL_BARS:]
+        for b in recent:
+            d = str(b.get("date") or "").strip()
+            if not d or d == date:
+                continue
+            p = symbol_dir / "days" / f"{d}.json"
+            if p.exists():
+                continue
+
+            stub_payload = {
+                "symbol": {"id": symbol["id"], "name": symbol["name"]},
+                "date": d,
+                "updated_at": tz_label,
+                "is_stale": False,
+                "agents": {"status": "unavailable", "reason": "price-only stub"},
+                "plans": {"status": "unavailable", "reason": "price-only stub"},
+                "sentiment": {
+                    "index": 0.0,
+                    "band": "neutral",
+                    "counts": {"bull": 0, "bear": 0, "neutral": 0},
+                    "news_total": 0,
+                },
+                "price": {
+                    "status": "ok",
+                    **{k: b.get(k) for k in ["open", "high", "low", "close", "volume", "open_interest", "date"]},
+                    "is_stale": False,
+                    "pct_change": pct_by_date.get(d, 0.0),
+                },
+                "news": [],
+                "kline": [],
+                "extras": {"status": "missing", "asof": d, "modules": {}},
+            }
+            write_json(p, stub_payload)
+
     history_path = symbol_dir / "history.json"
     history = read_json(history_path, default={"symbol": {"id": symbol["id"], "name": symbol["name"]}, "days": []})
     existing_days = history.get("days", []) or []
@@ -124,19 +181,35 @@ def upsert_symbol_day(
         ]
     days = {d["date"]: d for d in existing_days}
 
-    # Only update trading-day history/CSV. Non-trading days keep their day.json
-    # (news/sentiment) but do not add a new bar into history.
+    # Merge kline bars into history so the site always has a usable price curve.
+    # For dates without computed sentiment (no news backfill), sentiment defaults
+    # to 0.0 and can be overwritten later when that date is processed.
+    for b in (kline or []):
+        d = str(b.get("date") or "").strip()
+        if not d:
+            continue
+        old = days.get(d) or {"date": d}
+        days[d] = {
+            **old,
+            "date": d,
+            "sentiment": float(old.get("sentiment") or 0.0),
+            "open": float(b.get("open") or 0.0),
+            "high": float(b.get("high") or 0.0),
+            "low": float(b.get("low") or 0.0),
+            "close": float(b.get("close") or 0.0),
+            "volume": int(b.get("volume") or 0),
+            "open_interest": int(b.get("open_interest") or 0),
+            "pct_change": float(pct_by_date.get(d, old.get("pct_change") or 0.0)),
+        }
+
+    # If today's date is a trading day, overwrite that day's sentiment with the
+    # computed index (price fields already merged above).
     if is_trading_day and today_bar is not None:
+        d0 = days.get(date) or {"date": date}
         days[date] = {
+            **d0,
             "date": date,
-            "sentiment": sentiment_index,
-            "open": float(today_bar.get("open") or 0.0),
-            "high": float(today_bar.get("high") or 0.0),
-            "low": float(today_bar.get("low") or 0.0),
-            "close": float(today_bar.get("close") or 0.0),
-            "volume": int(today_bar.get("volume") or 0),
-            "open_interest": int(today_bar.get("open_interest") or 0),
-            "pct_change": 0.0 if pct is None else round(float(pct), 2),
+            "sentiment": float(sentiment_index),
         }
     history["days"] = sorted(days.values(), key=lambda x: x["date"])
     write_json(history_path, history)
