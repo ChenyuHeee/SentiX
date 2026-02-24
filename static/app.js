@@ -301,6 +301,23 @@
 
   function buildKlineChart(canvas, days) {
     if (!canvas || !window.Chart) return null;
+    tryRegisterFinancial();
+
+    // Guard: if candlestick isn't registered, don't instantiate (avoids
+    // throwing an uncaught error in some Chart.js builds/source-maps).
+    try {
+      const Chart = window.Chart;
+      const reg = Chart && Chart.registry;
+      let candlestick = null;
+      if (reg && typeof reg.getController === 'function') {
+        candlestick = reg.getController('candlestick');
+      } else if (reg && reg.controllers && typeof reg.controllers.get === 'function') {
+        candlestick = reg.controllers.get('candlestick');
+      }
+      if (!candlestick) return null;
+    } catch (e) {
+      return null;
+    }
     const data = days.map(d => ({
       x: d.date,
       o: d.open,
