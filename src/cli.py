@@ -18,7 +18,7 @@ from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date
 
 
 def _symbol_to_dict(s) -> Dict[str, Any]:
-    d: Dict[str, Any] = {"id": s.id, "name": s.name, "keywords": s.keywords}
+    d: Dict[str, Any] = {"id": s.id, "name": s.name, "keywords": s.keywords, "asset": getattr(s, "asset", "futures")}
     if getattr(s, "akshare_symbol", None):
         d["akshare_symbol"] = s.akshare_symbol
     if getattr(s, "tushare_ts_code", None):
@@ -89,12 +89,16 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
         analyzed_symbol = analyze_news_items(cfg, bundle.get("symbol", []) or [])
         analyzed_merged = analyze_news_items(cfg, bundle.get("merged", []) or [])
 
-        # Many AKShare "extras" datasets (basis, roll yield, rank tables) are
-        # published on trading days. When market is closed or the kline source
-        # is delayed, align extras to the latest available trading bar.
-        extras_asof = (kline[-1].get("date") if kline else None) or date
-        extras = fetch_extras(cfg, sym, extras_asof)
-        fund_sig = fundamentals_signals_for_llm(extras)
+        asset = str(sym.get("asset") or "futures").strip().lower() or "futures"
+        extras = None
+        fund_sig = {"status": "missing", "asof": "", "signals": {}}
+        if asset == "futures":
+            # Many AKShare "extras" datasets (basis, roll yield, rank tables) are
+            # published on trading days. When market is closed or the kline source
+            # is delayed, align extras to the latest available trading bar.
+            extras_asof = (kline[-1].get("date") if kline else None) or date
+            extras = fetch_extras(cfg, sym, extras_asof)
+            fund_sig = fundamentals_signals_for_llm(extras)
 
         macro = macro_agent(cfg, date=date, analyzed_global_news=analyzed_global)
         sym_news = symbol_news_agent(cfg, symbol=sym, date=date, analyzed_symbol_news=analyzed_symbol)
@@ -151,7 +155,8 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
             }
             plans_payload = trade_plan(symbol=sym, kline=kline, final_score=final)
 
-        update_fundamentals(data_dir=data_dir, symbol=sym, extras=extras, tz_label=tz_label)
+        if asset == "futures":
+            update_fundamentals(data_dir=data_dir, symbol=sym, extras=extras, tz_label=tz_label)
         upsert_symbol_day(
             data_dir=data_dir,
             symbol=sym,

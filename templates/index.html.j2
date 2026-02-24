@@ -53,8 +53,16 @@
         </div>
       {% endif %}
 
-      <div class="row g-3 d-none d-md-flex" id="cardsDesktop">
-        {% for s in latest.symbols %}
+      {% set futures_symbols = latest.symbols|selectattr('asset', 'equalto', 'futures')|list %}
+      {% set stock_symbols = latest.symbols|selectattr('asset', 'equalto', 'stock')|list %}
+      {% set legacy_symbols = latest.symbols|selectattr('asset', 'undefined')|list %}
+      {% if legacy_symbols %}
+        {% set futures_symbols = futures_symbols + legacy_symbols %}
+      {% endif %}
+
+      {% macro symbol_cards_desktop(items) %}
+      <div class="row g-3 d-none d-md-flex">
+        {% for s in items %}
           <div class="col-12 col-md-6 col-lg-4">
             <a class="text-decoration-none" href="s/{{ s.id }}.html">
               <div class="card h-100 shadow-sm">
@@ -62,6 +70,7 @@
                   <div class="d-flex justify-content-between">
                     <div class="h5 mb-2">{{ s.name }}</div>
                     <div class="d-flex gap-2 align-items-center">
+                      <span class="badge text-bg-light border">{{ 'A股' if s.asset == 'stock' else '期货' }}</span>
                       {% if s.is_stale %}
                         <span class="badge text-bg-warning">数据更新中</span>
                       {% endif %}
@@ -88,16 +97,19 @@
           </div>
         {% endfor %}
       </div>
+      {% endmacro %}
 
+      {% macro symbol_cards_mobile(items) %}
       <div class="d-md-none">
-        <div class="d-flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2" id="cardsMobile">
-          {% for s in latest.symbols %}
+        <div class="d-flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2">
+          {% for s in items %}
             <a class="text-decoration-none" href="s/{{ s.id }}.html" style="min-width: 75vw;">
               <div class="card shadow-sm">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
                     <div class="h5 mb-2">{{ s.name }}</div>
                     <div class="d-flex gap-2 align-items-center">
+                      <span class="badge text-bg-light border">{{ 'A股' if s.asset == 'stock' else '期货' }}</span>
                       {% if s.is_stale %}
                         <span class="badge text-bg-warning">数据更新中</span>
                       {% endif %}
@@ -124,6 +136,29 @@
           {% endfor %}
         </div>
       </div>
+      {% endmacro %}
+
+      {% if futures_symbols %}
+        <div class="d-flex align-items-end justify-content-between mt-2">
+          <div class="h5 mb-0">期货</div>
+          <div class="text-body-secondary small">{{ futures_symbols|length }} 只</div>
+        </div>
+        <div class="mt-2">
+          {{ symbol_cards_desktop(futures_symbols) }}
+          {{ symbol_cards_mobile(futures_symbols) }}
+        </div>
+      {% endif %}
+
+      {% if stock_symbols %}
+        <div class="d-flex align-items-end justify-content-between mt-4">
+          <div class="h5 mb-0">A股</div>
+          <div class="text-body-secondary small">{{ stock_symbols|length }} 只</div>
+        </div>
+        <div class="mt-2">
+          {{ symbol_cards_desktop(stock_symbols) }}
+          {{ symbol_cards_mobile(stock_symbols) }}
+        </div>
+      {% endif %}
 
       {% if not latest.symbols %}
         <div class="card mt-3">

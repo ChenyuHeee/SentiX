@@ -246,6 +246,7 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
     }
     for sym in symbols:
         sym_id = sym["id"]
+        asset = str(sym.get("asset") or "futures")
         day_date = date
         stale = False
 
@@ -276,6 +277,7 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
             {
                 "id": sym_id,
                 "name": sym["name"],
+                "asset": asset,
                 "sentiment_index": day["sentiment"]["index"],
                 "sentiment_band": day["sentiment"]["band"],
                 "price_status": price_status,

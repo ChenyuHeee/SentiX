@@ -32,6 +32,8 @@ def fetch_kline(cfg: Dict[str, Any], symbol: Dict[str, Any], end_date: str, days
 
 
 def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date: str, days: int) -> List[Dict[str, Any]]:
+    asset = str(symbol.get("asset") or "futures").strip().lower() or "futures"
+
     # AKShare: 新浪-期货-主力连续合约历史数据
     # 接口: ak.futures_main_sina(symbol="IF0", start_date="YYYYMMDD", end_date="YYYYMMDD")
     # 输出字段(常见): 日期, 开盘价, 最高价, 最低价, 收盘价, 成交量, 持仓量, 动态结算价
@@ -49,7 +51,16 @@ def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date
     except Exception as e:
         raise RuntimeError(f"akshare not available: {e}")
 
-    df = ak.futures_main_sina(symbol=ak_symbol, start_date=start_compact, end_date=end_compact)
+    if asset == "stock":
+        df = ak.stock_zh_a_hist(
+            symbol=ak_symbol,
+            period="daily",
+            start_date=start_compact,
+            end_date=end_compact,
+            adjust="",
+        )
+    else:
+        df = ak.futures_main_sina(symbol=ak_symbol, start_date=start_compact, end_date=end_compact)
     if df is None:
         raise RuntimeError("empty akshare response")
 
@@ -76,7 +87,7 @@ def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date
 
     out: List[Dict[str, Any]] = []
     for r in records:
-        date_raw = r.get("日期") or r.get("date") or r.get("Date")
+        date_raw = r.get("日期") or r.get("date") or r.get("Date") or r.get("时间")
         if not date_raw:
             continue
         date_iso = str(date_raw)
@@ -87,17 +98,30 @@ def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date
         if len(date_iso) != 10:
             continue
 
-        out.append(
-            {
-                "date": date_iso,
-                "open": _to_float(r.get("开盘价") or r.get("open")),
-                "high": _to_float(r.get("最高价") or r.get("high")),
-                "low": _to_float(r.get("最低价") or r.get("low")),
-                "close": _to_float(r.get("收盘价") or r.get("close")),
-                "volume": _to_int(r.get("成交量") or r.get("volume")),
-                "open_interest": _to_int(r.get("持仓量") or r.get("open_interest") or r.get("oi")),
-            }
-        )
+        if asset == "stock":
+            out.append(
+                {
+                    "date": date_iso,
+                    "open": _to_float(r.get("开盘") or r.get("开盘价") or r.get("open")),
+                    "high": _to_float(r.get("最高") or r.get("最高价") or r.get("high")),
+                    "low": _to_float(r.get("最低") or r.get("最低价") or r.get("low")),
+                    "close": _to_float(r.get("收盘") or r.get("收盘价") or r.get("close")),
+                    "volume": _to_int(r.get("成交量") or r.get("volume") or r.get("vol")),
+                    "open_interest": 0,
+                }
+            )
+        else:
+            out.append(
+                {
+                    "date": date_iso,
+                    "open": _to_float(r.get("开盘价") or r.get("open")),
+                    "high": _to_float(r.get("最高价") or r.get("high")),
+                    "low": _to_float(r.get("最低价") or r.get("low")),
+                    "close": _to_float(r.get("收盘价") or r.get("close")),
+                    "volume": _to_int(r.get("成交量") or r.get("volume")),
+                    "open_interest": _to_int(r.get("持仓量") or r.get("open_interest") or r.get("oi")),
+                }
+            )
 
     out.sort(key=lambda x: x["date"])
     # Keep within range and last N trading bars
