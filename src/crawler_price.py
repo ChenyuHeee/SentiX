@@ -99,6 +99,10 @@ def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date
             continue
 
         if asset == "stock":
+            # stock_zh_a_hist 常见字段：日期, 开盘, 收盘, 最高, 最低, 成交量, 成交额, 振幅, 换手率, 涨跌幅...
+            amount = _to_float(r.get("成交额") or r.get("amount"))
+            turnover_rate = _to_float(r.get("换手率") or r.get("turnover"))
+            amplitude = _to_float(r.get("振幅") or r.get("amplitude"))
             out.append(
                 {
                     "date": date_iso,
@@ -107,6 +111,9 @@ def fetch_kline_akshare(cfg: Dict[str, Any], symbol: Dict[str, Any], *, end_date
                     "low": _to_float(r.get("最低") or r.get("最低价") or r.get("low")),
                     "close": _to_float(r.get("收盘") or r.get("收盘价") or r.get("close")),
                     "volume": _to_int(r.get("成交量") or r.get("volume") or r.get("vol")),
+                    "amount": None if amount == 0.0 else amount,
+                    "turnover_rate": None if turnover_rate == 0.0 else turnover_rate,
+                    "amplitude": None if amplitude == 0.0 else amplitude,
                     "open_interest": 0,
                 }
             )

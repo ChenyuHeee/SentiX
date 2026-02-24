@@ -273,6 +273,8 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
         price_status = str(price.get("status") or "ok")
         close = price.get("close", None)
         pct_change = price.get("pct_change", None)
+        amount = price.get("amount", None)
+        turnover_rate = price.get("turnover_rate", None)
         latest["symbols"].append(
             {
                 "id": sym_id,
@@ -283,6 +285,8 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
                 "price_status": price_status,
                 "pct_change": pct_change,
                 "close": close,
+                "amount": amount,
+                "turnover_rate": turnover_rate,
                 "updated_at": tz_label,
                 "data_date": day_date,
                 "is_stale": stale,

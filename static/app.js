@@ -128,6 +128,20 @@
     const closeText = priceUnavailable ? '--' : fmt2(price.close);
     const pctText = priceUnavailable ? '--' : `${fmt2(price.pct_change)}%`;
     const volText = priceUnavailable ? '--' : (price.volume ?? '--');
+
+    function fmtAmount(v) {
+      if (typeof v !== 'number' || !isFinite(v)) return '--';
+      const a = Math.abs(v);
+      if (a >= 1e8) return `${(v / 1e8).toFixed(2)}亿`;
+      if (a >= 1e4) return `${(v / 1e4).toFixed(2)}万`;
+      return String(Math.round(v));
+    }
+
+    const amountText = priceUnavailable ? '--' : fmtAmount(price.amount);
+    const turnoverText = priceUnavailable ? '--' : (typeof price.turnover_rate === 'number' ? `${fmt2(price.turnover_rate)}%` : '--');
+    const extraLine = (!priceUnavailable && (price.amount != null || price.turnover_rate != null))
+      ? ` · 成交额：${amountText} · 换手率：${turnoverText}`
+      : '';
     el.innerHTML = `
       <div class="d-flex flex-wrap justify-content-between gap-3">
         <div>
@@ -140,7 +154,7 @@
         <div>
           <div class="text-body-secondary">收盘价</div>
           <div class="fs-4 fw-semibold">${closeText}</div>
-          <div class="text-body-secondary">涨跌幅：${pctText} · 成交量：${volText}</div>
+          <div class="text-body-secondary">涨跌幅：${pctText} · 成交量：${volText}${extraLine}</div>
         </div>
       </div>
     `;
