@@ -226,7 +226,7 @@ def update_fundamentals(
     # inventory: replace with latest available series from module (already a time series)
     inv_mod = modules.get("inventory") or {}
     inv_series: List[Dict[str, Any]] = []
-    if isinstance(inv_mod, dict) and isinstance(inv_mod.get("items"), list):
+    if isinstance(inv_mod, dict) and inv_mod.get("status") == "ok" and isinstance(inv_mod.get("items"), list):
         for it in inv_mod.get("items"):
             if not isinstance(it, dict):
                 continue

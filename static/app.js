@@ -471,6 +471,25 @@
     snap.textContent = snapParts.length ? snapParts.join(' | ') : '';
     if (snap.textContent) box.appendChild(snap);
 
+    function addStatusNote(title, obj, series) {
+      const status = obj && obj.status ? String(obj.status) : 'unknown';
+      const hint = obj && obj.hint ? String(obj.hint) : '';
+      const n = Array.isArray(series) ? series.length : 0;
+      let msg = '';
+      if (status !== 'ok') {
+        msg = hint ? hint : `${title}（${status}）`;
+      } else if (n > 0 && n < 2) {
+        msg = `${title}：已收集 ${n} 个点，至少 2 个点后绘图`;
+      } else if (n === 0) {
+        msg = `${title}：暂无数据`;
+      }
+      if (!msg) return;
+      const line = document.createElement('div');
+      line.className = 'text-body-secondary small';
+      line.textContent = msg;
+      box.appendChild(line);
+    }
+
     function addChartBlock(title, canvasId, buildFn) {
       const wrap = document.createElement('div');
       wrap.className = 'border rounded p-2';
@@ -481,6 +500,7 @@
     }
 
     const invSeries = (fund.inventory && Array.isArray(fund.inventory.series)) ? fund.inventory.series : [];
+    addStatusNote('库存', fund.inventory, invSeries);
     if (invSeries.length >= 2) {
       const s = invSeries.slice(-60);
       addChartBlock('库存（近 60 点）', 'invChart', (canvas) => {
@@ -489,6 +509,7 @@
     }
 
     const basisSeries = (fund.spot_basis && Array.isArray(fund.spot_basis.series)) ? fund.spot_basis.series : [];
+    addStatusNote('基差', fund.spot_basis, basisSeries);
     if (basisSeries.length >= 2) {
       const s = basisSeries.slice(-60);
       addChartBlock('主力基差（近 60 点）', 'basisChart', (canvas) => {
@@ -497,6 +518,7 @@
     }
 
     const rySeries = (fund.roll_yield && Array.isArray(fund.roll_yield.series)) ? fund.roll_yield.series : [];
+    addStatusNote('展期', fund.roll_yield, rySeries);
     if (rySeries.length >= 2) {
       const s = rySeries.slice(-60);
       addChartBlock('展期收益率（近 60 点）', 'ryChart', (canvas) => {
@@ -505,6 +527,7 @@
     }
 
     const posSeries = (fund.positions_rank && Array.isArray(fund.positions_rank.series)) ? fund.positions_rank.series : [];
+    addStatusNote('持仓', fund.positions_rank, posSeries);
     if (posSeries.length >= 2) {
       const s = posSeries.slice(-60);
       addChartBlock('净持仓（近 60 点）', 'posChart', (canvas) => {
