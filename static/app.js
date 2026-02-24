@@ -557,48 +557,66 @@
     if (!canvas || !window.Chart) return null;
     tryRegisterFinancial();
 
-    // Guard: if candlestick isn't registered, don't instantiate (avoids
-    // throwing an uncaught error in some Chart.js builds/source-maps).
-    try {
-      const Chart = window.Chart;
-      const reg = Chart && Chart.registry;
-      let candlestick = null;
-      if (reg && typeof reg.getController === 'function') {
-        candlestick = reg.getController('candlestick');
-      } else if (reg && reg.controllers && typeof reg.controllers.get === 'function') {
-        candlestick = reg.controllers.get('candlestick');
-      }
-      if (!candlestick) return null;
-    } catch (e) {
-      return null;
-    }
-    const data = days.map(d => ({
-      x: d.date,
+    const Chart = window.Chart;
+    const labels = days.map(d => d.date);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    // Use a category x scale to avoid requiring an external date adapter
+    // (timeseries/time scale will throw if no adapter is present).
+    const candleData = days.map((d, i) => ({
+      x: i,
       o: d.open,
       h: d.high,
       l: d.low,
       c: d.close,
     }));
+
     try {
-      return new Chart(canvas.getContext('2d'), {
+      return new Chart(ctx, {
         type: 'candlestick',
         data: {
+          labels,
           datasets: [{
             label: 'K线',
-            data,
+            data: candleData,
           }]
         },
         options: {
           parsing: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { maxRotation: 0, autoSkip: true } },
+            x: { type: 'category', ticks: { maxRotation: 0, autoSkip: true } },
             y: { position: 'right' }
           }
         }
       });
     } catch (e) {
-      return null;
+      // Fallback: render a close-price line so the page doesn't stay blank.
+      try {
+        return new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: '收盘价',
+              data: days.map(d => d.close),
+              tension: 0.25,
+              pointRadius: 0,
+              borderWidth: 2,
+            }]
+          },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { maxRotation: 0, autoSkip: true } },
+              y: { position: 'right' }
+            }
+          }
+        });
+      } catch (_e2) {
+        return null;
+      }
     }
   }
 
