@@ -398,8 +398,11 @@
     const cols = pickColumns(data);
     if (!cols.length) return null;
 
+    const wrap = document.createElement('div');
+    wrap.className = 'table-responsive';
+
     const table = document.createElement('table');
-    table.className = 'table table-sm table-striped mb-0';
+    table.className = 'table table-sm table-striped mb-0 text-nowrap';
     const thead = document.createElement('thead');
     const hr = document.createElement('tr');
     for (const c of cols) {
@@ -423,7 +426,8 @@
       tbody.appendChild(tr);
     }
     table.appendChild(tbody);
-    return table;
+    wrap.appendChild(table);
+    return wrap;
   }
 
   function renderFundamentals(fund) {
