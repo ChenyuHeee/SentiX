@@ -17,7 +17,7 @@
         </div>
         <div class="d-flex gap-2 align-items-center">
           <small class="text-body-secondary" id="updatedAt">{{ latest.updated_at }}</small>
-          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" type="button">暗色模式</button>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill" id="themeToggle" type="button">暗色模式</button>
         </div>
       </div>
     </nav>
@@ -34,7 +34,7 @@
       {% if macro %}
         <div class="row g-3 mb-1">
           <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card">
               <div class="card-body">
                 <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
                   <div>
@@ -67,53 +67,12 @@
       {% set legacy_symbols = latest.symbols|selectattr('asset', 'undefined')|list %}
       {% if legacy_symbols %}{% set futures_symbols = futures_symbols + legacy_symbols %}{% endif %}
 
-      <div class="row g-3 mt-1">
-        <div class="col-12 col-lg-6">
-          {% if macro %}
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
-                  <div>
-                    <div class="small text-body-secondary">当日宏观新闻情绪</div>
-                    {% if macro.status == 'ok' %}
-                      <div class="fs-2 fw-semibold sentiment-{{ macro.band }}">{{ '%.2f'|format(macro.index) }}</div>
-                      <div class="small text-body-secondary">宏观新闻 {{ macro.news_total }} 条（多 {{ macro.counts.bull }} / 空 {{ macro.counts.bear }} / 中 {{ macro.counts.neutral }}）</div>
-                    {% else %}
-                      <div class="text-body-secondary">数据更新中：{{ macro.reason }}</div>
-                    {% endif %}
-                  </div>
-                  <div class="text-end">
-                    <div class="small text-body-secondary">更新</div>
-                    <div class="fw-semibold">{{ macro.updated_at }}</div>
-                    {% if macro.status == 'ok' %}
-                      <div class="small text-body-secondary">置信度 {{ '%.2f'|format(macro.confidence) }} · {{ macro.mode }}</div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% else %}
-            <div class="card shadow-sm"><div class="card-body text-body-secondary">宏观数据更新中</div></div>
-          {% endif %}
-        </div>
-
-        <div class="col-12 col-lg-6">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <div class="small text-body-secondary">说明</div>
-              <div class="fw-semibold">情绪指数来自新闻衰减加权；市场数据来自日线</div>
-              <div class="text-body-secondary small mt-1">点击行可进入详情页查看 K线、成交量、新闻与（期货）基本面模块。</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {% macro market_table(items, label) %}
         <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mt-4">
           <div class="h5 mb-0">{{ label }}</div>
           <div class="text-body-secondary small">{{ items|length }} 个标的</div>
         </div>
-        <div class="card shadow-sm mt-2">
+        <div class="card mt-2">
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-sm table-hover mb-0 align-middle">

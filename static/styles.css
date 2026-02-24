@@ -1,4 +1,73 @@
-/* 仅做轻量补充：颜色交给 Bootstrap 主题 */
+/* 仅做轻量补充：颜色/字体交给 Bootstrap 主题变量（兼容亮/暗色）。 */
+
+html {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	background-color: var(--bs-body-bg);
+	/* 轻微“Apple 风”背景层次：完全基于 Bootstrap 变量 */
+	background-image:
+		radial-gradient(
+			1200px 600px at 15% -10%,
+			rgba(var(--bs-tertiary-bg-rgb), 0.8),
+			rgba(var(--bs-body-bg-rgb), 0)
+		),
+		radial-gradient(
+			900px 500px at 90% 0%,
+			rgba(var(--bs-secondary-bg-rgb), 0.55),
+			rgba(var(--bs-body-bg-rgb), 0)
+		);
+}
+
+main.container {
+	max-width: 1120px;
+}
+
+/* 顶部导航：轻微磨砂玻璃感 */
+.navbar {
+	background-color: rgba(var(--bs-body-bg-rgb), 0.8);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+/* 表面（卡片/列表）统一更“干净” */
+.card {
+	border-color: var(--bs-border-color-translucent);
+	border-radius: var(--bs-border-radius-lg);
+	background-color: rgba(var(--bs-body-bg-rgb), 0.85);
+	box-shadow: none;
+}
+
+.table {
+	--bs-table-bg: transparent;
+}
+
+.table thead th {
+	background-color: var(--bs-tertiary-bg);
+	font-weight: 600;
+}
+
+.table-hover > tbody > tr:hover > * {
+	background-color: rgba(var(--bs-secondary-bg-rgb), 0.6);
+}
+
+.table td,
+.table th {
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+}
+
+.table a {
+	color: inherit;
+}
+
+/* 让“新闻条目”更像 iOS 列表卡片 */
+.news-item {
+	background-color: rgba(var(--bs-body-bg-rgb), 0.65);
+	box-shadow: none;
+}
 
 .sentiment-bull { color: var(--bs-danger); }
 .sentiment-bear { color: var(--bs-success); }
@@ -8,5 +77,5 @@
 .pct-down { color: var(--bs-success); }
 .pct-flat { color: var(--bs-secondary); }
 
-.news-item { border: 1px solid var(--bs-border-color); border-radius: .5rem; padding: .75rem; }
+.news-item { border: 1px solid var(--bs-border-color-translucent); border-radius: var(--bs-border-radius-lg); padding: .75rem; }
 .news-meta { font-size: .875rem; color: var(--bs-secondary-color); }
