@@ -11,8 +11,8 @@ from .crawler_news import fetch_news_bundle
 from .crawler_price import fetch_kline
 from .crawler_extras import fetch_extras
 from .aggregator import upsert_symbol_day, write_latest
-from .agents import combine_final, macro_agent, market_agent, symbol_news_agent, trade_plan
-from .fundamentals import update_fundamentals
+from .agents import combine_final, macro_agent, market_agent, market_agent_llm, symbol_news_agent, trade_plan
+from .fundamentals import fundamentals_signals_for_llm, update_fundamentals
 from .generator import build_site
 from .utils import iso_datetime_now, iter_enabled_symbols, load_yaml, parse_date, read_json, setup_logging
 
@@ -89,9 +89,18 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
         analyzed_symbol = analyze_news_items(cfg, bundle.get("symbol", []) or [])
         analyzed_merged = analyze_news_items(cfg, bundle.get("merged", []) or [])
 
+        # Many AKShare "extras" datasets (basis, roll yield, rank tables) are
+        # published on trading days. When market is closed or the kline source
+        # is delayed, align extras to the latest available trading bar.
+        extras_asof = (kline[-1].get("date") if kline else None) or date
+        extras = fetch_extras(cfg, sym, extras_asof)
+        fund_sig = fundamentals_signals_for_llm(extras)
+
         macro = macro_agent(cfg, date=date, analyzed_global_news=analyzed_global)
         sym_news = symbol_news_agent(cfg, symbol=sym, date=date, analyzed_symbol_news=analyzed_symbol)
-        market = None if (not kline) else market_agent(cfg, kline=kline, date=date)
+        market = None
+        if kline:
+            market = market_agent_llm(cfg, symbol=sym, kline=kline, date=date, fundamentals=fund_sig) or market_agent(cfg, kline=kline, date=date)
 
         agents_payload: Dict[str, Any] = {
             "weights": {"macro": float(weights.get("macro", 0.3)), "symbol": float(weights.get("symbol", 0.3)), "market": float(weights.get("market", 0.4))},
@@ -142,11 +151,6 @@ def cmd_update_data(cfg: Dict[str, Any], *, root_dir: Path, date: str) -> None:
             }
             plans_payload = trade_plan(symbol=sym, kline=kline, final_score=final)
 
-        # Many AKShare "extras" datasets (basis, roll yield, rank tables) are
-        # published on trading days. When market is closed or the kline source
-        # is delayed, align extras to the latest available trading bar.
-        extras_asof = (kline[-1].get("date") if kline else None) or date
-        extras = fetch_extras(cfg, sym, extras_asof)
         update_fundamentals(data_dir=data_dir, symbol=sym, extras=extras, tz_label=tz_label)
         upsert_symbol_day(
             data_dir=data_dir,

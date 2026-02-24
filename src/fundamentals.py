@@ -7,6 +7,133 @@ from typing import Any, Dict, List
 from .utils import ensure_dir, read_json, write_json
 
 
+def fundamentals_signals_for_llm(extras: Dict[str, Any] | None) -> Dict[str, Any]:
+    """Build a compact fundamentals snapshot for LLM prompts.
+
+    Only returns normalized scalar values and statuses.
+    """
+
+    if not extras or not isinstance(extras, dict):
+        return {"status": "missing", "asof": "", "signals": {}}
+
+    modules = extras.get("modules") or {}
+    if not isinstance(modules, dict):
+        modules = {}
+
+    def _iso_date(d: Any) -> str:
+        if d is None:
+            return ""
+        s = str(d).strip()
+        if not s:
+            return ""
+        s = s.split(" ")[0].replace("/", "-")
+        if len(s) == 8 and s.isdigit():
+            return f"{s[0:4]}-{s[4:6]}-{s[6:8]}"
+        return s
+
+    def _num(v: Any) -> float | None:
+        if v is None:
+            return None
+        if isinstance(v, (int, float)):
+            x = float(v)
+            if x != x:  # NaN
+                return None
+            return x
+        s = str(v).strip().replace(",", "")
+        if s in {"", "nan", "None"}:
+            return None
+        try:
+            x = float(s)
+            if x != x:
+                return None
+            return x
+        except Exception:
+            return None
+
+    asof = _iso_date(extras.get("asof"))
+    out: Dict[str, Any] = {"status": "ok", "asof": asof, "signals": {}}
+
+    inv = modules.get("inventory") or {}
+    inv_sig: Dict[str, Any] = {"status": "unavailable"}
+    if isinstance(inv, dict):
+        inv_sig["status"] = str(inv.get("status") or "unavailable")
+        items = inv.get("items")
+        if isinstance(items, list) and items:
+            last = next((x for x in reversed(items) if isinstance(x, dict)), None)
+            if isinstance(last, dict):
+                inv_sig.update({"date": _iso_date(last.get("date")), "inventory": _num(last.get("inventory")), "change": _num(last.get("change"))})
+    out["signals"]["inventory"] = inv_sig
+
+    basis = modules.get("spot_basis") or {}
+    basis_sig: Dict[str, Any] = {"status": "unavailable"}
+    if isinstance(basis, dict):
+        basis_sig["status"] = str(basis.get("status") or "unavailable")
+        items = basis.get("items")
+        if isinstance(items, list) and items and isinstance(items[0], dict):
+            r0 = items[0]
+            basis_sig.update(
+                {
+                    "date": _iso_date(r0.get("date")),
+                    "spot_price": _num(r0.get("spot_price")),
+                    "dom_basis": _num(r0.get("dom_basis")),
+                    "dom_basis_rate": _num(r0.get("dom_basis_rate")),
+                    "dom_contract": r0.get("dom_contract"),
+                    "dom_contract_price": _num(r0.get("dom_contract_price")),
+                }
+            )
+    out["signals"]["spot_basis"] = basis_sig
+
+    ry = modules.get("roll_yield") or {}
+    ry_sig: Dict[str, Any] = {"status": "unavailable"}
+    if isinstance(ry, dict):
+        ry_sig["status"] = str(ry.get("status") or "unavailable")
+        items = ry.get("items")
+        if isinstance(items, list) and items and isinstance(items[0], dict):
+            r0 = items[0]
+            ry_sig.update({"date": _iso_date(r0.get("date")), "roll_yield": _num(r0.get("roll_yield") or r0.get("ry") or r0.get("展期收益率")), "near_by": r0.get("near_by"), "deferred": r0.get("deferred")})
+    out["signals"]["roll_yield"] = ry_sig
+
+    pos = modules.get("positions_rank") or {}
+    pos_sig: Dict[str, Any] = {"status": "unavailable"}
+    if isinstance(pos, dict):
+        pos_sig["status"] = str(pos.get("status") or "unavailable")
+        items = pos.get("items")
+        if isinstance(items, list) and items:
+            rows = [x for x in items if isinstance(x, dict)]
+
+            def _sum_keys(keys: List[str]) -> float | None:
+                total = 0.0
+                found = False
+                for r in rows:
+                    for k in keys:
+                        if k in r and r.get(k) is not None:
+                            v = _num(r.get(k))
+                            if v is None:
+                                continue
+                            total += float(v)
+                            found = True
+                            break
+                return total if found else None
+
+            long_v = _sum_keys(["long", "多单", "多头", "多单持仓", "多头持仓", "多头持仓量", "多头持仓(手)"])
+            short_v = _sum_keys(["short", "空单", "空头", "空单持仓", "空头持仓", "空头持仓量", "空头持仓(手)"])
+            net_v = _sum_keys(["net", "净持仓", "净持仓量", "净持仓(手)"])
+            if net_v is None and (long_v is not None) and (short_v is not None):
+                net_v = float(long_v) - float(short_v)
+
+            d0 = ""
+            params = pos.get("params")
+            if isinstance(params, dict) and params.get("date"):
+                d0 = _iso_date(params.get("date"))
+            if not d0:
+                d0 = asof
+
+            pos_sig.update({"date": d0, "rows": len(rows), "long": long_v, "short": short_v, "net": net_v})
+    out["signals"]["positions_rank"] = pos_sig
+
+    return out
+
+
 def update_fundamentals(
     *,
     data_dir: Path,

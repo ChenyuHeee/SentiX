@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
@@ -249,6 +250,104 @@ def market_agent(cfg: Dict[str, Any], *, kline: List[Dict[str, Any]], date: str)
         f"成交量/20日均量 {v / vma20:.2f}" if vma20 else "成交量均值不足",
     ]
     return AgentScore(index=float(idx), band=sentiment_band(idx), confidence=float(conf), mode="heuristic", rationale=rat)
+
+
+def market_agent_llm(
+    cfg: Dict[str, Any],
+    *,
+    symbol: Dict[str, Any],
+    kline: List[Dict[str, Any]],
+    date: str,
+    fundamentals: Dict[str, Any] | None,
+) -> AgentScore | None:
+    """LLM-enhanced market agent (technical + fundamentals).
+
+    Hallucination mitigation:
+    - Provide only compact, precomputed numeric signals (no raw tables).
+    - Strict JSON-only output contract.
+    - Validate/clamp response; fallback to heuristic on any anomaly.
+    - Sanitize numbers in rationale to avoid displaying unverified figures.
+    """
+
+    if not _deepseek_enabled(cfg):
+        return None
+
+    # Skip if the requested date is not in kline dates (market closed).
+    dates = {x.get("date") for x in kline if x.get("date")}
+    if date not in dates:
+        return None
+
+    closes = [float(x.get("close") or 0.0) for x in kline if x.get("close") is not None]
+    vols = [float(x.get("volume") or 0.0) for x in kline if x.get("volume") is not None]
+    if len(closes) < 10:
+        return AgentScore(index=0.0, band="neutral", confidence=0.55, mode="heuristic", rationale=["K线数据不足"])
+
+    c = float(closes[-1])
+    ma20 = _ma(closes, 20)
+    ma60 = _ma(closes, 60)
+    atr = _atr14(kline)
+    v = float(vols[-1]) if vols else 0.0
+    vma20 = _ma(vols, 20) if vols else 0.0
+    vol_ratio = (v / vma20) if vma20 else None
+
+    sym_name = str(symbol.get("name") or "")
+    f = fundamentals if isinstance(fundamentals, dict) else {"status": "missing", "asof": "", "signals": {}}
+
+    system = (
+        "你是期货市场数据Agent。你必须严格输出JSON对象，字段仅允许: "
+        "index(-1到1), confidence(0.5到0.95), rationale(数组,<=5条)。"
+        "不要输出其它字段、不要输出Markdown。\n"
+        "重要约束(反幻觉): 只能使用输入中给出的事实与数值，不要编造/猜测任何数值；"
+        "如果数据缺失，就在rationale里明确写‘未知/缺失’，并降低confidence。"
+    )
+
+    user = (
+        f"日期 {date}，品种 {sym_name}。以下是可用的权威信号(仅可引用这些数值)：\n"
+        f"技术面: close={c:.4f}, ma20={ma20:.4f}, ma60={ma60:.4f}, atr14={atr:.6f}, "
+        f"vol_ratio20={(f'{vol_ratio:.4f}' if isinstance(vol_ratio, float) else 'unknown')}\n"
+        f"基本面(asof={str(f.get('asof') or '')}): {json.dumps(f.get('signals') or {}, ensure_ascii=False)}\n"
+        "任务: 综合技术面与基本面，输出情绪指数index与confidence，并给出<=5条rationale。"
+        "不要引入输入中没有的指标名或数值。"
+    )
+
+    j = _deepseek_chat_json(cfg, system=system, user=user)
+    if not isinstance(j, dict) or "index" not in j:
+        return None
+
+    try:
+        idx = float(j.get("index") or 0.0)
+        conf = float(j.get("confidence") or 0.55)
+    except Exception:
+        return None
+
+    rat = j.get("rationale") or []
+    if not isinstance(rat, list):
+        rat = []
+    rat2 = [str(x) for x in rat][:5]
+
+    idx = float(max(-1.0, min(1.0, idx)))
+    conf = float(clamp(conf, 0.5, 0.95))
+
+    # Remove numbers to reduce the impact of hallucinated figures.
+    sanitized: List[str] = []
+    for line in rat2:
+        s = str(line)
+        s = re.sub(r"(?<!\\d)(-?\\d+(?:\\.\\d+)?)(?!\\d)", "", s)
+        s = re.sub(r"\\s{2,}", " ", s).strip()
+        if s:
+            sanitized.append(s)
+    rat2 = sanitized[:5]
+
+    # Cap confidence when fundamentals are missing/unavailable.
+    if str(f.get("status") or "").lower() != "ok":
+        conf = float(min(conf, 0.75))
+
+    # If fundamentals asof differs from requested date, cap confidence.
+    fasof = str(f.get("asof") or "").strip()
+    if fasof and fasof != str(date):
+        conf = float(min(conf, 0.72))
+
+    return AgentScore(index=idx, band=sentiment_band(idx), confidence=conf, mode="llm", rationale=rat2)
 
 
 def combine_final(

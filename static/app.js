@@ -353,6 +353,79 @@
     }
   }
 
+  function formatNum(v, digits) {
+    if (v === null || v === undefined) return '--';
+    const n = Number(v);
+    if (!Number.isFinite(n)) return String(v);
+    const d = (typeof digits === 'number') ? digits : 2;
+    return n.toFixed(d);
+  }
+
+  function pickColumns(rows) {
+    if (!rows || !rows.length) return [];
+    const preferred = [
+      'rank', '排名',
+      'member', 'member_name', '会员简称', '会员',
+      'long', '多单', '多头', '多单持仓',
+      'short', '空单', '空头', '空单持仓',
+      'net', '净持仓',
+      'volume', 'vol', '成交量', '成交',
+      'change', '增减',
+    ];
+    const keys = new Set();
+    for (const r of rows) {
+      if (r && typeof r === 'object') {
+        for (const k of Object.keys(r)) keys.add(k);
+      }
+    }
+    const cols = [];
+    for (const k of preferred) {
+      if (keys.has(k) && !cols.includes(k)) cols.push(k);
+      if (cols.length >= 8) break;
+    }
+    if (cols.length < 3) {
+      for (const k of Array.from(keys)) {
+        if (!cols.includes(k)) cols.push(k);
+        if (cols.length >= 8) break;
+      }
+    }
+    return cols;
+  }
+
+  function renderTable(rows, maxRows) {
+    const data = Array.isArray(rows) ? rows.slice(0, maxRows || 10) : [];
+    if (!data.length) return null;
+    const cols = pickColumns(data);
+    if (!cols.length) return null;
+
+    const table = document.createElement('table');
+    table.className = 'table table-sm table-striped mb-0';
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    for (const c of cols) {
+      const th = document.createElement('th');
+      th.textContent = String(c);
+      hr.appendChild(th);
+    }
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    for (const r of data) {
+      const tr = document.createElement('tr');
+      for (const c of cols) {
+        const td = document.createElement('td');
+        const v = (r && typeof r === 'object') ? r[c] : '';
+        if (typeof v === 'number') td.textContent = formatNum(v, 2);
+        else td.textContent = (v === null || v === undefined) ? '' : String(v);
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    return table;
+  }
+
   function renderFundamentals(fund) {
     const box = document.getElementById('fundBox');
     const empty = document.getElementById('fundEmpty');
@@ -382,6 +455,21 @@
     if (fund.roll_yield) lines.push(oneLine('展期', fund.roll_yield));
     if (fund.positions_rank) lines.push(oneLine('持仓', fund.positions_rank));
     if (summary) summary.textContent = lines.join(' | ');
+
+    // Latest snapshot (human readable)
+    const snap = document.createElement('div');
+    snap.className = 'text-body-secondary small';
+    const invLast = (fund.inventory && Array.isArray(fund.inventory.series)) ? fund.inventory.series[fund.inventory.series.length - 1] : null;
+    const basisLast = (fund.spot_basis && Array.isArray(fund.spot_basis.series)) ? fund.spot_basis.series[fund.spot_basis.series.length - 1] : null;
+    const ryLast = (fund.roll_yield && Array.isArray(fund.roll_yield.series)) ? fund.roll_yield.series[fund.roll_yield.series.length - 1] : null;
+    const posLast = (fund.positions_rank && Array.isArray(fund.positions_rank.series)) ? fund.positions_rank.series[fund.positions_rank.series.length - 1] : null;
+    const snapParts = [];
+    if (invLast) snapParts.push(`库存: ${formatNum(invLast.inventory, 2)} / 变动: ${formatNum(invLast.change, 2)}`);
+    if (basisLast) snapParts.push(`主力基差: ${formatNum(basisLast.dom_basis, 2)} / 基差率: ${formatNum(basisLast.dom_basis_rate, 4)}`);
+    if (ryLast) snapParts.push(`展期收益率: ${formatNum(ryLast.roll_yield, 4)}`);
+    if (posLast) snapParts.push(`净持仓: ${formatNum(posLast.net, 2)} (多: ${formatNum(posLast.long, 2)} / 空: ${formatNum(posLast.short, 2)})`);
+    snap.textContent = snapParts.length ? snapParts.join(' | ') : '';
+    if (snap.textContent) box.appendChild(snap);
 
     function addChartBlock(title, canvasId, buildFn) {
       const wrap = document.createElement('div');
@@ -429,14 +517,15 @@
       const wrap = document.createElement('div');
       wrap.className = 'border rounded p-2';
       wrap.innerHTML = `<div class="fw-semibold mb-2">持仓排名（预览）</div>`;
-      const pre = document.createElement('pre');
-      pre.className = 'mb-0 small';
-      try {
-        pre.textContent = JSON.stringify(preview, null, 2);
-      } catch (e) {
-        pre.textContent = String(preview);
+      const table = renderTable(preview, 10);
+      if (table) {
+        wrap.appendChild(table);
+      } else {
+        const t = document.createElement('div');
+        t.className = 'text-body-secondary small';
+        t.textContent = '预览数据格式不稳定，暂无法表格化展示';
+        wrap.appendChild(t);
       }
-      wrap.appendChild(pre);
       box.appendChild(wrap);
     }
   }
