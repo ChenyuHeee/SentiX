@@ -4,8 +4,8 @@
     "name": "螺纹钢"
   },
   "date": "2026-02-24",
-  "updated_at": "2026-02-24 15:58",
-  "is_stale": true,
+  "updated_at": "2026-02-24 16:45",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,11 +19,11 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "美股收高但道指盘中闪跌，显示市场情绪波动，科技股支撑但整体信心不足。",
-        "美联储下调利率并自曝通胀担忧，结合滞胀担忧支撑黄金，反映宏观不确定性上升。",
-        "特朗普关税政策反复（如对伊朗加税）及美伊风险加剧，引发贸易和地缘政治紧张。",
-        "原油市场受供过于求担忧和关税威胁打压，大宗商品承压暗示经济前景疲软。",
-        "美最高院否决关税带来短期利好，但债汇承压及全球事件（如美俄制裁）持续施压风险资产。"
+        "美联储下调利率25个基点，显示对经济放缓的担忧，可能抑制市场乐观情绪。",
+        "特朗普对伊朗贸易伙伴加征关税及美伊风险升级，加剧地缘政治不确定性，打压风险偏好。",
+        "原油供过于求担忧及关税威胁施压油价，反映全球需求疲软，利空大宗商品和周期股。",
+        "美股虽收高但道指盘中闪跌，显示市场波动加剧，投资者情绪谨慎。",
+        "滞胀担忧支撑黄金大涨，显示避险需求上升，可能预示宏观环境恶化。"
       ]
     },
     "symbol": {
@@ -33,25 +33,90 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "新闻标题普遍反映供需失衡、旺季不旺、价格弱势，如'供需失衡问题难解'、'旺季不旺'、'价格仍维持弱势'，显示市场情绪偏悲观。",
-        "行业转型阵痛、亏损钢企自救等表述（如'行业转型阵痛期未过'、'亏损钢企开启自救之路'）暗示基本面压力持续，利空情绪占主导。",
-        "部分标题提及'盈利有望触底回暖'、'未来可期'等积极展望，但多基于长期策略或年度报告，短期影响有限，缓和了整体负面程度。",
-        "需求端担忧突出，如'地产用钢下滑'、'用钢需求悲观'，直接指向螺纹钢核心消费领域疲软，强化了看空预期。",
-        "标题中'反内卷'、'过剩困局难解'等词汇凸显行业内部竞争激烈和结构性问题，进一步打压市场信心。"
+        "供需失衡与过剩困局被多次提及，如'建筑钢材供需失衡问题难解'和'螺纹钢灰犀牛：过剩困局难解'，表明基本面压力持续。",
+        "传统旺季表现疲软，'金九银十'和'金三银四'均出现旺季不旺的情况，反映需求端支撑不足。",
+        "行业转型阵痛和亏损钢企自救的新闻，暗示行业面临结构性挑战，可能抑制价格反弹。",
+        "尽管有'盈利有望触底回暖'和'未来可期'的乐观观点，但多与长期转型相关，短期情绪仍偏谨慎。",
+        "新闻中'需求主导价格中枢重构'和'钢材消费进入平台期'等表述，指向价格可能维持弱势或低位震荡。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.9858309323588621,
+      "band": "bear",
+      "confidence": 0.5,
+      "mode": "heuristic",
+      "rationale": [
+        "收盘 3027.00，MA20 3097.90，MA60 3115.50",
+        "成交量/20日均量 1.03"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.5443323729435449,
+      "band": "bear",
+      "confidence": 0.6499999999999999,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-02-24",
+    "symbol": {
+      "id": "rebar",
+      "name": "螺纹钢"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        3011.68,
+        3042.32
+      ],
+      "stop": 3072.96,
+      "target1": 2996.36,
+      "target2": 2965.71,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        2996.36,
+        3057.64
+      ],
+      "stop": 3103.61,
+      "target1": 2965.71,
+      "target2": 2904.43,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        2981.04,
+        3072.96
+      ],
+      "stop": 3134.25,
+      "target1": 2935.07,
+      "target2": 2843.14,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
     "index": -0.006905984663378028,
@@ -65,15 +130,15 @@
   },
   "price": {
     "status": "ok",
-    "open": 3051.0,
-    "high": 3066.0,
-    "low": 3042.0,
-    "close": 3055.0,
-    "volume": 555957,
-    "open_interest": 1942442,
-    "date": "2026-02-13",
-    "is_stale": true,
-    "pct_change": 0.16
+    "open": 3055.0,
+    "high": 3060.0,
+    "low": 3005.0,
+    "close": 3027.0,
+    "volume": 746349,
+    "open_interest": 2034509,
+    "date": "2026-02-24",
+    "is_stale": false,
+    "pct_change": -0.92
   },
   "news": [
     {
@@ -125,9 +190,9 @@
       "confidence": 0.5
     },
     {
-      "title": "Mysteel解读：建筑钢材供需失衡问题难解 行业转型阵痛期未过 - 我的钢铁网",
+      "title": "Mysteel解读：建筑钢材供需失衡问题难解 行业转型阵痛期未过 - mysteel.com",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9CVWN0aGo0VFdaNm45Z2pSZUxJLWhBUnBtN3NJZ1ktYzVLSXc1cGZBcm5wWU12Yk9BLXZtNlVGQW5qbHF2a08wZktIWkV6eWtFRG1ZSVVQSldmSFdBYUxNbTlCZHRuVVM3M0E?oc=5",
-      "source": "我的钢铁网",
+      "source": "mysteel.com",
       "published_at": "Fri, 21 Nov 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.0013810679320049757,
@@ -161,9 +226,9 @@
       "confidence": 0.5
     },
     {
-      "title": "Mysteel：“金九银十”传统旺季基本结束 螺纹钢价格仍维持弱势 - 我的钢铁网",
+      "title": "Mysteel：“金九银十”传统旺季基本结束 螺纹钢价格仍维持弱势 - mysteel.com",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5kVVN5MkFxZDctTXRndTZJcW1jMW5ueHgtUUd5VFBqM1FwM2JRS3Y4MGlhTGpiYm5Qdmlkby1NakNLMlRrUFNDeThwTTJXM1hjQ2x3RjZmZ1FTM2x3OFFaaUNIamQxSXJmQUE?oc=5",
-      "source": "我的钢铁网",
+      "source": "mysteel.com",
       "published_at": "Thu, 16 Oct 2025 07:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -185,9 +250,9 @@
       "confidence": 0.5
     },
     {
-      "title": "Mysteel：螺纹钢“金三银四” 旺季不旺 - 我的钢铁网",
+      "title": "Mysteel：螺纹钢“金三银四” 旺季不旺 - mysteel.com",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0yVEF3Q0lPaEMwSW9ZQ1dRYzVDa0tQZXJ3c1B5OF9rNFhHVTY4Z2F0SHlhX0twcHpRVDZ6ZktVbzFURTV2VG5NZExTNkh5aVF2T0hFTjFwXzN6UWNSNjNIZnhHckhQSGRTNFE?oc=5",
-      "source": "我的钢铁网",
+      "source": "mysteel.com",
       "published_at": "Thu, 27 Mar 2025 07:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -209,9 +274,9 @@
       "confidence": 0.55254875
     },
     {
-      "title": "Mysteel年报：2025年中国钢铁市场变革犹存，未来可期 - 我的钢铁网",
+      "title": "Mysteel年报：2025年中国钢铁市场变革犹存，未来可期 - mysteel.com",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1yeTFlQTJUR0RYZW9ZNUFOdlJNWU1NaV9NY1NrME1BZ09lRTlLQm1RdGhtSXE2Q19jRldTcl9lR2RPWExWWEVyTEpTTFV2cWRaV2V1OEp3X2pCZXdndXZUT1Ztb0plcG9tQVE?oc=5",
-      "source": "我的钢铁网",
+      "source": "mysteel.com",
       "published_at": "Mon, 16 Dec 2024 08:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -257,9 +322,9 @@
       "confidence": 0.5
     },
     {
-      "title": "Mysteel：2023年基建用钢用量环比小幅增长——基建用钢增量难以替代地产用钢下滑 - 我的钢铁网",
+      "title": "Mysteel：2023年基建用钢用量环比小幅增长——基建用钢增量难以替代地产用钢下滑 - mysteel.com",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5SM1duTEFhZ0J4dXQ5eW1oTndVdVBQWVJxUDBncUtiVzFqclRvazR0VlpyUnJDYUFCcGhRTUlDYjJIcDVzVC1NbWRrMTdBWFItRDZsUHM5QjdFdzlibW1uR1hxYVdUSmZLX3c?oc=5",
-      "source": "我的钢铁网",
+      "source": "mysteel.com",
       "published_at": "Thu, 02 Nov 2023 07:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -318,15 +383,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-05-27",
-      "open": 3010.0,
-      "high": 3018.0,
-      "low": 2964.0,
-      "close": 2980.0,
-      "volume": 1935754,
-      "open_interest": 2399979
-    },
     {
       "date": "2025-05-28",
       "open": 2981.0,
@@ -1937,6 +1993,15 @@
       "close": 3055.0,
       "volume": 555957,
       "open_interest": 1942442
+    },
+    {
+      "date": "2026-02-24",
+      "open": 3055.0,
+      "high": 3060.0,
+      "low": 3005.0,
+      "close": 3027.0,
+      "volume": 746349,
+      "open_interest": 2034509
     }
   ],
   "extras": {
@@ -2343,32 +2408,32 @@
             "date": "20260224"
           },
           {
-            "symbol": "RB2605",
+            "symbol": "RB2603",
             "variety": "RB",
-            "vol_top5": 611132.0,
-            "vol_chg_top5": 168015.0,
-            "long_open_interest_top5": 624719.0,
-            "long_open_interest_chg_top5": 8385.0,
-            "short_open_interest_top5": 686747.0,
-            "short_open_interest_chg_top5": 38070.0,
-            "vol_top10": 794135.0,
-            "vol_chg_top10": 212669.0,
-            "long_open_interest_top10": 910886.0,
-            "long_open_interest_chg_top10": 31649.0,
-            "short_open_interest_top10": 984796.0,
-            "short_open_interest_chg_top10": 52352.0,
-            "vol_top15": 914584.0,
-            "vol_chg_top15": 252845.0,
-            "long_open_interest_top15": 1109106.0,
-            "long_open_interest_chg_top15": 39427.0,
-            "short_open_interest_top15": 1172600.0,
-            "short_open_interest_chg_top15": 58727.0,
-            "vol_top20": 999746.0,
-            "vol_chg_top20": 269183.0,
-            "long_open_interest_top20": 1266835.0,
-            "long_open_interest_chg_top20": 49202.0,
-            "short_open_interest_top20": 1324765.0,
-            "short_open_interest_chg_top20": 63663.0,
+            "vol_top5": 9897.0,
+            "vol_chg_top5": -1593.0,
+            "long_open_interest_top5": 8655.0,
+            "long_open_interest_chg_top5": -538.0,
+            "short_open_interest_top5": 8729.0,
+            "short_open_interest_chg_top5": 26.0,
+            "vol_top10": 13648.0,
+            "vol_chg_top10": -122.0,
+            "long_open_interest_top10": 13380.0,
+            "long_open_interest_chg_top10": -1423.0,
+            "short_open_interest_top10": 14094.0,
+            "short_open_interest_chg_top10": -778.0,
+            "vol_top15": 16157.0,
+            "vol_chg_top15": 1076.0,
+            "long_open_interest_top15": 15789.0,
+            "long_open_interest_chg_top15": -2292.0,
+            "short_open_interest_top15": 16743.0,
+            "short_open_interest_chg_top15": -804.0,
+            "vol_top20": 17325.0,
+            "vol_chg_top20": 247.0,
+            "long_open_interest_top20": 17342.0,
+            "long_open_interest_chg_top20": -1704.0,
+            "short_open_interest_top20": 18057.0,
+            "short_open_interest_chg_top20": -1158.0,
             "date": "20260224"
           },
           {
@@ -2401,32 +2466,32 @@
             "date": "20260224"
           },
           {
-            "symbol": "RB2603",
+            "symbol": "RB2605",
             "variety": "RB",
-            "vol_top5": 9897.0,
-            "vol_chg_top5": -1593.0,
-            "long_open_interest_top5": 8655.0,
-            "long_open_interest_chg_top5": -538.0,
-            "short_open_interest_top5": 8729.0,
-            "short_open_interest_chg_top5": 26.0,
-            "vol_top10": 13648.0,
-            "vol_chg_top10": -122.0,
-            "long_open_interest_top10": 13380.0,
-            "long_open_interest_chg_top10": -1423.0,
-            "short_open_interest_top10": 14094.0,
-            "short_open_interest_chg_top10": -778.0,
-            "vol_top15": 16157.0,
-            "vol_chg_top15": 1076.0,
-            "long_open_interest_top15": 15789.0,
-            "long_open_interest_chg_top15": -2292.0,
-            "short_open_interest_top15": 16743.0,
-            "short_open_interest_chg_top15": -804.0,
-            "vol_top20": 17325.0,
-            "vol_chg_top20": 247.0,
-            "long_open_interest_top20": 17342.0,
-            "long_open_interest_chg_top20": -1704.0,
-            "short_open_interest_top20": 18057.0,
-            "short_open_interest_chg_top20": -1158.0,
+            "vol_top5": 611132.0,
+            "vol_chg_top5": 168015.0,
+            "long_open_interest_top5": 624719.0,
+            "long_open_interest_chg_top5": 8385.0,
+            "short_open_interest_top5": 686747.0,
+            "short_open_interest_chg_top5": 38070.0,
+            "vol_top10": 794135.0,
+            "vol_chg_top10": 212669.0,
+            "long_open_interest_top10": 910886.0,
+            "long_open_interest_chg_top10": 31649.0,
+            "short_open_interest_top10": 984796.0,
+            "short_open_interest_chg_top10": 52352.0,
+            "vol_top15": 914584.0,
+            "vol_chg_top15": 252845.0,
+            "long_open_interest_top15": 1109106.0,
+            "long_open_interest_chg_top15": 39427.0,
+            "short_open_interest_top15": 1172600.0,
+            "short_open_interest_chg_top15": 58727.0,
+            "vol_top20": 999746.0,
+            "vol_chg_top20": 269183.0,
+            "long_open_interest_top20": 1266835.0,
+            "long_open_interest_chg_top20": 49202.0,
+            "short_open_interest_top20": 1324765.0,
+            "short_open_interest_chg_top20": 63663.0,
             "date": "20260224"
           },
           {
