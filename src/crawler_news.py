@@ -64,8 +64,72 @@ def _fetch_html(url: str, *, timeout: int = 15, user_agent: str | None = None) -
     }
     resp = requests.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
-    resp.encoding = resp.encoding or "utf-8"
-    return resp.text
+
+    content = resp.content or b""
+
+    def normalize_enc(enc: str | None) -> str | None:
+        if not enc:
+            return None
+        e = str(enc).strip().strip('"').strip("'")
+        if not e:
+            return None
+        e = e.lower()
+        if e in {"gb2312", "gbk"}:
+            return "gb18030"
+        if e in {"utf8"}:
+            return "utf-8"
+        return e
+
+    def sniff_meta_charset(buf: bytes) -> str | None:
+        try:
+            head = buf[:8192].decode("ascii", errors="ignore").lower()
+        except Exception:
+            return None
+        m = re.search(r"charset\s*=\s*([a-z0-9_\-]+)", head)
+        if m:
+            return normalize_enc(m.group(1))
+        return None
+
+    # Prefer declared encoding when it's meaningful. Requests may default to
+    # ISO-8859-1 for text/* without charset, which is wrong for many CN sites.
+    declared = normalize_enc(resp.encoding)
+    if declared and declared not in {"iso-8859-1", "ascii"}:
+        try:
+            return content.decode(declared, errors="replace")
+        except Exception:
+            pass
+
+    candidates: list[str] = []
+    meta_enc = sniff_meta_charset(content)
+    if meta_enc:
+        candidates.append(meta_enc)
+    apparent = normalize_enc(getattr(resp, "apparent_encoding", None))
+    if apparent:
+        candidates.append(apparent)
+    # Common fallbacks.
+    candidates.extend(["utf-8", "gb18030"])
+
+    tried: set[str] = set()
+    best: str | None = None
+    best_score: int | None = None
+    for enc in candidates:
+        enc = normalize_enc(enc) or "utf-8"
+        if enc in tried:
+            continue
+        tried.add(enc)
+        try:
+            text = content.decode(enc, errors="replace")
+        except Exception:
+            continue
+        # Heuristic: fewer replacement chars indicates better decoding.
+        score = text.count("\ufffd")
+        if best is None or (best_score is not None and score < best_score):
+            best = text
+            best_score = score
+            if score == 0:
+                break
+
+    return best or content.decode("utf-8", errors="replace")
 
 
 def _extract_links(html: str, *, base_url: str) -> list[dict[str, str]]:
