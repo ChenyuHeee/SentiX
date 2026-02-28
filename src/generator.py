@@ -46,6 +46,10 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
 
     index_tpl = env.get_template("index.html.j2")
 
+    # Enrich latest symbols with fields from their day payloads (volume,
+    # open_interest, amount, turnover_rate) that may be missing from an older
+    # latest.json written before this code existed.
+    # Also extract macro_summary from the first available symbol payload.
     macro_summary = None
     global_latest_date = str(latest.get("date") or "")
     if global_latest_date:
@@ -59,37 +63,56 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
             )
             if not payload:
                 continue
-            agents = payload.get("agents") or {}
-            macro = agents.get("macro") or {}
-            status = str(macro.get("status") or "").strip() or "unknown"
-            if status != "ok":
-                macro_summary = {
-                    "status": status,
-                    "reason": macro.get("reason") or status,
-                    "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
-                }
-                break
 
-            macro_news = [it for it in (payload.get("news") or []) if (it or {}).get("scope") == "macro"]
-            counts = {"bull": 0, "bear": 0, "neutral": 0}
-            for it in macro_news:
-                s = (it or {}).get("sentiment")
-                if s in counts:
-                    counts[s] += 1
+            # Enrich missing price fields
+            _price = payload.get("price") or {}
+            if _price.get("status") == "ok":
+                for _fld in ("volume", "open_interest", "amount", "turnover_rate", "pct_change"):
+                    if sym.get(_fld) is None and _price.get(_fld) is not None:
+                        sym[_fld] = _price[_fld]
+
+            # Fallback: read from kline bars if price dict is incomplete
+            # (older day files may not have amount/turnover_rate in price)
+            _kline = payload.get("kline") or []
+            if _kline:
+                _price_date = str((_price.get("date") or "")).strip()
+                _last_bar = None
+                if _price_date:
+                    _last_bar = next((b for b in reversed(_kline) if b.get("date") == _price_date), None)
+                if not _last_bar:
+                    _last_bar = _kline[-1]
+                for _fld in ("volume", "open_interest", "amount", "turnover_rate"):
+                    if sym.get(_fld) is None and _last_bar.get(_fld) is not None:
+                        val = _last_bar[_fld]
+                        if val != 0:
+                            sym[_fld] = val
+
+            # Extract macro summary from the first valid symbol only
+            if macro_summary is None:
+                agents = payload.get("agents") or {}
+                macro = agents.get("macro") or {}
+                status = str(macro.get("status") or "").strip() or "unknown"
+                if status != "ok":
+                    macro_summary = {
+                        "status": status,
+                        "reason": macro.get("reason") or status,
+                        "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
+                    }
                 else:
-                    counts["neutral"] += 1
+                    day_sentiment = payload.get("sentiment") or {}
+                    day_counts = day_sentiment.get("counts") or {"bull": 0, "bear": 0, "neutral": 0}
+                    day_news_total = int(day_sentiment.get("news_total") or 0)
 
-            macro_summary = {
-                "status": "ok",
-                "index": macro.get("index"),
-                "band": macro.get("band") or "neutral",
-                "confidence": macro.get("confidence"),
-                "mode": macro.get("mode") or "heuristic",
-                "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
-                "news_total": len(macro_news),
-                "counts": counts,
-            }
-            break
+                    macro_summary = {
+                        "status": "ok",
+                        "index": macro.get("index"),
+                        "band": macro.get("band") or "neutral",
+                        "confidence": macro.get("confidence"),
+                        "mode": macro.get("mode") or "heuristic",
+                        "updated_at": payload.get("updated_at") or latest.get("updated_at") or "",
+                        "news_total": day_news_total,
+                        "counts": day_counts,
+                    }
 
     index_html = index_tpl.render(
         site=site_cfg,

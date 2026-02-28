@@ -156,13 +156,21 @@
                         {% endif %}
                       </td>
                       <td class="text-end mono">{{ '--' if s.close is none else '%.2f'|format(s.close) }}</td>
-                      <td class="text-end mono" style="color:var(--sx-text-secondary);">--</td>
+                      <td class="text-end mono" style="color:var(--sx-text-secondary);">
+                        {% if s.open_interest is defined and s.open_interest and s.open_interest != 0 %}
+                          {{ '{:,}'.format(s.open_interest) }}
+                        {% elif s.volume is defined and s.volume %}
+                          {{ '{:,}'.format(s.volume) }}
+                        {% else %}
+                          --
+                        {% endif %}
+                      </td>
                       <td class="text-end" style="color:var(--sx-text-secondary);">{{ s.data_date }}</td>
                       <td class="text-end">
-                        {% if s.is_stale %}
-                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">更新中</span>
-                        {% elif s.price_status and s.price_status != 'ok' %}
+                        {% if s.price_status and s.price_status != 'ok' %}
                           <span class="status-dot status-error"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">不可用</span>
+                        {% elif s.is_stale %}
+                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">休市</span>
                         {% else %}
                           <span class="status-dot status-ok"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">OK</span>
                         {% endif %}
@@ -225,8 +233,8 @@
                       </td>
                       <td class="text-end mono">{{ '--' if s.close is none else '%.2f'|format(s.close) }}</td>
                       <td class="text-end mono" style="color:var(--sx-text-secondary);">
-                        {% if s.amount is defined and s.amount is not none %}
-                          {{ s.amount }}
+                        {% if s.amount is defined and s.amount is not none and s.amount > 0 %}
+                          {{ '%.2f'|format(s.amount / 100000000) }}亿
                         {% else %}
                           --
                         {% endif %}
@@ -240,10 +248,10 @@
                       </td>
                       <td class="text-end" style="color:var(--sx-text-secondary);">{{ s.data_date }}</td>
                       <td class="text-end">
-                        {% if s.is_stale %}
-                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">更新中</span>
-                        {% elif s.price_status and s.price_status != 'ok' %}
+                        {% if s.price_status and s.price_status != 'ok' %}
                           <span class="status-dot status-error"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">不可用</span>
+                        {% elif s.is_stale %}
+                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">休市</span>
                         {% else %}
                           <span class="status-dot status-ok"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">OK</span>
                         {% endif %}

@@ -84,7 +84,7 @@ def upsert_symbol_day(
         "price": (
             {
                 "status": "ok",
-                **{k: (today_bar or {}).get(k) for k in ["open", "high", "low", "close", "volume", "open_interest", "date"]},
+                **{k: (today_bar or {}).get(k) for k in ["open", "high", "low", "close", "volume", "open_interest", "amount", "turnover_rate", "date"]},
                 "is_stale": bool(is_price_stale),
                 "pct_change": None if pct is None else round(float(pct), 2),
             }
@@ -101,6 +101,8 @@ def upsert_symbol_day(
                 "close": None,
                 "volume": None,
                 "open_interest": None,
+                "amount": None,
+                "turnover_rate": None,
             }
         ),
         "news": analyzed_news,
@@ -189,7 +191,7 @@ def upsert_symbol_day(
         if not d:
             continue
         old = days.get(d) or {"date": d}
-        days[d] = {
+        entry = {
             **old,
             "date": d,
             "sentiment": float(old.get("sentiment") or 0.0),
@@ -201,6 +203,12 @@ def upsert_symbol_day(
             "open_interest": int(b.get("open_interest") or 0),
             "pct_change": float(pct_by_date.get(d, old.get("pct_change") or 0.0)),
         }
+        # A-stock extra fields
+        if b.get("amount") is not None:
+            entry["amount"] = b["amount"]
+        if b.get("turnover_rate") is not None:
+            entry["turnover_rate"] = b["turnover_rate"]
+        days[d] = entry
 
     # If today's date is a trading day, overwrite that day's sentiment with the
     # computed index (price fields already merged above).
@@ -218,23 +226,16 @@ def upsert_symbol_day(
     export_dir = data_dir / "exports"
     ensure_dir(export_dir)
     export_path = export_dir / f"{symbol['id']}.csv"
+    asset = str(symbol.get("asset") or "futures").strip().lower() or "futures"
+    if asset == "stock":
+        csv_fields = ["date", "sentiment", "close", "volume", "amount", "turnover_rate", "pct_change"]
+    else:
+        csv_fields = ["date", "sentiment", "close", "volume", "open_interest", "pct_change"]
     with open(export_path, "w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(
-            f,
-            fieldnames=["date", "sentiment", "close", "volume", "open_interest", "pct_change"],
-        )
+        w = csv.DictWriter(f, fieldnames=csv_fields)
         w.writeheader()
         for row in history["days"]:
-            w.writerow(
-                {
-                    "date": row["date"],
-                    "sentiment": row["sentiment"],
-                    "close": row["close"],
-                    "volume": row["volume"],
-                    "open_interest": row["open_interest"],
-                    "pct_change": row["pct_change"],
-                }
-            )
+            w.writerow({k: row.get(k, "") for k in csv_fields})
     return day_payload
 
 
@@ -273,6 +274,8 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
         price_status = str(price.get("status") or "ok")
         close = price.get("close", None)
         pct_change = price.get("pct_change", None)
+        volume = price.get("volume", None)
+        open_interest = price.get("open_interest", None)
         amount = price.get("amount", None)
         turnover_rate = price.get("turnover_rate", None)
         latest["symbols"].append(
@@ -285,6 +288,8 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
                 "price_status": price_status,
                 "pct_change": pct_change,
                 "close": close,
+                "volume": volume,
+                "open_interest": open_interest,
                 "amount": amount,
                 "turnover_rate": turnover_rate,
                 "updated_at": tz_label,

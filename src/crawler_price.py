@@ -11,11 +11,27 @@ import requests
 def fetch_kline(cfg: Dict[str, Any], symbol: Dict[str, Any], end_date: str, days: int) -> List[Dict[str, Any]]:
     provider = (cfg.get("price", {}) or {}).get("provider", "akshare")
     if provider == "akshare":
-        try:
-            return fetch_kline_akshare(cfg, symbol, end_date=end_date, days=days)
-        except Exception as e:
-            logging.warning("AKShare price fetch failed for %s: %s", symbol.get("id"), e)
-            return []
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                result = fetch_kline_akshare(cfg, symbol, end_date=end_date, days=days)
+                if result:
+                    return result
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(2 * (attempt + 1))
+                    logging.info("AKShare returned empty for %s, retry %d/%d", symbol.get("id"), attempt + 2, max_retries)
+                    continue
+                return result
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(2 * (attempt + 1))
+                    logging.warning("AKShare price fetch failed for %s (attempt %d/%d): %s", symbol.get("id"), attempt + 1, max_retries, e)
+                    continue
+                logging.warning("AKShare price fetch failed for %s after %d attempts: %s", symbol.get("id"), max_retries, e)
+                return []
+        return []
     if provider == "tushare":
         try:
             return fetch_kline_tushare(cfg, symbol, end_date=end_date, days=days)
