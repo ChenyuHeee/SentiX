@@ -163,10 +163,11 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
         if export_src.exists():
             copy_file(export_src, docs_dir / "api" / "exports" / f"{sym_id}.csv")
 
+        sym_asset = str(sym.get("asset") or "futures")
         detail_html = detail_tpl.render(
             site=site_cfg,
             base_path=base_path_detail,
-            symbol={"id": sym_id, "name": sym_name},
+            symbol={"id": sym_id, "name": sym_name, "asset": sym_asset},
             build_version=build_version,
         )
         write_text(docs_dir / "s" / f"{sym_id}.html", detail_html)

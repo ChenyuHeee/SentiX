@@ -4,128 +4,167 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ site.title }}</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A//www.w3.org/2000/svg'%20viewBox%3D'0%200%2016%2016'%3E%3Crect%20width%3D'16'%20height%3D'16'%20fill%3D'none'/%3E%3C/svg%3E" />
+    <meta name="description" content="SentiX — 多维度金融情绪分析终端" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>S</text></svg>" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="static/styles.css{% if build_version %}?v={{ build_version }}{% endif %}" rel="stylesheet" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg border-bottom">
+    <!-- Ticker tape -->
+    <div class="ticker-tape" id="tickerTape">
+      <div class="ticker-inner" id="tickerInner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
-        <div class="navbar-brand d-flex flex-column lh-sm">
-          <span class="fw-semibold">{{ site.brand_en or 'SentiX' }}</span>
-          <small class="text-body-secondary">{{ site.brand_zh or '深意·X' }}</small>
+        <div class="d-flex flex-column lh-sm">
+          <span class="brand-logo">{{ site.brand_en or 'SentiX' }}</span>
+          <span class="brand-sub">{{ site.brand_zh or '深意·X' }}</span>
         </div>
         <div class="d-flex gap-2 align-items-center">
-          <small class="text-body-secondary" id="updatedAt">{{ latest.updated_at }}</small>
-          <button class="btn btn-outline-secondary btn-sm rounded-pill" id="themeToggle" type="button">暗色模式</button>
+          <small class="mono" style="color:var(--sx-text-secondary);" id="updatedAt">{{ latest.updated_at }}</small>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill" id="themeToggle" type="button">◐</button>
         </div>
       </div>
     </nav>
 
     <main class="container py-3">
-      <div class="d-flex flex-wrap justify-content-between align-items-end gap-2">
-        <div>
-          <div class="h4 mb-1">市场情绪概览</div>
-          <div class="text-body-secondary small">{{ latest.date }} 更新</div>
-        </div>
-        <div class="text-body-secondary small">数据源：新闻 + 市场日线（期货 / A股）</div>
-      </div>
-
+      <!-- Market Stats Bar -->
       {% if macro %}
-        <div class="row g-3 mb-1">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
-                  <div>
-                    <div class="small text-body-secondary">当日宏观新闻交易情绪</div>
-                    {% if macro.status == 'ok' %}
-                      <div class="fs-3 fw-semibold sentiment-{{ macro.band }}">{{ '%.2f'|format(macro.index) }}</div>
-                      <div class="small text-body-secondary">
-                        宏观新闻 {{ macro.news_total }} 条（多 {{ macro.counts.bull }} / 空 {{ macro.counts.bear }} / 中 {{ macro.counts.neutral }}）
-                      </div>
-                    {% else %}
-                      <div class="text-body-secondary">数据更新中：{{ macro.reason }}</div>
-                    {% endif %}
-                  </div>
-                  <div class="text-end">
-                    <div class="small text-body-secondary">更新</div>
-                    <div class="fw-semibold">{{ macro.updated_at }}</div>
-                    {% if macro.status == 'ok' %}
-                      <div class="small text-body-secondary">置信度 {{ '%.2f'|format(macro.confidence) }} · {{ macro.mode }}</div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6 col-md-3">
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-label">宏观情绪</div>
+              {% if macro.status == 'ok' %}
+                <div class="stat-value sentiment-{{ macro.band }}">{{ '%.2f'|format(macro.index) }}</div>
+                <div class="stat-sub">{{ macro.news_total }} 条新闻</div>
+              {% else %}
+                <div class="stat-value">--</div>
+                <div class="stat-sub">{{ macro.reason }}</div>
+              {% endif %}
             </div>
           </div>
         </div>
+        <div class="col-6 col-md-3">
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-label">多 / 空 / 中</div>
+              {% if macro.status == 'ok' %}
+                <div class="stat-value">
+                  <span class="sentiment-bull">{{ macro.counts.bull }}</span>
+                  <span class="sentiment-neutral">/</span>
+                  <span class="sentiment-bear">{{ macro.counts.bear }}</span>
+                  <span class="sentiment-neutral">/</span>
+                  <span class="sentiment-neutral">{{ macro.counts.neutral }}</span>
+                </div>
+                <div class="stat-sub">新闻情绪分布</div>
+              {% else %}
+                <div class="stat-value">--</div>
+                <div class="stat-sub">更新中</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-label">跟踪标的</div>
+              <div class="stat-value">{{ latest.symbols|length }}</div>
+              <div class="stat-sub">期货 + A股</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-label">数据日期</div>
+              <div class="stat-value mono" style="font-size:1.1rem;">{{ latest.date }}</div>
+              <div class="stat-sub">{{ latest.updated_at }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endif %}
 
+      <!-- Search + Category Tabs -->
       {% set futures_symbols = latest.symbols|selectattr('asset', 'equalto', 'futures')|list %}
       {% set stock_symbols = latest.symbols|selectattr('asset', 'equalto', 'stock')|list %}
       {% set legacy_symbols = latest.symbols|selectattr('asset', 'undefined')|list %}
       {% if legacy_symbols %}{% set futures_symbols = futures_symbols + legacy_symbols %}{% endif %}
 
-      {% macro market_table(items, label) %}
-        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mt-4">
-          <div class="h5 mb-0">{{ label }}</div>
-          <div class="text-body-secondary small">{{ items|length }} 个标的</div>
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="category-tabs" id="categoryTabs">
+          <button class="category-tab active" data-cat="all">全部<span class="tab-count">{{ latest.symbols|length }}</span></button>
+          {% if futures_symbols %}
+          <button class="category-tab" data-cat="futures">期货<span class="tab-count">{{ futures_symbols|length }}</span></button>
+          {% endif %}
+          {% if stock_symbols %}
+          <button class="category-tab" data-cat="stock">A股<span class="tab-count">{{ stock_symbols|length }}</span></button>
+          {% endif %}
         </div>
-        <div class="card mt-2">
+        <div class="search-box">
+          <span class="search-icon">&#x1F50D;</span>
+          <input class="form-control" type="text" id="searchInput" placeholder="搜索品种名称、代码…" autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Futures Table -->
+      {% if futures_symbols %}
+      <div id="futuresSection">
+        <div class="section-header">
+          <span class="section-title">&#x1F4C8; 期货合约</span>
+          <span class="section-line"></span>
+          <span class="section-title" style="font-size:.72rem;">{{ futures_symbols|length }} 个标的</span>
+        </div>
+        <div class="card mb-3">
           <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-sm table-hover mb-0 align-middle">
+              <table class="table table-sm table-hover align-middle" id="futuresTable">
                 <thead>
-                  <tr class="text-body-secondary">
+                  <tr>
                     <th>标的</th>
-                    <th class="text-end">情绪</th>
+                    <th class="text-end">情绪指数</th>
                     <th class="text-end">涨跌幅</th>
-                    <th class="text-end">收盘</th>
-                    <th class="text-end">换手</th>
-                    <th class="text-end">成交额</th>
+                    <th class="text-end">收盘价</th>
+                    <th class="text-end">持仓量</th>
                     <th class="text-end">数据日</th>
                     <th class="text-end">状态</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for s in items %}
-                    <tr>
+                  {% for s in futures_symbols %}
+                    <tr class="symbol-row fade-in" data-asset="futures" data-name="{{ s.name }}" data-id="{{ s.id }}" style="animation-delay:{{ loop.index0 * 0.04 }}s">
                       <td>
-                        <a class="text-decoration-none fw-semibold" href="s/{{ s.id }}.html">{{ s.name }}</a>
-                        <div class="small text-body-secondary">{{ s.id }}</div>
+                        <a class="fw-semibold" href="s/{{ s.id }}.html">{{ s.name }}</a>
+                        <div class="small" style="color:var(--sx-text-secondary);">
+                          <span class="badge-asset badge-futures">期货</span>
+                          {{ s.id }}
+                        </div>
                       </td>
-                      <td class="text-end fw-semibold sentiment-{{ s.sentiment_band }}">{{ '%.2f'|format(s.sentiment_index) }}</td>
+                      <td class="text-end">
+                        <span class="fw-semibold mono sentiment-{{ s.sentiment_band }}">{{ '%.2f'|format(s.sentiment_index) }}</span>
+                      </td>
                       <td class="text-end">
                         {% if s.pct_change is not none %}
-                          <span class="fw-semibold pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">{{ '%.2f'|format(s.pct_change) }}%</span>
+                          <span class="fw-semibold mono pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">
+                            {{ '+' if s.pct_change > 0 else '' }}{{ '%.2f'|format(s.pct_change) }}%
+                          </span>
                         {% else %}
-                          <span class="text-body-secondary">--</span>
+                          <span class="no-data">--</span>
                         {% endif %}
                       </td>
-                      <td class="text-end">{{ '--' if s.close is none else s.close }}</td>
-                      <td class="text-end">
-                        {% if s.turnover_rate is defined and s.turnover_rate is not none %}
-                          {{ '%.2f'|format(s.turnover_rate) }}%
-                        {% else %}
-                          --
-                        {% endif %}
-                      </td>
-                      <td class="text-end">
-                        {% if s.amount is defined and s.amount is not none %}
-                          {{ s.amount }}
-                        {% else %}
-                          --
-                        {% endif %}
-                      </td>
-                      <td class="text-end text-body-secondary">{{ s.data_date }}</td>
+                      <td class="text-end mono">{{ '--' if s.close is none else '%.2f'|format(s.close) }}</td>
+                      <td class="text-end mono" style="color:var(--sx-text-secondary);">--</td>
+                      <td class="text-end" style="color:var(--sx-text-secondary);">{{ s.data_date }}</td>
                       <td class="text-end">
                         {% if s.is_stale %}
-                          <span class="badge text-bg-warning">更新中</span>
+                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">更新中</span>
                         {% elif s.price_status and s.price_status != 'ok' %}
-                          <span class="badge text-bg-secondary">不可用</span>
+                          <span class="status-dot status-error"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">不可用</span>
                         {% else %}
-                          <span class="badge text-bg-light border">OK</span>
+                          <span class="status-dot status-ok"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">OK</span>
                         {% endif %}
                       </td>
                     </tr>
@@ -135,28 +174,103 @@
             </div>
           </div>
         </div>
-      {% endmacro %}
-
-      {% if futures_symbols %}
-        {{ market_table(futures_symbols, '期货') }}
+      </div>
       {% endif %}
+
+      <!-- Stock Table -->
       {% if stock_symbols %}
-        {{ market_table(stock_symbols, 'A股') }}
+      <div id="stockSection">
+        <div class="section-header">
+          <span class="section-title">&#x1F3DB; A股个股</span>
+          <span class="section-line"></span>
+          <span class="section-title" style="font-size:.72rem;">{{ stock_symbols|length }} 个标的</span>
+        </div>
+        <div class="card mb-3">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle" id="stockTable">
+                <thead>
+                  <tr>
+                    <th>标的</th>
+                    <th class="text-end">情绪指数</th>
+                    <th class="text-end">涨跌幅</th>
+                    <th class="text-end">收盘价</th>
+                    <th class="text-end">成交额</th>
+                    <th class="text-end">换手率</th>
+                    <th class="text-end">数据日</th>
+                    <th class="text-end">状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in stock_symbols %}
+                    <tr class="symbol-row fade-in" data-asset="stock" data-name="{{ s.name }}" data-id="{{ s.id }}" style="animation-delay:{{ loop.index0 * 0.04 }}s">
+                      <td>
+                        <a class="fw-semibold" href="s/{{ s.id }}.html">{{ s.name }}</a>
+                        <div class="small" style="color:var(--sx-text-secondary);">
+                          <span class="badge-asset badge-stock">A股</span>
+                          {{ s.id }}
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <span class="fw-semibold mono sentiment-{{ s.sentiment_band }}">{{ '%.2f'|format(s.sentiment_index) }}</span>
+                      </td>
+                      <td class="text-end">
+                        {% if s.pct_change is not none %}
+                          <span class="fw-semibold mono pct-{{ 'up' if s.pct_change > 0 else 'down' if s.pct_change < 0 else 'flat' }}">
+                            {{ '+' if s.pct_change > 0 else '' }}{{ '%.2f'|format(s.pct_change) }}%
+                          </span>
+                        {% else %}
+                          <span class="no-data">--</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end mono">{{ '--' if s.close is none else '%.2f'|format(s.close) }}</td>
+                      <td class="text-end mono" style="color:var(--sx-text-secondary);">
+                        {% if s.amount is defined and s.amount is not none %}
+                          {{ s.amount }}
+                        {% else %}
+                          --
+                        {% endif %}
+                      </td>
+                      <td class="text-end mono" style="color:var(--sx-text-secondary);">
+                        {% if s.turnover_rate is defined and s.turnover_rate is not none %}
+                          {{ '%.2f'|format(s.turnover_rate) }}%
+                        {% else %}
+                          --
+                        {% endif %}
+                      </td>
+                      <td class="text-end" style="color:var(--sx-text-secondary);">{{ s.data_date }}</td>
+                      <td class="text-end">
+                        {% if s.is_stale %}
+                          <span class="status-dot status-stale"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">更新中</span>
+                        {% elif s.price_status and s.price_status != 'ok' %}
+                          <span class="status-dot status-error"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">不可用</span>
+                        {% else %}
+                          <span class="status-dot status-ok"></span><span style="font-size:.75rem;color:var(--sx-text-secondary);">OK</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endif %}
 
       {% if not latest.symbols %}
         <div class="card mt-3">
-          <div class="card-body">
-            <div class="placeholder-glow">
-              <span class="placeholder col-6"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-8"></span>
-            </div>
-            <div class="text-body-secondary mt-2">数据更新中</div>
+          <div class="card-body text-center py-5">
+            <div class="no-data">数据更新中，请稍候…</div>
           </div>
         </div>
       {% endif %}
     </main>
+
+    <footer class="site-footer">
+      <div>SentiX · 深意·X — 多维度金融情绪分析终端</div>
+      <div>数据源：新闻聚合 + AKShare 行情 · 分析引擎：DeepSeek LLM</div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>window.__BASE_PATH__ = {{ base_path|tojson }};</script>
