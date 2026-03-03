@@ -87,9 +87,16 @@ def build_site(cfg: Dict[str, Any], *, root_dir: Path) -> None:
                         if val != 0:
                             sym[_fld] = val
 
+            # Prefer agents.final.index over lexicon sentiment for display
+            _agents = payload.get("agents") or {}
+            _final = _agents.get("final") or {}
+            if _final.get("status") == "ok" and _final.get("index") is not None:
+                sym["sentiment_index"] = float(_final["index"])
+                sym["sentiment_band"] = str(_final.get("band") or "neutral")
+
             # Extract macro summary from the first valid symbol only
             if macro_summary is None:
-                agents = payload.get("agents") or {}
+                agents = _agents
                 macro = agents.get("macro") or {}
                 status = str(macro.get("status") or "").strip() or "unknown"
                 if status != "ok":

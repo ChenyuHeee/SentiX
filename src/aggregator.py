@@ -278,13 +278,25 @@ def write_latest(data_dir: Path, date: str, tz_label: str, symbols: List[Dict[st
         open_interest = price.get("open_interest", None)
         amount = price.get("amount", None)
         turnover_rate = price.get("turnover_rate", None)
+
+        # Use the multi-agent final index when available; fall back to the
+        # simple lexicon-based news sentiment.
+        agents_data = day.get("agents") or {}
+        final_agent = agents_data.get("final") or {}
+        if final_agent.get("status") == "ok" and final_agent.get("index") is not None:
+            display_index = float(final_agent["index"])
+            display_band = str(final_agent.get("band") or sentiment_band(display_index))
+        else:
+            display_index = float(day["sentiment"]["index"])
+            display_band = str(day["sentiment"]["band"])
+
         latest["symbols"].append(
             {
                 "id": sym_id,
                 "name": sym["name"],
                 "asset": asset,
-                "sentiment_index": day["sentiment"]["index"],
-                "sentiment_band": day["sentiment"]["band"],
+                "sentiment_index": display_index,
+                "sentiment_band": display_band,
                 "price_status": price_status,
                 "pct_change": pct_change,
                 "close": close,

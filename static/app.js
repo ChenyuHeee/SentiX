@@ -112,8 +112,19 @@
   function renderSummary(day) {
     const el = document.getElementById('summaryCard');
     if (!el) return;
-    const s = day.sentiment.index;
-    const band = day.sentiment.band;
+
+    // Use agents.final.index (multi-agent weighted score) when available;
+    // fall back to the simple lexicon-based news sentiment.index.
+    const agents = day.agents || {};
+    const final = agents.final || {};
+    let s, band;
+    if (final.status === 'ok' && typeof final.index === 'number') {
+      s = final.index;
+      band = final.band || 'neutral';
+    } else {
+      s = day.sentiment.index;
+      band = day.sentiment.band;
+    }
     const price = day.price || {};
     const priceStatus = price.status || 'ok';
     const priceUnavailable = priceStatus !== 'ok';
