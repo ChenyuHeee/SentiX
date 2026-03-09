@@ -4,8 +4,8 @@
     "name": "豆粕"
   },
   "date": "2026-03-09",
-  "updated_at": "2026-03-09 08:54",
-  "is_stale": true,
+  "updated_at": "2026-03-09 16:45",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,11 +19,11 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "地缘政治紧张（霍尔木兹海峡消息）与美联储政策不确定性（特朗普施压）交织，加剧市场波动。",
-        "原油供过于求担忧与关税威胁利空油价，但临时停火可能缓解通胀压力，形成矛盾信号。",
-        "美股下挫、科技股大跌显示风险偏好下降，但黄金上涨反映避险情绪升温。",
-        "特朗普要求降息至1%的言论可能引发对政策独立性的担忧，影响市场信心。",
-        "整体新闻标题呈现冲突性叙事（如‘直线大跳水’ vs ‘临时停火’），显示情绪分化而非单向悲观或乐观。"
+        "特朗普言论（要求降息至1%、要求美联储理事辞职）引发政策不确定性，可能加剧市场波动，利空风险资产。",
+        "美联储维持利率不变且鲍威尔发出警告，暗示对通胀的谨慎态度，可能抑制市场乐观情绪。",
+        "原油市场同时出现供过于求担忧和地缘冲突支撑，价格波动剧烈（V形反转），反映市场分歧和不确定性。",
+        "美股全线下挫、科技巨头大跌，显示风险偏好下降，资金可能转向避险资产如黄金。",
+        "特朗普关税威胁和以伊冲突持续，叠加美联储政策僵局，可能压制全球经济增长预期。"
       ]
     },
     "symbol": {
@@ -33,28 +33,96 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "库存持续去化显示供应端偏紧，对价格有支撑作用。",
-        "巴西洪灾可能导致大豆减产，构成潜在利多因素。",
-        "国储收购价格上调提振市场情绪，但影响可能有限。",
-        "养殖业需求疲弱和饲料成本高企反映下游压力，抑制上涨空间。",
-        "多篇报告前瞻和周期复盘暗示市场处于关键节点，但方向不明朗。"
+        "新闻标题中既有库存去化、巴西洪灾减产、机构看多等利多因素，也有需求疲弱、价格下探等利空因素，多空交织但利多略占上风。",
+        "国储收购价上调、南美天气炒作、USDA报告预期等事件可能提振市场情绪，但实际影响需观察后续数据。",
+        "豆粕期货价格下探至3000元关口，反映出现货市场压力，但部分标题暗示可能接近底部或酝酿反弹。",
+        "长期策略报告和周期复盘类新闻显示市场关注基本面变化，但短期方向仍不明朗。",
+        "整体情绪偏谨慎乐观，指数略高于中性，但信心度中等，因新闻多为前瞻性或事件驱动，缺乏确定性数据。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.6,
+      "band": "bull",
+      "confidence": 0.75,
+      "mode": "llm",
+      "rationale": [
+        "技术面：收盘价2995.0000高于20日均线2800.7500和60日均线2776.5500，显示短期和中期趋势偏强。",
+        "技术面：成交量比率vol_ratio20为2.5454，显著高于1，表明市场交易活跃，可能伴随趋势延续。",
+        "基本面：库存inventory为38629.0，较前一日减少200.0，库存下降可能对价格有支撑作用。",
+        "基本面：现货基差dom_basis为-257.0（负值），现货价格3172.0高于期货收盘价，显示现货相对强势，但基差为负可能反映期货市场情绪谨慎。",
+        "基本面：滚动收益roll_yield和持仓排名positions_rank状态为unavailable，数据缺失，限制了基本面分析的完整性。"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.21,
+      "band": "bull",
+      "confidence": 0.75,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-03-09",
+    "symbol": {
+      "id": "meal",
+      "name": "豆粕"
+    },
+    "short_term": {
+      "direction": "long",
+      "entry_zone": [
+        2972.18,
+        3017.82
+      ],
+      "stop": 2926.54,
+      "target1": 3040.64,
+      "target2": 3086.29,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "long",
+      "entry_zone": [
+        2949.36,
+        3040.64
+      ],
+      "stop": 2880.89,
+      "target1": 3086.29,
+      "target2": 3177.57,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "long",
+      "entry_zone": [
+        2926.54,
+        3063.46
+      ],
+      "stop": 2835.25,
+      "target1": 3131.93,
+      "target2": 3268.86,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": 0.03042495224030527,
+    "index": 0.02763593731343869,
     "band": "neutral",
     "counts": {
       "bull": 1,
@@ -65,17 +133,17 @@
   },
   "price": {
     "status": "ok",
-    "open": 2847.0,
-    "high": 2922.0,
-    "low": 2844.0,
-    "close": 2915.0,
-    "volume": 1793260,
-    "open_interest": 2089623,
+    "open": 2925.0,
+    "high": 3066.0,
+    "low": 2919.0,
+    "close": 2995.0,
+    "volume": 2567487,
+    "open_interest": 1935418,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-03-06",
-    "is_stale": true,
-    "pct_change": 2.53
+    "date": "2026-03-09",
+    "is_stale": false,
+    "pct_change": 2.74
   },
   "news": [
     {
@@ -115,30 +183,6 @@
       "confidence": 0.55
     },
     {
-      "title": "白宫陷两难赌注：油价阵痛与军事优先，特朗普如何应对新一轮通胀冲击？ - 同花顺财经",
-      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFAyemxWTl9DaUl5c3lacmtoSE1pcnB1QmhoR0lmOGNPcU1BcUp5RW1ZcnpTMWVqdko2WUdMUVlPU2N2Z2Nsb0VpTUxKSnNmR1JLMk9mR1RHbjlrTDNCNWc?oc=5",
-      "source": "同花顺财经",
-      "published_at": "Fri, 06 Mar 2026 02:03:36 GMT",
-      "content": "",
-      "weight": 0.8122523963562356,
-      "age_days": 3,
-      "scope": "macro",
-      "sentiment": "neutral",
-      "confidence": 0.5345108226993895
-    },
-    {
-      "title": "刚刚开盘，直线大跳水！石油、黄金、美联储降息，大变局！霍尔木兹海峡，传来大消息 - 证券时报",
-      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9lVHpKblRITkxkb2xoN0YtbGgxZE1RMFNYNnB2TU9YTVRnX1ZWaDBtX01PNWhLeUpBb3lPWm5NWUNycFE4NGNPcE9Qbk05Rnh6RzRsN0hQNElUa3Bm?oc=5",
-      "source": "证券时报",
-      "published_at": "Sun, 01 Mar 2026 07:43:00 GMT",
-      "content": "",
-      "weight": 0.5743491774985174,
-      "age_days": 8,
-      "scope": "macro",
-      "sentiment": "bull",
-      "confidence": 0.6084990448061054
-    },
-    {
       "title": "【USDA2月报告前瞻】阿根廷炒天气，国内豆粕要反转？ - CME Group",
       "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPUkpPYUJjRVpGdTBDZmNCTUFzdWRIektSSVdyR05scFljNnJrUVZGZTBWZzJnaGJGWl9xV2JMby1PY0p0WnVuU21OX0tFWlJrcWJSOFh4b1dZTlpVZTdGVjJ1YXdlLVRGNWpEQTZWWFNManBYVGJyV0p6Y2NIVlJGZ0YxVkVlZk0?oc=5",
       "source": "CME Group",
@@ -146,6 +190,30 @@
       "content": "",
       "weight": 0.1088188204120155,
       "age_days": 32,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
+      "title": "特朗普的一举一动，又开始影响全球市场表现 - 中国基金报",
+      "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9uN2VSU09kUXl6bzJqS253YldiRjJvdk5MZUdVMzNCRDgwQ3hoZEE4Yl80YUxEZ1BsTEZaUnE2RlBnMzNHOEZyeW04WGFIelR2MmQxcE5tcVRMQTFDUC1HUUUzRk5FVDJsdjNrbFY1VzRBZUprYk9YQ1h3?oc=5",
+      "source": "中国基金报",
+      "published_at": "Wed, 14 Jan 2026 08:00:00 GMT",
+      "content": "",
+      "weight": 0.023683071351724965,
+      "age_days": 54,
+      "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
+      "title": "东海期货：2026年豆粕投资策略报告 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMitAJBVV95cUxQVWlpellydTFxYm96V2pjLXctVGo2R0ZsZVdoRTZQNEtBamUxcDBPNk5uTVVObm8xc0N5eUV2V2ZKR0ZxTG12azh3bjdXTFBSVzY4Q1JlMmJndm00dnlTLU0tQXR6REJxX3llUmVRRk9HcHk5cDJJUlA4bkx6SzhWX2huMkFyMndvN2xIaUlyaml5QUZYV1pJLUtPUUZwLTdqNllCb3BoS3E5V0F4c084WlVYWlZwbkFXalJkMnRwbVdhYk1PT0xCSGZ5NkxFOHEzYUJZdnV3RHMxNmVIYWNQVWM4ZW42T3VNSWdHM3JJb2V5dnI3aVVlVFRTZlFsdkJoQ1gxMFBxWVFfUWRaVEs2SWZqMnFOTXB3bUlHR2h4eUhXRzgtNldSZ2pYSmI0WERJaXcwQg?oc=5",
+      "source": "新浪财经",
+      "published_at": "Wed, 31 Dec 2025 08:00:00 GMT",
+      "content": "",
+      "weight": 0.008974205898414337,
+      "age_days": 68,
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
@@ -163,21 +231,21 @@
       "confidence": 0.5
     },
     {
-      "title": "未来两三个月，大豆市场要“变脸”？ - CME Group",
-      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1YeEZOejJXZG9vV0FGT25Nd2oxMUdERXJ6SGVTelJLVFRfSmJkM1d6a0k2VmZDQ0FyTmNtZmtpY1JoZGtpZERDSFpEdDVJUG54amRHYUxDTExsSGxPdnBzZWtXUG54djk1Y09weW4yb0J4OEl2?oc=5",
-      "source": "CME Group",
+      "title": "油市上演反转好戏，地缘+美联储降息，将油价从危局中拉出 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOVDF2WkZrNy1Lc2dOcXM0YllCWFdqd1lHR2RlZ3lIRWhsRGJDMjFSSWpENWZySkxIVkF0RlJoS0VGVkdQaVl1TEFmZ0VIYUh6VmlKWDVOWWszTW5hMEdyZGhCZEF2QUtsOEVBSWxaamRqa21tWTc4YVFpN3cybFRJeVdaaUplOUZ2UUoxM2NxYWM?oc=5",
+      "source": "新浪财经",
       "published_at": "Thu, 11 Dec 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.002243551474603583,
       "age_days": 88,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
+      "scope": "macro",
+      "sentiment": "bull",
+      "confidence": 0.5527187462687738
     },
     {
-      "title": "光大期货：12月11日农产品日报 - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMi1wRBVV95cUxQOHlDSHN2OFN4eWliQXozOEtTalFGbXp0bUozS3djUVBmMDRhRHZ3a2FrY0dNTklIUk9iNVJQM0I1Z1l0UG4wd0VWLXhFaDdTREJSSktxME94dzVNYkFDYTNCbm5EbXY5SUd5YlZELWV0WlktTWZPd3UzM3lmMmNDcGJnWmNQd3RWTDZ5bDVTM0c3bThzZWthQWdrVzRMUHdQbVpmVnd3Y2ZsTzZGdUpMUUl2bHpaSUMybHljNE5xczk1QmlEOGZ3bkN5Z1RiMmNhSHpIQ24zRjhwTS1ERU5ETHQya1Bid1NwcTQzYjktWC1oeGF0aUNhSmw0SnYxdi00alptbGtpVjJiTGRVZmxRc2YtLUFhbTNJWWFlZ0dHdlZESVRZWmp1VVFnNkxTODlQYU5LLUZRWk1PYklSamJxaHRvUC1Ta1AzYV9Vc1dIX2cyQkFhTXNaQVJ3bUx6eGV4Y0JHNGZFQk9GYTM1Z3NRNGZiU1JRbHg1c3lLYUdrVlJiWmpJczZxSDRGbjRKTjVUQWNZX250STNSVFNYbk9ZV0N6WnhCYmhIeVZUaS1zSEV3bVVqSkhFVVNBTGNhS0o4V1dUSklwS3J6bEE0ZW9wcUJtcmhsdU96djU1cV9XTWJxMlJfUmI2ak1rZDhVT0lnTEYwVGpHZnlwMTBNUVR4U3JMaFhqUHZvajBKY190UFdCWEdXRXBTeDVWRFlxLXZneEQ2b0czWGpKNnVCenE1ek16OERobmQwNWZoZjItZ3FRVG9hUWZPWTB5NnR1ZUh6VlpRQXBYYw?oc=5",
-      "source": "新浪财经",
+      "title": "未来两三个月，大豆市场要“变脸”？ - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1YeEZOejJXZG9vV0FGT25Nd2oxMUdERXJ6SGVTelJLVFRfSmJkM1d6a0k2VmZDQ0FyTmNtZmtpY1JoZGtpZERDSFpEdDVJUG54amRHYUxDTExsSGxPdnBzZWtXUG54djk1Y09weW4yb0J4OEl2?oc=5",
+      "source": "CME Group",
       "published_at": "Thu, 11 Dec 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.002243551474603583,
@@ -223,13 +291,13 @@
       "confidence": 0.5
     },
     {
-      "title": "伊以临时停火可能避免了“停滞性通胀冲击” - 财富中文网",
-      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1SbG1HMXhJYmdNXzNKX2YyQlEzZDkxVnFKWlM1Z19qWnowbUlwSUNCcHR1UE83WlotU09qanJVZzlLSnMzMFBNV1dpRUZ1aFh1d1ZESWlLZHdDQnZsWnBtQm5rV29pa00zTVJmcDI0NU9LV0M3TUVB?oc=5",
-      "source": "财富中文网",
-      "published_at": "Wed, 25 Jun 2025 07:00:00 GMT",
+      "title": "以伊冲突：特朗普称美国不寻求停火！美联储维持利率不变，鲍威尔发出警告！原油价格刚刚V形反转 - 证券时报",
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9NNENWYzUzZFZDTk5MbzhUeWs3MWJvU2cxRGdHdl80c1JjUWZYWEpjS3BueHYzdzZham93VGNnZnVDMHJ0SElBdmgwZVhnTlhnMl9nQmZrbw?oc=5",
+      "source": "证券时报",
+      "published_at": "Thu, 19 Jun 2025 07:00:00 GMT",
       "content": "",
       "weight": 0.0005,
-      "age_days": 257,
+      "age_days": 263,
       "scope": "macro",
       "sentiment": "neutral",
       "confidence": 0.5
@@ -320,15 +388,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-06-10",
-      "open": 3016.0,
-      "high": 3035.0,
-      "low": 3005.0,
-      "close": 3031.0,
-      "volume": 1082721,
-      "open_interest": 2319959
-    },
     {
       "date": "2025-06-11",
       "open": 3031.0,
@@ -1939,22 +1998,26 @@
       "close": 2915.0,
       "volume": 1793260,
       "open_interest": 2089623
+    },
+    {
+      "date": "2026-03-09",
+      "open": 2925.0,
+      "high": 3066.0,
+      "low": 2919.0,
+      "close": 2995.0,
+      "volume": 2567487,
+      "open_interest": 1935418
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-03-06",
+    "asof": "2026-03-09",
     "modules": {
       "inventory": {
         "status": "ok",
         "hint": "仓单/库存（AKShare futures_inventory_em）",
-        "summary": "最新库存 38829.0，增减 None",
+        "summary": "最新库存 38629.0，增减 -200.0",
         "items": [
-          {
-            "date": "2025-12-03",
-            "inventory": 15430.0,
-            "change": 5980.0
-          },
           {
             "date": "2025-12-04",
             "inventory": 23830.0,
@@ -2249,6 +2312,11 @@
             "date": "2026-03-06",
             "inventory": 38829.0,
             "change": null
+          },
+          {
+            "date": "2026-03-09",
+            "inventory": 38629.0,
+            "change": -200.0
           }
         ],
         "params": {
@@ -2283,7 +2351,7 @@
         "hint": "展期收益率（接口异常：AttributeError）",
         "items": [],
         "params": {
-          "date": "20260306",
+          "date": "20260309",
           "var": "M"
         }
       },
@@ -2292,7 +2360,7 @@
         "hint": "会员持仓/成交排名（接口异常：BadZipFile）",
         "items": [],
         "params": {
-          "date": "20260306",
+          "date": "20260309",
           "var": "M"
         }
       }
