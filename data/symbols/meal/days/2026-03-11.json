@@ -4,8 +4,8 @@
     "name": "豆粕"
   },
   "date": "2026-03-11",
-  "updated_at": "2026-03-11 08:50",
-  "is_stale": true,
+  "updated_at": "2026-03-11 16:44",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,39 +19,107 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "地缘政治冲突（美伊、以伊）推高通胀预期，支撑原油和黄金上涨，利好风险偏好但加剧不确定性。",
-        "美联储维持利率不变且降息概率下降，传递鹰派信号，压制股市（尤其科技股）并强化美元，利空风险资产。",
-        "原油市场同时受供需矛盾（供过于求担忧）和地缘风险影响，价格波动剧烈（V形反转），反映多空博弈激烈。",
-        "特朗普政策动向（关税威胁、美联储人事干预）增加市场波动，贸易和货币政策不确定性抑制风险情绪。",
-        "整体宏观环境呈现“滞胀”特征：增长担忧（美股下挫）与通胀压力并存，导致情绪偏向谨慎乐观。"
+        "地缘政治冲突（美伊、以伊）推高通胀预期，支撑原油和黄金，但美联储降息概率下降可能压制风险偏好。",
+        "美联储维持利率不变且鲍威尔发出警告，叠加特朗普政策不确定性，加剧市场波动，美股尤其科技股承压。",
+        "原油市场存在矛盾信号：地缘冲突提供支撑，但供过于求担忧和关税威胁构成下行压力，导致价格波动加剧。",
+        "特朗普影响市场情绪，其言论（如要求美联储理事辞职）可能削弱政策可信度，增加宏观不确定性。",
+        "整体情绪偏谨慎，通胀与增长担忧交织，但避险资产（如黄金）上涨显示部分避险需求，限制悲观程度。"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": 0.2,
-      "band": "neutral",
-      "confidence": 0.75,
+      "index": 0.6,
+      "band": "bull",
+      "confidence": 0.85,
       "mode": "llm",
       "rationale": [
-        "新闻标题中多次提及南美天气（如阿根廷、巴西洪灾）可能导致大豆减产，构成供应端潜在利多。",
-        "国储大豆收购价格上调的政策消息对市场情绪有提振作用。",
-        "部分机构（如东海期货、新浪财经相关报道）发布看多观点或策略报告，显示一定乐观预期。",
-        "同时存在需求疲弱（养殖业需求疲弱、饲料成本高企）和价格下探（豆粕期货下探至3000元）的利空因素，形成多空交织局面。",
-        "多个标题聚焦USDA报告前瞻和行情拐点预测，显示市场处于关键信息等待期，不确定性较高，情绪偏向谨慎观望。"
+        "外资机构净多仓大幅增加，显示机构看多情绪增强",
+        "巴西洪灾可能导致大豆减产，供应端存在利多因素",
+        "饲料需求好于预期，支撑豆粕消费",
+        "多篇报告关注豆粕潜在拐点和大行情，市场关注度提升",
+        "国储收购价格上调提振市场情绪"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.6,
+      "band": "bull",
+      "confidence": 0.75,
+      "mode": "llm",
+      "rationale": [
+        "技术面：收盘价3068显著高于20日均线2828.95和60日均线2783，显示短期和中期趋势偏强。",
+        "技术面：成交量比率vol_ratio20为2.5679，表明当前成交量显著高于过去20日平均水平，市场活跃度较高。",
+        "基本面：库存为36982，较前一日减少1511，库存下降通常对价格有支撑作用。",
+        "基本面：现货基差为-329（现货价3302），期货价格相对现货贴水，可能限制期货的进一步上涨空间。",
+        "基本面：展期收益和持仓排名数据缺失，增加了评估的不确定性。"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.48,
+      "band": "bull",
+      "confidence": 0.78,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-03-11",
+    "symbol": {
+      "id": "meal",
+      "name": "豆粕"
+    },
+    "short_term": {
+      "direction": "long",
+      "entry_zone": [
+        3040.61,
+        3095.39
+      ],
+      "stop": 2985.82,
+      "target1": 3122.79,
+      "target2": 3177.57,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "long",
+      "entry_zone": [
+        3013.21,
+        3122.79
+      ],
+      "stop": 2931.04,
+      "target1": 3177.57,
+      "target2": 3287.14,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "long",
+      "entry_zone": [
+        2985.82,
+        3150.18
+      ],
+      "stop": 2876.25,
+      "target1": 3232.36,
+      "target2": 3396.71,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
     "index": 0.03042495224030527,
@@ -65,19 +133,31 @@
   },
   "price": {
     "status": "ok",
-    "open": 2987.0,
-    "high": 3004.0,
-    "low": 2922.0,
-    "close": 2973.0,
-    "volume": 1570739,
-    "open_interest": 1887486,
+    "open": 2993.0,
+    "high": 3077.0,
+    "low": 2989.0,
+    "close": 3068.0,
+    "volume": 2919190,
+    "open_interest": 2030946,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-03-10",
-    "is_stale": true,
-    "pct_change": -0.73
+    "date": "2026-03-11",
+    "is_stale": false,
+    "pct_change": 3.2
   },
   "news": [
+    {
+      "title": "外资机构席位·期货品种持仓一览（3月11日） 每日汇总乾坤、瑞银、摩根三家外资期货公司的持仓数据。今日豆粕多头增持超11000手，空头减持超200手，净多仓增加....一图查看。 NEW 36分钟前",
+      "url": "https://xnews.jin10.com/details/212877",
+      "source": "金十数据",
+      "published_at": "2026-03-11",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
     {
       "title": "国储大豆收购价格上调提振情绪 预计12月国产大豆...",
       "url": "https://finance.eastmoney.com/a/202512023580276335.html",
@@ -125,18 +205,6 @@
       "scope": "macro",
       "sentiment": "bull",
       "confidence": 0.6084990448061054
-    },
-    {
-      "title": "【USDA2月报告前瞻】阿根廷炒天气，国内豆粕要反转？ - CME Group",
-      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPUkpPYUJjRVpGdTBDZmNCTUFzdWRIektSSVdyR05scFljNnJrUVZGZTBWZzJnaGJGWl9xV2JMby1PY0p0WnVuU21OX0tFWlJrcWJSOFh4b1dZTlpVZTdGVjJ1YXdlLVRGNWpEQTZWWFNManBYVGJyV0p6Y2NIVlJGZ0YxVkVlZk0?oc=5",
-      "source": "CME Group",
-      "published_at": "Thu, 05 Feb 2026 08:00:00 GMT",
-      "content": "",
-      "weight": 0.09473228540689989,
-      "age_days": 34,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
     },
     {
       "title": "特朗普的一举一动，又开始影响全球市场表现 - 中国基金报",
@@ -223,6 +291,18 @@
       "confidence": 0.5
     },
     {
+      "title": "南美大豆产量如何调整，国内豆粕何时触底反弹？ - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1fZzN0RjlqbkhKLUw0dkk3U1o1VVpqSFkxeTI2YU95cHVxTzFiSXdiWUd1S1FwUndqWHhIaC00alRlU0ZRUVRrVm9Pak50YXVBMU9VYm85RG13WUpzQ2luMUlneFh4SGdUdmNDMmRCT1lnTG5S?oc=5",
+      "source": "CME Group",
+      "published_at": "Thu, 03 Apr 2025 07:00:00 GMT",
+      "content": "",
+      "weight": 0.0005,
+      "age_days": 342,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
       "title": "3月 USDA报告如何调整，大豆豆粕何时现拐点？ - CME Group",
       "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ESy1pR1ljeTVucjRsbkdTQzFLN1dweUs5bmtUWEI0bzJDdG5WbGdSc25Pb3RMUDVoUDYyZ3lEc3R4QWRuWi1NVGprQmxWVTBqZ01LdU1KVE5MYmg4MnhJMHZ0UDhRNmM3TllBdDg0a2M0T2xz?oc=5",
       "source": "CME Group",
@@ -235,9 +315,9 @@
       "confidence": 0.5
     },
     {
-      "title": "CBOT持仓： 南美天气搅局！大豆持仓异动，小麦空头施压 提供者 FX678 - 英为财情 Investing.com",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5fM1V4QWtHc2pmai1Cd2xkZTJMWmtmU19MTkRBMUdxY1VWWjBpemVyeWFLTlc5SlM5LUpqaEZMQVBBT0ZLZ0NrbENUS201QWE5MnhURmcxdDc2S3d1U1UzWjRzU08wdFpJVm9YdkZmMA?oc=5",
-      "source": "英为财情 Investing.com",
+      "title": "【USDA1月报告前瞻】内外形势变化，大豆豆粕要大涨？ - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFAwa1hFR3JJZHpkamxJZGtEWHBsMzc0R2NfSFh3U3Zzb2RSYS1FbkZUUUNmclRrZmpGNXNEdmJWU25aNzRiRmtZLVk3cmhDWUdSaV9BTG8zQWF6ME9hdjlsUzlhRDQ1YmUtcDVFbFhlWmVOYnhR?oc=5",
+      "source": "CME Group",
       "published_at": "Fri, 03 Jan 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -247,9 +327,9 @@
       "confidence": 0.5
     },
     {
-      "title": "【USDA1月报告前瞻】内外形势变化，大豆豆粕要大涨？ - CME Group",
-      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFAwa1hFR3JJZHpkamxJZGtEWHBsMzc0R2NfSFh3U3Zzb2RSYS1FbkZUUUNmclRrZmpGNXNEdmJWU25aNzRiRmtZLVk3cmhDWUdSaV9BTG8zQWF6ME9hdjlsUzlhRDQ1YmUtcDVFbFhlWmVOYnhR?oc=5",
-      "source": "CME Group",
+      "title": "CBOT持仓： 南美天气搅局！大豆持仓异动，小麦空头施压 提供者 FX678 - 英为财情 Investing.com",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5fM1V4QWtHc2pmai1Cd2xkZTJMWmtmU19MTkRBMUdxY1VWWjBpemVyeWFLTlc5SlM5LUpqaEZMQVBBT0ZLZ0NrbENUS201QWE5MnhURmcxdDc2S3d1U1UzWjRzU08wdFpJVm9YdkZmMA?oc=5",
+      "source": "英为财情 Investing.com",
       "published_at": "Fri, 03 Jan 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -305,30 +385,9 @@
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
-    },
-    {
-      "title": "​利空来袭！豆粕期货下探至3000元，养殖业需求疲弱，何时止跌？ - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9OaWhyTHFnNjdaaXByNmNWYkd6bERRWkxMWjFtMmJjek1VOXJqN1NVQWdsU3ZFcWppM2k1WnR0dUoyT1ZMQUlRNXpzWEgxdWljZDZhQUIzRjF3bUttb2ZTbF8yTHh4bUpmSlAxS19Ma3dNMjAwaTgySkF2VzF5dw?oc=5",
-      "source": "新浪财经",
-      "published_at": "Tue, 16 Jan 2024 08:00:00 GMT",
-      "content": "",
-      "weight": 0.0005,
-      "age_days": 785,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
     }
   ],
   "kline": [
-    {
-      "date": "2025-06-12",
-      "open": 3050.0,
-      "high": 3065.0,
-      "low": 3032.0,
-      "close": 3049.0,
-      "volume": 1296602,
-      "open_interest": 2356309
-    },
     {
       "date": "2025-06-13",
       "open": 3055.0,
@@ -1939,22 +1998,26 @@
       "close": 2973.0,
       "volume": 1570739,
       "open_interest": 1887486
+    },
+    {
+      "date": "2026-03-11",
+      "open": 2993.0,
+      "high": 3077.0,
+      "low": 2989.0,
+      "close": 3068.0,
+      "volume": 2919190,
+      "open_interest": 2030946
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-03-10",
+    "asof": "2026-03-11",
     "modules": {
       "inventory": {
         "status": "ok",
         "hint": "仓单/库存（AKShare futures_inventory_em）",
-        "summary": "最新库存 38493.0，增减 -136.0",
+        "summary": "最新库存 36982.0，增减 -1511.0",
         "items": [
-          {
-            "date": "2025-12-05",
-            "inventory": 23830.0,
-            "change": null
-          },
           {
             "date": "2025-12-08",
             "inventory": 23830.0,
@@ -2249,6 +2312,11 @@
             "date": "2026-03-10",
             "inventory": 38493.0,
             "change": -136.0
+          },
+          {
+            "date": "2026-03-11",
+            "inventory": 36982.0,
+            "change": -1511.0
           }
         ],
         "params": {
@@ -2283,7 +2351,7 @@
         "hint": "展期收益率（接口异常：AttributeError）",
         "items": [],
         "params": {
-          "date": "20260310",
+          "date": "20260311",
           "var": "M"
         }
       },
@@ -2292,7 +2360,7 @@
         "hint": "会员持仓/成交排名（接口异常：BadZipFile）",
         "items": [],
         "params": {
-          "date": "20260310",
+          "date": "20260311",
           "var": "M"
         }
       }
