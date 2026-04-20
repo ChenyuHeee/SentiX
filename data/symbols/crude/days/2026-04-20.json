@@ -4,8 +4,8 @@
     "name": "原油"
   },
   "date": "2026-04-20",
-  "updated_at": "2026-04-20 09:06",
-  "is_stale": true,
+  "updated_at": "2026-04-20 17:13",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,80 +19,148 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "油价飙升和美伊冲突加剧通胀担忧，可能抑制美联储降息空间，对风险资产构成压力。",
-        "市场对特朗普言论反应趋于平淡，显示其影响力减弱，但地缘政治风险仍推高避险情绪。",
-        "美联储降息预期降温（概率跌至50%），削弱流动性宽松前景，利空股市等风险资产。",
-        "黄金和白银走低，反映市场可能更关注实际利率预期而非避险需求，暗示宏观情绪偏谨慎。",
-        "美债市场表现“微妙”，显示投资者在通胀、增长和地缘风险间摇摆，整体情绪偏向防御。"
+        "特朗普言论加剧地缘政治不确定性，美伊冲突推高油价，可能强化通胀压力，抑制美联储降息空间。",
+        "市场对美联储降息预期降温，年内第二次降息概率跌至50%，显示紧缩担忧抬头。",
+        "黄金、白银走低反映避险情绪未主导，但油价飙涨可能引发滞胀忧虑，压制风险偏好。",
+        "沃什提名听证会或揭示美联储政策路径，增加政策不确定性，市场处于观望状态。",
+        "特朗普降息呼吁被市场无视，表明交易员更关注基本面，对政治噪音反应钝化。"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": 0.8,
-      "band": "bull",
-      "confidence": 0.9,
+      "index": -0.2,
+      "band": "neutral",
+      "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "美伊军事冲突升级，美军扣押伊朗货轮并炸洞，伊朗无人机打击美舰，地缘政治风险急剧上升，直接推高原油价格。",
-        "WTI原油期货开盘大涨7%和5%，显示市场对供应中断的强烈担忧，尤其是霍尔木兹海峡可能受影响。",
-        "伊拉克官员提及数百万桶原油出口因霍尔木兹海峡问题面临风险，进一步加剧供应紧张预期。",
-        "上期所原油期货合约夜盘收涨8.07%，反映国内市场的看涨情绪，与全球事件联动。",
-        "尽管有OPEC+产量不变等中性消息，但冲突主导短期情绪，压倒其他因素，推动指数偏向积极。"
+        "中东紧张局势和霍尔木兹海峡突发事件可能推高油价，但被需求季节性疲软部分抵消。",
+        "新闻标题显示油价波动剧烈（如‘原油巨震’、‘大涨7%’、‘收跌4.8%’），表明市场情绪不稳定。",
+        "实体供应减少与‘纸桶’交易增加之间的脱节，可能引发对价格真实性的担忧，增加不确定性。",
+        "机构下调库存预期和OPEC+产量不变可能提供支撑，但淡季需求疲软构成下行压力。",
+        "整体上，负面因素（如需求疲软、结构性问题）略占上风，但地缘政治风险限制了下行空间。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.2,
+      "band": "neutral",
+      "confidence": 0.65,
+      "mode": "llm",
+      "rationale": [
+        "技术面: 收盘价618.4低于20日均线690.325，显示短期趋势偏弱。",
+        "技术面: 收盘价618.4略高于60日均线597.735，显示长期趋势略有支撑。",
+        "基本面: 现货升水(dom_basis_rate)为0.0367，显示现货相对期货强势，为正面信号。",
+        "基本面: 展期收益(roll_yield)为0.0818，显示近月合约价格低于远月，为正面信号。",
+        "基本面: 库存数据缺失，基本面信息不完整，降低判断信心。"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.2,
+      "band": "neutral",
+      "confidence": 0.71,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-04-20",
+    "symbol": {
+      "id": "crude",
+      "name": "原油"
+    },
+    "short_term": {
+      "direction": "neutral",
+      "entry_zone": [
+        595.15,
+        641.65
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "neutral",
+      "entry_zone": [
+        571.9,
+        664.9
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "neutral",
+      "entry_zone": [
+        548.65,
+        688.15
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.007565286546228745,
+    "index": 0.057447273595472706,
     "band": "neutral",
     "counts": {
-      "bull": 3,
-      "bear": 3,
-      "neutral": 14
+      "bull": 2,
+      "bear": 0,
+      "neutral": 18
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 637.8,
-    "high": 643.6,
-    "low": 628.0,
-    "close": 636.2,
-    "volume": 36411,
-    "open_interest": 34499,
+    "open": 595.7,
+    "high": 625.3,
+    "low": 592.0,
+    "close": 618.4,
+    "volume": 81797,
+    "open_interest": 41536,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-04-17",
-    "is_stale": true,
-    "pct_change": 0.7
+    "date": "2026-04-20",
+    "is_stale": false,
+    "pct_change": -2.8
   },
   "news": [
     {
-      "title": "金十数据全球财经早餐 | 2026年4月20日 美伊乱局不停，黄金原油上下巨震！美联储理事警告长期冲突风险，海湾地区官员研判特朗普或将接受更多妥协……上周五至今，全球都发生了哪些大事？ HOT 2小时前 来自： 订阅金十全球财经早餐",
-      "url": "https://xnews.jin10.com/details/216974",
-      "source": "金十数据",
-      "published_at": "2026-04-20",
+      "title": "美债市场屏息以待！沃什提名确认听证会或揭示美联储政策路径 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQRVhfUUlkVE44akhNTUl1eWRCLXNkb2dNUWoyRVJRTzNwRkZuT0l0VnZGS0JPRms3czdraTcxVHQ2ZXc2SzBEanRFZDQ0alFncUpibGpJMDl3NEZ2M2FCTm0yMzhfUU14YzdNa1Q1MjktX185ZHRzSXFsQ0VzVGtkajJ4b0dySmdUaTFNVU1TTnN3akN2aWFRc0FZOG9fTWpRTVdYZjJuUkpKUQ?oc=5",
+      "source": "新浪财经",
+      "published_at": "Mon, 20 Apr 2026 03:33:45 GMT",
       "content": "",
       "weight": 1.0,
       "age_days": 0,
-      "scope": "symbol",
-      "sentiment": "bear",
-      "confidence": 0.65
+      "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.55
     },
     {
-      "title": "海上开火！美军炸洞扣押伊朗货轮，德黑兰拒绝谈判誓言报复 特朗普前脚刚乐观表示“美伊即将复谈”，后脚双方就在海上真刀真枪地干了起来。综合各方消息：美军在阿曼湾扣押伊朗货船并在机舱炸洞；伊朗武装部队则发射多架无人机，直接打击了数艘美方军舰作为报复。伊朗拒绝第二轮和谈。周一WTI原油跳空高开5%。 HOT 原创 2小时前 来自： 订阅特朗普动态",
-      "url": "https://xnews.jin10.com/details/216975",
+      "title": "油价到底是多少？这个问题正变得越来越难回答 “真实油价”并不存在？“纸桶”交易量增加10亿桶，而实体供应却减少千万桶级别！资深能源作者称，与其执着于价格，不如理解市场结构本身。 NEW 原创 37分钟前 来自： 订阅原油市场资讯",
+      "url": "https://xnews.jin10.com/details/217033",
       "source": "金十数据",
       "published_at": "2026-04-20",
       "content": "",
@@ -103,20 +171,32 @@
       "confidence": 0.55
     },
     {
-      "title": "为何十国财长都在害怕？揭开美股新高背后的“破窗陷阱”｜大师复盘 美股收复冲突全部失地，但G10财长还在喊“风险”，这轮修复到底缺了什么？诺奖得主弗里德曼帮你拆开这个“裂缝”里藏着的风险。 HOT 04-18 11:59 来自： 订阅原油市场资讯",
-      "url": "https://xnews.jin10.com/details/216728",
+      "title": "十年大数据统计：金、银、油、铜、农产品期货本周展望（4月20日更新） 从季节性走势的规律来看，本周国际黄金期货、WTI原油、COMEX铜价格展望如何？一文看懂。 VIP 2小时前",
+      "url": "https://xnews.jin10.com/details/217023",
       "source": "金十数据",
       "published_at": "2026-04-20",
       "content": "",
       "weight": 1.0,
       "age_days": 0,
       "scope": "symbol",
-      "sentiment": "bear",
-      "confidence": 0.65
+      "sentiment": "neutral",
+      "confidence": 0.55
     },
     {
-      "title": "伊拉克官员：将有数百万桶原油出口因霍尔木兹海峡...",
-      "url": "https://finance.eastmoney.com/a/202604193709876228.html",
+      "title": "中东局势碰撞需求淡季！原油巨头警告：油价恐迎“惊涛骇浪” 随着中东紧张局势持续，且全球原油需求进入季节性疲软期，原油市场可能正酝酿着一场“完美风暴”…… HOT 原创 3小时前 来自： 订阅华尔街热议",
+      "url": "https://xnews.jin10.com/details/217015",
+      "source": "金十数据",
+      "published_at": "2026-04-20",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
+    {
+      "title": "全球原油供应恢复至战前水平 需要多久？",
+      "url": "https://finance.eastmoney.com/a/202604203710448561.html",
       "source": "东方财富期货",
       "published_at": "2026-04-20",
       "content": "",
@@ -223,6 +303,18 @@
       "confidence": 0.55
     },
     {
+      "title": "有色/贵金属 | 工业硅：库存持续积累 期价缺乏有...",
+      "url": "https://finance.eastmoney.com/a/202604203710101256.html",
+      "source": "东方财富期货",
+      "published_at": "2026-04-20",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
+    {
       "title": "有色/贵金属 | 国内库存拐点出现 铝材出口有望加...",
       "url": "https://finance.eastmoney.com/a/202604173708250782.html",
       "source": "东方财富期货",
@@ -247,9 +339,9 @@
       "confidence": 0.55
     },
     {
-      "title": "信达证券：三大机构明显下调2026年全球原油库存预期 - QQ News",
+      "title": "信达证券：三大机构明显下调2026年全球原油库存预期 - 腾讯新闻",
       "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE1kZ0EtdndQazB5SUlUUHZrM1prRHpuVlh3RkxhTEFFY1pJQXhsYVRMcmI3aEgycFRWOFRDeWdwdmQ2Q1lDc3cxN0REOW85Mk9ucDczQm1n?oc=5",
-      "source": "QQ News",
+      "source": "腾讯新闻",
       "published_at": "Fri, 17 Apr 2026 07:29:00 GMT",
       "content": "",
       "weight": 0.8122523963562356,
@@ -293,42 +385,9 @@
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
-    },
-    {
-      "title": "美伊战火引爆油市？特朗普：敌对行动结束后 油价将回落！ - 财联社",
-      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE54MlhRR0swOS1CYnJKaXJOV0hCTnhka1RvaTdkTV90UE5VdTBzTGpQWFR6bWw2ZzZtVzFDZWJEczRJTEVfcjlkZA?oc=5",
-      "source": "财联社",
-      "published_at": "Wed, 04 Mar 2026 08:00:00 GMT",
-      "content": "",
-      "weight": 0.03847326291702863,
-      "age_days": 47,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.5562511431344103
-    },
-    {
-      "title": "美伊冲突再燃“通胀隐忧”，美联储年内第二次降息概率跌至50% - 华尔街见闻",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBXSVp2VWdwQzc3VjM3cTFvLWIyb3NKRjRoZzl0aTFXMGN3dWFVSjZwZWJfVzlwQjR1elBJWHlrNmRiSkQyVlJXeHhXYk5ZbWJoWFdR?oc=5",
-      "source": "华尔街见闻",
-      "published_at": "Tue, 03 Mar 2026 08:00:00 GMT",
-      "content": "",
-      "weight": 0.03589682359365735,
-      "age_days": 48,
-      "scope": "macro",
-      "sentiment": "bull",
-      "confidence": 0.5559999403003816
     }
   ],
   "kline": [
-    {
-      "date": "2025-07-21",
-      "open": 517.7,
-      "high": 520.4,
-      "low": 511.3,
-      "close": 512.3,
-      "volume": 150393,
-      "open_interest": 38281
-    },
     {
       "date": "2025-07-22",
       "open": 511.6,
@@ -1939,11 +1998,20 @@
       "close": 636.2,
       "volume": 36411,
       "open_interest": 34499
+    },
+    {
+      "date": "2026-04-20",
+      "open": 595.7,
+      "high": 625.3,
+      "low": 592.0,
+      "close": 618.4,
+      "volume": 81797,
+      "open_interest": 41536
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-04-17",
+    "asof": "2026-04-20",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1953,41 +2021,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2325.71 · 主力基差 76.28999999999996",
+        "summary": "现货 2328.57 · 主力基差 85.42999999999984",
         "items": [
           {
-            "date": "20260417",
+            "date": "20260420",
             "symbol": "SC",
-            "spot_price": 2325.71,
+            "spot_price": 2328.57,
             "near_contract": "c2605",
-            "near_contract_price": 2370.0,
+            "near_contract_price": 2381.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": 44.289999999999964,
-            "dom_basis": 76.28999999999996,
-            "near_basis_rate": 0.019043646886327092,
-            "dom_basis_rate": 0.03280288600040415
+            "near_basis": 52.429999999999836,
+            "dom_basis": 85.42999999999984,
+            "near_basis_rate": 0.022515964733720528,
+            "dom_basis_rate": 0.03668775256917334
           }
         ],
         "params": {
-          "date": "20260417"
+          "date": "20260420"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 0.10228949071392687",
+        "summary": "展期收益率 0.08177867119788096",
         "items": [
           {
-            "date": "20260417",
+            "date": "20260420",
             "var": "SC",
-            "roll_yield": 0.10228949071392687,
+            "roll_yield": 0.08177867119788096,
             "near_by": "SC2606",
             "deferred": "SC2607"
           }
         ],
         "params": {
-          "date": "20260417",
+          "date": "20260420",
           "var": "SC"
         }
       },
@@ -1996,7 +2064,7 @@
         "hint": "会员持仓/成交排名（AKShare get_rank_sum_daily）",
         "items": [],
         "params": {
-          "date": "20260417",
+          "date": "20260420",
           "var": "SC"
         }
       }
