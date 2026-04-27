@@ -4,8 +4,8 @@
     "name": "豆粕"
   },
   "date": "2026-04-27",
-  "updated_at": "2026-04-27 09:10",
-  "is_stale": true,
+  "updated_at": "2026-04-27 17:15",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -37,17 +37,82 @@
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.9962459951978662,
+      "band": "bull",
+      "confidence": 0.5,
+      "mode": "heuristic",
+      "rationale": [
+        "收盘 2993.00，MA20 2966.90，MA60 2904.17",
+        "成交量/20日均量 0.99"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.4481832652259298,
+      "band": "bull",
+      "confidence": 0.5262477345447567,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-04-27",
+    "symbol": {
+      "id": "meal",
+      "name": "豆粕"
+    },
+    "short_term": {
+      "direction": "long",
+      "entry_zone": [
+        2975.79,
+        3010.21
+      ],
+      "stop": 2941.36,
+      "target1": 3027.43,
+      "target2": 3061.86,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "long",
+      "entry_zone": [
+        2958.57,
+        3027.43
+      ],
+      "stop": 2906.93,
+      "target1": 3061.86,
+      "target2": 3130.71,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "long",
+      "entry_zone": [
+        2941.36,
+        3044.64
+      ],
+      "stop": 2872.5,
+      "target1": 3096.29,
+      "target2": 3199.57,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
     "index": 0.056656471866845616,
@@ -61,17 +126,17 @@
   },
   "price": {
     "status": "ok",
-    "open": 2991.0,
-    "high": 3010.0,
-    "low": 2965.0,
-    "close": 2984.0,
-    "volume": 1327417,
-    "open_interest": 2471408,
+    "open": 2984.0,
+    "high": 2994.0,
+    "low": 2975.0,
+    "close": 2993.0,
+    "volume": 888919,
+    "open_interest": 2448324,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-04-24",
-    "is_stale": true,
-    "pct_change": -0.33
+    "date": "2026-04-27",
+    "is_stale": false,
+    "pct_change": 0.3
   },
   "news": [
     {
@@ -316,15 +381,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-07-28",
-      "open": 3017.0,
-      "high": 3023.0,
-      "low": 2984.0,
-      "close": 2990.0,
-      "volume": 1020578,
-      "open_interest": 1560299
-    },
     {
       "date": "2025-07-29",
       "open": 2989.0,
@@ -1935,22 +1991,26 @@
       "close": 2984.0,
       "volume": 1327417,
       "open_interest": 2471408
+    },
+    {
+      "date": "2026-04-27",
+      "open": 2984.0,
+      "high": 2994.0,
+      "low": 2975.0,
+      "close": 2993.0,
+      "volume": 888919,
+      "open_interest": 2448324
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-04-24",
+    "asof": "2026-04-27",
     "modules": {
       "inventory": {
         "status": "ok",
         "hint": "仓单/库存（AKShare futures_inventory_em）",
         "summary": "最新库存 27580.0，增减 None",
         "items": [
-          {
-            "date": "2026-01-22",
-            "inventory": 32428.0,
-            "change": -12.0
-          },
           {
             "date": "2026-01-23",
             "inventory": 32428.0,
@@ -2245,6 +2305,11 @@
             "date": "2026-04-24",
             "inventory": 27580.0,
             "change": null
+          },
+          {
+            "date": "2026-04-27",
+            "inventory": 27580.0,
+            "change": null
           }
         ],
         "params": {
@@ -2254,24 +2319,24 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2984.0 · 主力基差 None",
+        "summary": "现货 2954.0 · 主力基差 39.0",
         "items": [
           {
-            "date": "20260424",
+            "date": "20260427",
             "symbol": "M",
-            "spot_price": 2984.0,
+            "spot_price": 2954.0,
             "near_contract": "m2605",
-            "near_contract_price": 2827.0,
+            "near_contract_price": 2832.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": -157.0,
-            "dom_basis": null,
-            "near_basis_rate": -0.05261394101876671,
-            "dom_basis_rate": null
+            "near_basis": -122.0,
+            "dom_basis": 39.0,
+            "near_basis_rate": -0.04129993229519291,
+            "dom_basis_rate": 0.013202437373053488
           }
         ],
         "params": {
-          "date": "20260424"
+          "date": "20260427"
         }
       },
       "roll_yield": {
@@ -2279,7 +2344,7 @@
         "hint": "展期收益率（接口异常：AttributeError）",
         "items": [],
         "params": {
-          "date": "20260424",
+          "date": "20260427",
           "var": "M"
         }
       },
@@ -2288,7 +2353,7 @@
         "hint": "会员持仓/成交排名（接口异常：BadZipFile）",
         "items": [],
         "params": {
-          "date": "20260424",
+          "date": "20260427",
           "var": "M"
         }
       }
