@@ -4,8 +4,8 @@
     "name": "豆粕"
   },
   "date": "2026-06-23",
-  "updated_at": "2026-06-23 09:20",
-  "is_stale": true,
+  "updated_at": "2026-06-23 17:44",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -14,82 +14,138 @@
     },
     "macro": {
       "status": "ok",
-      "index": -0.6,
+      "index": -0.3,
       "band": "bear",
-      "confidence": 0.85,
+      "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "特朗普签署协议曝光导致油价崩跌失守80美元，显示地缘政治风险加剧和供应过剩担忧。",
-        "特朗普言论和伊朗石油威胁增加不确定性，但市场对美联储加息押注拉扯，情绪偏空。",
-        "美伊谈判挫折和'NACHO交易'复燃推高油价和美债收益率，但供过于求担忧和关税威胁施压油价大跌。",
-        "美元两连跌和黄金持稳于5000关口反映避险需求，但股油同涨显示短期矛盾，整体情绪偏负面。",
-        "CME报告强调供过于求和关税威胁，强化利空情绪，但美联储决议前市场谨慎，指数未至极端。"
+        "油价崩跌失守80美元，叠加美股、金银、比特币全线下跌，市场避险情绪显著升温。",
+        "特朗普言论反复（称喜欢通胀、扬言夺取伊朗石油），加剧政策不确定性。",
+        "美联储加息押注拉扯，美元短期高位震荡，但避险情绪回落施压美元走低。",
+        "美伊战火风险与特朗普表态（敌对行动后油价回落）形成矛盾，市场方向不明。",
+        "黄金持稳于5000关口，显示部分避险需求，但整体资产下跌暗示风险偏好恶化。"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": -0.2,
-      "band": "neutral",
+      "index": -0.3,
+      "band": "bear",
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "美豆优良率符合预期且持平，缺乏天气炒作支撑，利多预期落空。",
-        "新闻标题明确提及交易逻辑从强预期转向弱现实，暗示基本面偏空。",
-        "多篇报告强调震荡、筑底、等待驱动，显示市场缺乏明确上涨动力。",
-        "标题提及豆粕暴跌和价差反复，反映短期情绪偏弱。",
-        "生猪需求渐起可能带来增量，但尚未形成明确利多驱动，整体中性偏空。"
+        "多个标题提及豆粕震荡、无趋势、筑底，显示市场缺乏明确方向，情绪偏弱。",
+        "标题如'豆粕暴跌是开始还是尾声'和'从强预期转向弱现实'暗示悲观情绪。",
+        "USDA报告解读有分歧，利多驱动不足，市场等待明确信号。",
+        "生猪需求渐起可能带来支撑，但尚未形成有效驱动。",
+        "期权套保策略增多，反映市场避险情绪，而非乐观预期。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.2,
+      "band": "neutral",
+      "confidence": 0.6,
+      "mode": "llm",
+      "rationale": [
+        "收盘价2947.0低于MA20(2949.7)和MA60(2972.15)，短期均线偏空",
+        "ATR14为29.64，波动率中等，未出现极端行情",
+        "成交量比率0.916低于1，市场参与度偏低",
+        "现货基差77.0为正，但现货价2870.0低于期货价，现货端支撑有限",
+        "库存40204.0处于正常水平，无显著供需矛盾"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.26,
+      "band": "bear",
+      "confidence": 0.69,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-06-23",
+    "symbol": {
+      "id": "meal",
+      "name": "豆粕"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        2932.18,
+        2961.82
+      ],
+      "stop": 2991.46,
+      "target1": 2917.36,
+      "target2": 2887.71,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        2917.36,
+        2976.64
+      ],
+      "stop": 3021.11,
+      "target1": 2887.71,
+      "target2": 2828.43,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        2902.54,
+        2991.46
+      ],
+      "stop": 3050.75,
+      "target1": 2858.07,
+      "target2": 2769.14,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.0038240854461834128,
+    "index": -0.09061952389563448,
     "band": "neutral",
     "counts": {
       "bull": 1,
-      "bear": 1,
-      "neutral": 16
+      "bear": 4,
+      "neutral": 15
     },
-    "news_total": 18
+    "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 2939.0,
-    "high": 2942.0,
-    "low": 2923.0,
-    "close": 2934.0,
-    "volume": 525510,
-    "open_interest": 2031735,
+    "open": 2933.0,
+    "high": 2948.0,
+    "low": 2919.0,
+    "close": 2947.0,
+    "volume": 787949,
+    "open_interest": 2015289,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-06-22",
-    "is_stale": true,
-    "pct_change": -0.27
+    "date": "2026-06-23",
+    "is_stale": false,
+    "pct_change": 0.44
   },
   "news": [
-    {
-      "title": "【美国天气炒作攻略】美豆、美玉米优良率符合预期，中西部地区天气或影响大豆作物生长？ 截至6月21日当周，美国大豆优良率为66%，市场预估为66%，前一周为66%，上年同期为66%。 NEW 35分钟前",
-      "url": "https://xnews.jin10.com/details/222546",
-      "source": "金十数据",
-      "published_at": "2026-06-23",
-      "content": "",
-      "weight": 1.0,
-      "age_days": 0,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.55
-    },
     {
       "title": "大豆交易逻辑从强预期转向弱现实",
       "url": "https://finance.eastmoney.com/a/202605183739820215.html",
@@ -151,6 +207,18 @@
       "confidence": 0.5182847070504778
     },
     {
+      "title": "避险情绪回落施压美元走低，短期维持高位震荡 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNSk9KZS1ZN0RzYWVXa3ViLVJlc3lfa3lTaHl5WFI4Mk9MOHJrN1FZbDVGV3Z2MHRacDRZOFNxMzVEWkR0VlhMVmxJNXMtT0lfNDFwUkhMLVpfWUxhcHF5Ym9uMkxZUVd2Y1IzQ0JtYmpKRVBpMy1PYjcxZ0tJYWpLNW8yZzdGLWs?oc=5",
+      "source": "新浪财经",
+      "published_at": "Mon, 15 Jun 2026 16:57:03 GMT",
+      "content": "",
+      "weight": 0.5743491774985174,
+      "age_days": 8,
+      "scope": "macro",
+      "sentiment": "bear",
+      "confidence": 0.6084990448061054
+    },
+    {
       "title": "特朗普称“喜欢通胀”，后扬言要夺取伊朗石油_期市动态 - 中金在线",
       "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE15SnNlaG1FVjRWb2JncVdnaXd0LXZvRVFZOHREWXpoeFpxTVNjczUtMnpTX2JFYlFUTU0yd1BSRlpZUGFpWkxIMl9YQWJRQ1k4RmFONk4wXzZsOG9KT3Zub3VaWUoxckpjYWZzSWZR?oc=5",
       "source": "中金在线",
@@ -163,16 +231,16 @@
       "confidence": 0.5034102107359651
     },
     {
-      "title": "油价携美债收益率同涨！美伊谈判又遇挫折 “NACHO交易”复燃 - 财联社",
-      "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE9OLUg5TGx5aUllbloyYzdQWHpFY0gxQm43a3gwbmo5MzlSYnZiMmlnN3NBSGQ3V2hBMk1ibEJwcmdCSlp2c3c?oc=5",
-      "source": "财联社",
-      "published_at": "Mon, 01 Jun 2026 07:00:00 GMT",
+      "title": "“黑色星期五”！美股大跳水，金银、原油、比特币全线下跌！特朗普紧急发声 - 星岛环球网",
+      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5RblJYaFN1QmxqWXFXcGpJSGxwZ3NlZVVzc2NkcUZycThsLVlkbnZjWVRnS0xwZ09ocW51LXJQNXpMemV4NmVMc0MxdnR4V2FFVkRlbQ?oc=5",
+      "source": "星岛环球网",
+      "published_at": "Sat, 06 Jun 2026 07:00:00 GMT",
       "content": "",
-      "weight": 0.217637640824031,
-      "age_days": 22,
+      "weight": 0.3077861033362291,
+      "age_days": 17,
       "scope": "macro",
-      "sentiment": "neutral",
-      "confidence": 0.5
+      "sentiment": "bear",
+      "confidence": 0.5825091450752823
     },
     {
       "title": "【观点汇总】豆粕：4月USDA报，市场解读有分歧 - Sina finance",
@@ -199,6 +267,18 @@
       "confidence": 0.552609373134387
     },
     {
+      "title": "美伊战火引爆油市？特朗普：敌对行动结束后 油价将回落！ - 财联社",
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE54MlhRR0swOS1CYnJKaXJOV0hCTnhka1RvaTdkTV90UE5VdTBzTGpQWFR6bWw2ZzZtVzFDZWJEczRJTEVfcjlkZA?oc=5",
+      "source": "财联社",
+      "published_at": "Wed, 04 Mar 2026 08:00:00 GMT",
+      "content": "",
+      "weight": 0.0005,
+      "age_days": 111,
+      "scope": "macro",
+      "sentiment": "bear",
+      "confidence": 0.55254875
+    },
+    {
       "title": "东海期货：2026年豆粕投资策略报告 - 新浪财经",
       "url": "https://news.google.com/rss/articles/CBMitwVBVV95cUxQSG9SRGROemdfWXVUS2V0d3pTZHRvZlgxNGpKc24zTDVfb3FxeUo0dE5hdGlqZEdXR0lxaGhFSHhqVk5sMFJ4NUpnUG1ZbVZSRV9vUmhvMWptanRrbTFCZ1I4aXBVV3pETkE2MTdqbFZuOExLaGVnRmNPRGFIZzk3OWt5dnVmcnZ1OHpxNk9UM3R0MjlPNnNrWm1GRS1TSXIwZFZ5NHFxT0hiN1FVV1YyZ3p3aWxLaFJlckdtYUJWUlFzU0xUaVBIQjJpT29LbnVqQjJtREIwLUVxOUhPaFBQbm04dDFFUGJVTXVETHZ4TzdrXzV2bUtWYVFwMURoQ0xkbjdwa1ZSZnh6eGtiVEQ0MnVNQ09tODFfbjlSV0Y2dnVHancwTUE0MHctMU5ERUt1X21hYmxNU1NlaWs0Q1N3Y3RIcjFwNmVTRVRQT0pzdUVzYndWM2ZhXzdWbjV0aEcxYTNmRE1KZGFueVlsQlJYWUlHNGplVzJOS3dJN2RpTTdKSmNmZEMtSFBBcGticmctM3RRNlpUWTlhckhadklYbHR3cWhFMkJGT2MxZ2JDT2R2U2dzNjRRSVVYeHlNeVA0TDg5bGVRZlBid1dZcWhKbDZ0UXI1ZWRyUFdTbWZlWGpMM0lwOXMzQzZ0cGVXSXpuWjVNQ2FVZmE2M09nQXhWeGo1QmxUM0hzbTVmM2drTHhQQ3V0bFQzdUxQSjVmd0tkbURwWmtpT0NjREJZLU9Za3lzTzNETHE4dlA4aGVWRFBhLXNmQ1FiZ29feFJ1N2hXcXk3TXJiTzlTVjFMbVZyNVZwUkU3a1JXUkJ1aXNDVGdLWFQxOWdOX0N4RVl3V0hnVHZZVFhuSXgzSkplVmVnVGdOemVNajA3QlpoYUljSUc1QmVfNXprNlNvNHhLYTlHSzI0YkNHbw?oc=5",
       "source": "新浪财经",
@@ -223,14 +303,26 @@
       "confidence": 0.5
     },
     {
-      "title": "【原油市场周报】供过于求担忧利空原油 美国再提关税威胁施压油价大跌 - CME Group",
-      "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQWWtETVNwMDVKaTExWXhiYlJhbFo2NVUyYk50Yy1nNTZxUk5ORkhILUNzZVlYX05FNGQyTFVQYzBnNzRGbUkzNnA3ZThoT2xwRV9RQkFvQUxDZWNubVFjM1BSSHBSMjR3RFVrNFZIcmx2SzI4a0w3aDlpZkV3aTF4UHJGWjdIMEIzMkdv?oc=5",
+      "title": "3月 USDA报告如何调整，大豆豆粕何时现拐点？ - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ESy1pR1ljeTVucjRsbkdTQzFLN1dweUs5bmtUWEI0bzJDdG5WbGdSc25Pb3RMUDVoUDYyZ3lEc3R4QWRuWi1NVGprQmxWVTBqZ01LdU1KVE5MYmg4MnhJMHZ0UDhRNmM3TllBdDg0a2M0T2xz?oc=5",
       "source": "CME Group",
-      "published_at": "Sat, 18 Oct 2025 07:00:00 GMT",
+      "published_at": "Thu, 06 Mar 2025 08:00:00 GMT",
       "content": "",
       "weight": 0.0005,
-      "age_days": 248,
-      "scope": "macro",
+      "age_days": 474,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
+      "title": "【USDA1月报告前瞻】内外形势变化，大豆豆粕要大涨？ - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFAwa1hFR3JJZHpkamxJZGtEWHBsMzc0R2NfSFh3U3Zzb2RSYS1FbkZUUUNmclRrZmpGNXNEdmJWU25aNzRiRmtZLVk3cmhDWUdSaV9BTG8zQWF6ME9hdjlsUzlhRDQ1YmUtcDVFbFhlWmVOYnhR?oc=5",
+      "source": "CME Group",
+      "published_at": "Fri, 03 Jan 2025 08:00:00 GMT",
+      "content": "",
+      "weight": 0.0005,
+      "age_days": 536,
+      "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
     },
@@ -296,15 +388,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-09-17",
-      "open": 3042.0,
-      "high": 3051.0,
-      "low": 2998.0,
-      "close": 3002.0,
-      "volume": 1383681,
-      "open_interest": 2070225
-    },
     {
       "date": "2025-09-18",
       "open": 3008.0,
@@ -1915,22 +1998,26 @@
       "close": 2934.0,
       "volume": 525510,
       "open_interest": 2031735
+    },
+    {
+      "date": "2026-06-23",
+      "open": 2933.0,
+      "high": 2948.0,
+      "low": 2919.0,
+      "close": 2947.0,
+      "volume": 787949,
+      "open_interest": 2015289
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-06-22",
+    "asof": "2026-06-23",
     "modules": {
       "inventory": {
         "status": "ok",
         "hint": "仓单/库存（AKShare futures_inventory_em）",
         "summary": "最新库存 40204.0，增减 None",
         "items": [
-          {
-            "date": "2026-03-24",
-            "inventory": 35220.0,
-            "change": -150.0
-          },
           {
             "date": "2026-03-25",
             "inventory": 34913.0,
@@ -2225,6 +2312,11 @@
             "date": "2026-06-22",
             "inventory": 40204.0,
             "change": null
+          },
+          {
+            "date": "2026-06-23",
+            "inventory": 40204.0,
+            "change": null
           }
         ],
         "params": {
@@ -2234,24 +2326,24 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2868.0 · 主力基差 66.0",
+        "summary": "现货 2870.0 · 主力基差 77.0",
         "items": [
           {
-            "date": "20260622",
+            "date": "20260623",
             "symbol": "M",
-            "spot_price": 2868.0,
+            "spot_price": 2870.0,
             "near_contract": "m2607",
-            "near_contract_price": 2750.0,
+            "near_contract_price": 2765.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": -118.0,
-            "dom_basis": 66.0,
-            "near_basis_rate": -0.04114365411436538,
-            "dom_basis_rate": 0.023012552301255207
+            "near_basis": -105.0,
+            "dom_basis": 77.0,
+            "near_basis_rate": -0.03658536585365857,
+            "dom_basis_rate": 0.02682926829268295
           }
         ],
         "params": {
-          "date": "20260622"
+          "date": "20260623"
         }
       },
       "roll_yield": {
@@ -2259,7 +2351,7 @@
         "hint": "展期收益率（接口异常：AttributeError）",
         "items": [],
         "params": {
-          "date": "20260622",
+          "date": "20260623",
           "var": "M"
         }
       },
@@ -2268,7 +2360,7 @@
         "hint": "会员持仓/成交排名（接口异常：BadZipFile）",
         "items": [],
         "params": {
-          "date": "20260622",
+          "date": "20260623",
           "var": "M"
         }
       }
