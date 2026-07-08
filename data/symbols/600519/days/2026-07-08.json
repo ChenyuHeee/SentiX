@@ -4,8 +4,8 @@
     "name": "贵州茅台"
   },
   "date": "2026-07-08",
-  "updated_at": "2026-07-08 08:59",
-  "is_stale": true,
+  "updated_at": "2026-07-08 17:17",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,11 +19,11 @@
       "confidence": 0.85,
       "mode": "llm",
       "rationale": [
-        "美联储坚持不降息，鹰派信号压制风险偏好，对市场情绪构成压力。",
-        "特朗普言论和行动（如喜欢通胀、威胁伊朗石油）增加地缘政治不确定性，加剧避险情绪。",
-        "美伊冲突风险推高油价，但特朗普声称战后油价回落，显示短期波动性高，市场情绪谨慎。",
-        "黄金持稳于5000关口，反映避险需求，但鹰派美联储限制上行空间，情绪偏负面。",
-        "股油同涨与美债走强、美元两连跌并存，显示市场分化，整体情绪偏向防御性调整。"
+        "特朗普新指令引发美债市场恐慌，避险情绪升温。",
+        "美联储坚持不降息，与特朗普压力形成对抗，政策不确定性增加。",
+        "油价飙涨、金银走低，显示地缘风险与通胀预期交织。",
+        "美伊战火威胁推高油价，但特朗普声称战后油价回落，市场短期波动加剧。",
+        "美元两连跌、美债走强，反映市场对经济前景和利率路径的担忧。"
       ]
     },
     "symbol": {
@@ -33,51 +33,130 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "涨价消息（公斤茅台等提价200元）和时隔8年上调官方零售价，显示短期利好，但市场已部分消化。",
-        "董事长强调价格稳定且暂无拆股计划，抑制过度投机情绪，但未引发恐慌。",
-        "首次下滑和行业调整新闻增加不确定性，但动销环比增长和段永平抄底提供支撑。",
-        "黄牛乱象、渠道博弈等负面细节与涨价、回购等正面信号交织，情绪中性偏正面。",
-        "公募基金持仓分化显示机构态度谨慎，但整体新闻情绪未极端化。"
+        "提价消息（公斤茅台等）和飞天茅台价格走高、市值上涨等新闻显示短期利好，支撑正面情绪。",
+        "董事长强调价格稳定、暂无拆股计划，以及股东会讨论价格调控、渠道博弈等，反映管理层谨慎态度，抑制过度乐观。",
+        "业绩首次下滑、股价月跌2500亿元、年轻人不喝白酒等负面新闻，表明长期增长面临挑战，压制指数。",
+        "段永平抄底、公募基金持仓分化、行业调整等新闻，显示市场分歧，情绪中性偏正面但不够强劲。",
+        "综合看，正面因素略占上风但力度有限，指数小幅正值，信心中等。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.3,
+      "band": "bear",
+      "confidence": 0.7,
+      "mode": "llm",
+      "rationale": [
+        "收盘价1199.30低于MA20(1222.34)和MA60(1311.22)，呈现空头排列",
+        "ATR14为33.64，波动率中等，但价格持续在均线下方运行",
+        "成交量比率vol_ratio20为0.5843，低于1，显示市场交投清淡",
+        "基本面数据缺失，无法评估价值支撑"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.21,
+      "band": "bear",
+      "confidence": 0.76,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-07-08",
+    "symbol": {
+      "id": "600519",
+      "name": "贵州茅台"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        1182.48,
+        1216.12
+      ],
+      "stop": 1249.76,
+      "target1": 1165.66,
+      "target2": 1132.01,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        1165.66,
+        1232.94
+      ],
+      "stop": 1283.41,
+      "target1": 1132.01,
+      "target2": 1064.73,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        1148.84,
+        1249.76
+      ],
+      "stop": 1317.05,
+      "target1": 1098.37,
+      "target2": 997.44,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": 0.02960486521611832,
+    "index": 0.05723759906461878,
     "band": "neutral",
     "counts": {
-      "bull": 2,
+      "bull": 3,
       "bear": 1,
-      "neutral": 17
+      "neutral": 16
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 1200.0,
-    "high": 1202.0,
-    "low": 1188.11,
-    "close": 1188.8,
-    "volume": 27365,
+    "open": 1188.77,
+    "high": 1200.98,
+    "low": 1177.0,
+    "close": 1199.3,
+    "volume": 25776,
     "open_interest": 0,
-    "amount": 3264967794.0,
-    "turnover_rate": 0.22,
-    "date": "2026-07-07",
-    "is_stale": true,
-    "pct_change": -1.5
+    "amount": 3071933498.0,
+    "turnover_rate": 0.21,
+    "date": "2026-07-08",
+    "is_stale": false,
+    "pct_change": 0.88
   },
   "news": [
+    {
+      "title": "特朗普新指令 美债市“受惊”！ - orientaldaily.com.my",
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE0tMHdHTDVKaE8zZ1E5WFNtZENpcHc4TjBxbDFDVHdQdGhzaVBKandzV0lrT2VMRHpReEctckU0M19hYlhybkI3WWJTV29jRzFYSmVOYXRuOU1hdTdvbFo4Q3hWV0VYei1YVC1YMXBLQXRZZw?oc=5",
+      "source": "orientaldaily.com.my",
+      "published_at": "Wed, 08 Jul 2026 04:45:00 GMT",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
     {
       "title": "面对“特朗普压力”，美联储坚持不降息 - 新浪财经",
       "url": "https://news.google.com/rss/articles/CBMipAhBVV95cUxNX0RNMUdOeHNwdmRCS3hvM0lrb092TXFYam82NTBJWE81UGVDM25tTFJGU1RiOUpIelJYeUluanVSa3NiRm9ZbmQxRjZTaEktMmg4VF9hTzNvWmxTTDV1UzdPdFVIRk9haHdQX3JQWDZEUURaX1gxWGlIRHFyZmNJdVRvcGdYT2ZxQzgwSGpNNWZXQk1WYzd5WGVPQ0kySG9xaWdyckhzY2tYV2tDNjBrYjJjZkM3UWE0R1VmcThaYXR6V0xHNmNVVWFkT25YT1Q2NjhNZmdsSm5wTUF4R2V1N1RsZ1lsc0N1eFRWemh3TWliVnB3X2RqeVIxR0ltM3E4OWxGNkdsdThxRjQ4dEhkUGtwTUYtSmhPX3RFYWc4ZjdiYUc4RUJFZ29uNGliLVU3eldQQ2NkNGIwN2oxczRmTHVuRlZXelZqYnJzRW95TzFJdzJrRzZtZ3ktSlJycTFUNGpVV2htdk1aaDhFMWJfRlg0ODF5ZUtqODdqcktINENnTi1NUFZIeHZjVEFSWTZlNUhLQjV3REp5YzYxT2xJSUtfZ2hpRmpkVEhOWkVxbXFHdFhURWNOdEo4MlVUNVdkMkp4WWpfQ2d5TjdPTkxZeXYzSHpDX3hyWTZoVTBhanJ6OFlicm9WTHFhQktKcTVQUklGcEVEVk5LUzlMaWRfYVluVFdBSTBkMjk1T1ItTElra1lLWkV2bzZfUjFsWGdVZkZoSnowbXRFNmpfZ3Y2alNMWHBhdV8yUnMyRzh5N0lfaDdRVEc3OHRaT1prcDV6ckVyRzNBU21iUGVOeFBFSUhQaXNJblJIcTE5a2xYWWdCTnVtT0pXdzBwelVBYXROelJsUnBmRjFKZkVRVTlsZGZqdUFKa1E0M3NOVF9IZF9wU040NWpGdmpFZ01YR08zTDQxVmp5SWlKTHZJdDRmVVNfWDBsMWdIMTFoSHp5MTBTM09ocVh5ZEdKeENrV3cxSlRENWFOaGJ4Tzdka3NnT0lxeG9IYm9Nc3UxU053V1FtWWxnb1JFSTNOM200T19LdDF4Z2hBNlE5UXFQaVpTWC1kMzZxdWR0cUE0bjRBUE40eVRRM0JRUllTWEc0ZDdOSll2QkY3WjFqd1dhQTVOVi0xNUVyM1otQkQwZkdmUWVGX2gzMWY0Q0x5NWNjNDF0OUVybjNRU0xOazk4VGVaa1pXZXZWYWxXU0Nnb3BTVEF1Q0dfVUQ0QmdtYUoyOF9jbDZGVXhmUVJNMjB3ejVQYjM5SVVvMGYwNURwc0FybWZ3azdUSTBxclVuazlhNllncGVoN3hNYlR4UjdHSld3djJPNHNZVjctTFNQbnZyM3lmb29rV3YyUmxaYUlPcEFERGRYQTRyOEtCc09qdjVlWWg3TW1IdHZwMjBac0R0T3FuVDhE?oc=5",
@@ -98,30 +177,6 @@
       "content": "",
       "weight": 0.25,
       "age_days": 20,
-      "scope": "macro",
-      "sentiment": "neutral",
-      "confidence": 0.5
-    },
-    {
-      "title": "6月18日财经早餐：美联储释放鹰派信号，黄金不敢大涨？油价对决特朗普签协议 vs 伊朗会谈推迟 - 汇通网 Fx678",
-      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE55Y01HNDZaNkMzVFZhdGdOZUN5OXlLOWpORDVOWXZEMW82bS1sdzU5TS1DLXUzbXBoanVEeWdEUWFHNHhNZmVVRTZ0WF9PcnhMMFljTHlnUFMzZVk?oc=5",
-      "source": "汇通网 Fx678",
-      "published_at": "Thu, 18 Jun 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.25,
-      "age_days": 20,
-      "scope": "macro",
-      "sentiment": "neutral",
-      "confidence": 0.5
-    },
-    {
-      "title": "特朗普称“喜欢通胀”，后扬言要夺取伊朗石油_期市动态 - 中金在线",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE15SnNlaG1FVjRWb2JncVdnaXd0LXZvRVFZOHREWXpoeFpxTVNjczUtMnpTX2JFYlFUTU0yd1BSRlpZUGFpWkxIMl9YQWJRQ1k4RmFONk4wXzZsOG9KT3Zub3VaWUoxckpjYWZzSWZR?oc=5",
-      "source": "中金在线",
-      "published_at": "Thu, 11 Jun 2026 13:02:06 GMT",
-      "content": "",
-      "weight": 0.1538930516681145,
-      "age_days": 27,
       "scope": "macro",
       "sentiment": "neutral",
       "confidence": 0.5
@@ -187,6 +242,18 @@
       "confidence": 0.5
     },
     {
+      "title": "油价飙涨，黄金、白银走低！特朗普再发威胁！美联储降息预期有变！ - 证券时报",
+      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1kTE5Gd0t3Qnp5UUxheWR2U0dGanoxRnFsclBpNWRPa2dHR3lseWo1R3ExTVFxTjdBakJsOUlObnE1Z19HdEpFTGZaSGQwcm05NFI1VjI5cXVmV2p1?oc=5",
+      "source": "证券时报",
+      "published_at": "Mon, 06 Apr 2026 07:00:00 GMT",
+      "content": "",
+      "weight": 0.0015864304616332718,
+      "age_days": 93,
+      "scope": "macro",
+      "sentiment": "bull",
+      "confidence": 0.5526546769700093
+    },
+    {
       "title": "贵州茅台官宣涨价 白酒行业洗牌难免 - 东方财富",
       "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5ka3BlZTU0Y1NMUzB0WDN4SFNZTGlfeEVyOWFFUkJ2S29Tbnl3d2ZJNy1QOWlFMTVYVWVNWmdrTGVFLUVhYTFfZU5FeXRpbmVGYm5rMHdEeUhNUVZ0Wlo2Zy03cFhBZw?oc=5",
       "source": "东方财富",
@@ -211,18 +278,6 @@
       "confidence": 0.5
     },
     {
-      "title": "8年后，茅台再涨价！白酒行业已“变天”！ - 证券时报",
-      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5PN2lDVG1LN2F0RDB4Y3NrcU5QaDQwRzRHQ1VPNWY0Tm1JdXU2QjkzVDFxeVlDcUx0Y0dBUjJNRm1NenlDZFV2NlBWTWhqNHp6dXVEMnpUOA?oc=5",
-      "source": "证券时报",
-      "published_at": "Mon, 30 Mar 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.0009765625,
-      "age_days": 100,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
-    },
-    {
       "title": "静待美联储决议，股油同涨，美债走强，美元两连跌，黄金连续两日持稳于5000关口 - 华尔街见闻",
       "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBOcFVxTEtKYnRaQXpfaks5OTlvUnFhT3JJWlVFUThGMEpYNVZGRUZheUgyS1M1S1RZbXhhLXFONE9TSGlwUGxMdXg1LS1FNzlsMVl3?oc=5",
       "source": "华尔街见闻",
@@ -235,7 +290,7 @@
       "confidence": 0.55254875
     },
     {
-      "title": "【逆市逻辑】年轻人不喝白酒，但贵州茅台可能仍然赚钱20年，一篇看懂茅台投资的逻辑 - Moomoo",
+      "title": "【价值投资分析】年轻人不喝白酒，但贵州茅台可能仍然赚钱20年，一篇看懂茅台投资的逻辑 - Moomoo",
       "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPeW5odEhRdndTbE1GNWVucUJ0SlVKYkFQTkZqbV8tWUxhWUVacnNFRHd3OVhTLUd5OFRic0NRb2RvTjhJQy1Xc1MyTUM0Q21LVFNUSVptcU9DWEhHMlJCWVhDVkpBeXdHTmVma21yUTQwSDFvb0hXMlRPektoMnl1V1RLRmVIeWNTVy1jMGxEbVYyWFpQR3hrNU1QYmtOdElzWkV5TW1YcmEyTGpIalFtOC1MNUlVQmR6MndJ?oc=5",
       "source": "Moomoo",
       "published_at": "Thu, 05 Mar 2026 08:00:00 GMT",
@@ -307,9 +362,9 @@
       "confidence": 0.5
     },
     {
-      "title": "“普茅”飞入百姓家，2026年贵州茅台“变”了 - 36Kr",
+      "title": "“普茅”飞入百姓家，2026年贵州茅台“变”了 - 36 Kr",
       "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE1ZU2wtcDdHZ3dPc3duZmtPMjAzQVB4eV9LaFZqSDgweFAyQ3FZWDlsS093ZElOZnpPNDJwbWxhaHNOV29ZRTF0MTQxcFhDZw?oc=5",
-      "source": "36Kr",
+      "source": "36 Kr",
       "published_at": "Sun, 04 Jan 2026 08:00:00 GMT",
       "content": "",
       "weight": 0.0005,
@@ -317,21 +372,21 @@
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
+    },
+    {
+      "title": "行业深度调整 明年如何破局？贵州茅台管理层在经销商大会“划重点” - 财联社",
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE5MRDZqdkxUSDF5dmtYb1RKdW9GRk90SmJVTVlsX0tTNzRfSnI2SWEwSnhSYnE3S3dVUFhwVTFHS1NPWExzbVMwNw?oc=5",
+      "source": "财联社",
+      "published_at": "Sun, 28 Dec 2025 08:00:00 GMT",
+      "content": "",
+      "weight": 0.0005,
+      "age_days": 192,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
     }
   ],
   "kline": [
-    {
-      "date": "2025-10-10",
-      "open": 1437.6,
-      "high": 1439.94,
-      "low": 1427.5,
-      "close": 1430.0,
-      "volume": 36001,
-      "amount": 5157459262.0,
-      "turnover_rate": 0.29,
-      "amplitude": 0.87,
-      "open_interest": 0
-    },
     {
       "date": "2025-10-13",
       "open": 1415.7,
@@ -2478,6 +2533,18 @@
       "amount": 3264967794.0,
       "turnover_rate": 0.22,
       "amplitude": 1.15,
+      "open_interest": 0
+    },
+    {
+      "date": "2026-07-08",
+      "open": 1188.77,
+      "high": 1200.98,
+      "low": 1177.0,
+      "close": 1199.3,
+      "volume": 25776,
+      "amount": 3071933498.0,
+      "turnover_rate": 0.21,
+      "amplitude": 2.02,
       "open_interest": 0
     }
   ],
