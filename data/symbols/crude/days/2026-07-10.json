@@ -4,8 +4,8 @@
     "name": "原油"
   },
   "date": "2026-07-10",
-  "updated_at": "2026-07-10 09:02",
-  "is_stale": true,
+  "updated_at": "2026-07-10 17:43",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -14,73 +14,141 @@
     },
     "macro": {
       "status": "ok",
-      "index": -0.3,
-      "band": "bear",
-      "confidence": 0.8,
-      "mode": "llm",
-      "rationale": [
-        "特朗普强硬表态推升油价，地缘风险加剧，市场避险情绪升温。",
-        "美债收益率升至一个半月高位，美联储加息概率骤升，压制风险资产。",
-        "黄金遭抛售且美银大砍目标价，显示市场对避险资产信心减弱。",
-        "芯片股带动美股大涨，但美元原油冲高回落，市场波动性高且方向分化。",
-        "比特币守住6.2万，但整体宏观情绪偏谨慎，风险偏好未全面恢复。"
-      ]
-    },
-    "symbol": {
-      "status": "ok",
       "index": -0.6,
       "band": "bear",
       "confidence": 0.85,
       "mode": "llm",
       "rationale": [
-        "美伊冲突持续威胁霍尔木兹海峡，但沙特降价和OPEC增产预期压制油价",
-        "CFTC叫停全天候原油合约，监管阻力增加市场不确定性",
-        "WTI原油跌破70美元，显示市场对供应过剩的担忧加剧",
-        "阿联酋退出OPEC和伊拉克施压，OPEC解体风险上升",
-        "库存数据混乱和成本坍塌，原油系品种全线走弱"
+        "特朗普强硬表态推升油价，地缘风险加剧市场不确定性，避险情绪升温但黄金遭抛售，显示市场对风险资产偏好分化。",
+        "美债收益率升至一个半月高位，美联储加息概率骤升9个百分点，紧缩预期压制风险情绪。",
+        "芯片股带动美股大涨，但美元原油冲高回落，比特币守住6.2万，表明市场情绪矛盾，短期波动加剧。",
+        "美银大砍黄金目标价14%，机构看空贵金属，进一步削弱避险资产吸引力。",
+        "综合来看，地缘政治与加息预期主导市场，情绪偏谨慎，但科技股反弹提供局部支撑，整体偏向负面。"
+      ]
+    },
+    "symbol": {
+      "status": "ok",
+      "index": -0.3,
+      "band": "bear",
+      "confidence": 0.75,
+      "mode": "llm",
+      "rationale": [
+        "地缘风险（霍尔木兹停航）与OPEC增产预期、沙特降价等利空因素交织，市场情绪分化",
+        "先锋资管押注通胀粘性，但油价实际下跌，显示市场对地缘溢价定价不足",
+        "多条新闻显示油价跌破关键位（70美元），技术面与基本面均偏空",
+        "机构分析指出地缘风险重夺定价权但油价仍跌，反映市场对供应过剩的担忧",
+        "OPEC增产及霍尔木兹恢复流量等消息强化了短期看空情绪"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.3,
+      "band": "bear",
+      "confidence": 0.65,
+      "mode": "llm",
+      "rationale": [
+        "收盘价471.20低于MA20(479.54)和MA60(579.06)，技术面偏空",
+        "ATR14为16.79，波动率中等，但vol_ratio20=0.91显示成交量略低于20日均量",
+        "现货升水率0.90%且基差为正，但近月合约SC2608相对远月SC2609的展期收益率为-11.77%，显示远期贴水结构",
+        "库存状态为unavailable，持仓排名为空，基本面关键数据缺失",
+        "综合技术面偏弱与基本面部分缺失，情绪偏空但信心受限"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.39,
+      "band": "bear",
+      "confidence": 0.74,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-07-10",
+    "symbol": {
+      "id": "crude",
+      "name": "原油"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        462.8,
+        479.6
+      ],
+      "stop": 496.39,
+      "target1": 454.41,
+      "target2": 437.61,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        454.41,
+        487.99
+      ],
+      "stop": 513.18,
+      "target1": 437.61,
+      "target2": 404.03,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        446.01,
+        496.39
+      ],
+      "stop": 529.98,
+      "target1": 420.82,
+      "target2": 370.44,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.1625,
-    "band": "neutral",
+    "index": -0.2268689339960686,
+    "band": "bear",
     "counts": {
       "bull": 0,
-      "bear": 5,
-      "neutral": 15
+      "bear": 7,
+      "neutral": 13
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 472.3,
-    "high": 493.7,
-    "low": 467.2,
-    "close": 473.6,
-    "volume": 147207,
-    "open_interest": 38464,
+    "open": 481.6,
+    "high": 484.0,
+    "low": 466.2,
+    "close": 471.2,
+    "volume": 51443,
+    "open_interest": 40689,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-07-09",
-    "is_stale": true,
-    "pct_change": 1.46
+    "date": "2026-07-10",
+    "is_stale": false,
+    "pct_change": -0.51
   },
   "news": [
     {
-      "title": "2026年7月10日金十期货早餐：美伊在霍尔木兹海峡的冲突或持续一周乃至一个月；CFTC正式叫停芝商所全天原油期货交易计划 梳理每日行情，把握市场动态，各位听众朋友早上好，今天是2026年7月10日星期五。欢迎收听《期货早高峰》。期货早高峰，百万期货精英的首选！ 2小时前",
-      "url": "https://xnews.jin10.com/details/224132",
+      "title": "先锋逆势盯紧油市反常指标，押注能源通胀粘性将超预期 先锋资管基于原油与成品油大幅背离的反常裂解价差布局通胀对冲资产，其团队判断成品油滞后涨价将持续推升通胀，而市场对这一可能性的定价不足。 NEW 精选 1小时前 来自： 订阅华尔街热议",
+      "url": "https://xnews.jin10.com/details/224196",
       "source": "金十数据",
       "published_at": "2026-07-10",
       "content": "",
@@ -91,8 +159,32 @@
       "confidence": 0.55
     },
     {
-      "title": "监管阻力骤增！CFTC拟否决芝商所全天候原油合约上市申请 随着美伊冲突导致油价剧震，散户与机构对全天候原油交易的需求与日俱增，相较于市场的“赌瘾”，美国监管机构据悉更担心市场承载力。 精选 11小时前 来自： 订阅华尔街热议",
-      "url": "https://xnews.jin10.com/details/224128",
+      "title": "霍尔木兹几近停航，布油却跌破76美元｜原油头条 油轮通行接近停摆，布油周涨约6%后仍在周五回吐，外交预期继续压住风险溢价。 VIP 1小时前 来自： 订阅原油市场资讯",
+      "url": "https://xnews.jin10.com/details/224195",
+      "source": "金十数据",
+      "published_at": "2026-07-10",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "bear",
+      "confidence": 0.65
+    },
+    {
+      "title": "油价驱动重新聚焦地缘，这一水平恐成新有效区间？｜投行油评 地缘风险重夺短期定价权，此前过剩交易被打断，油价再度在两大因素之间摇摆，高盛预计布油这一水平恐成新有效区间！点击查看>> VIP 2小时前 来自： 订阅原油市场资讯",
+      "url": "https://xnews.jin10.com/details/224191",
+      "source": "金十数据",
+      "published_at": "2026-07-10",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "bear",
+      "confidence": 0.65
+    },
+    {
+      "title": "机构交易计划：中东局势升温，为何原油却下跌？（快报版） 国际金银携手突破空头云层，美元正回测关键水平，欧元震荡反弹，而英镑伺机冲击前期高点…… VIP 5小时前",
+      "url": "https://xnews.jin10.com/details/224167",
       "source": "金十数据",
       "published_at": "2026-07-10",
       "content": "",
@@ -235,22 +327,10 @@
       "confidence": 0.55
     },
     {
-      "title": "特朗普一句话扭转行情？芯片股带动美股大涨、美元原油冲高回落，比特币守住6.2万 - FX168财经",
+      "title": "特朗普一句话扭转行情？芯片股带动美股大涨、美元原油冲高回落，比特币守住6.2万 - FX168",
       "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBuZi1TV3VVSUVha19IOGE2a290UGNKT1BTbXhSeUxVV2dKTVZDUDlGZHhJUVZPZ1I4QTIyYTZ1empsOS1ERzZiblBmd01WN1A0ZTEwcG9QWDVZelVkanNaRGYxWm91SDBFSWFoTmlrME1PZVZlX3hqVw?oc=5",
-      "source": "FX168财经",
+      "source": "FX168",
       "published_at": "Thu, 09 Jul 2026 16:29:31 GMT",
-      "content": "",
-      "weight": 1.0,
-      "age_days": 1,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.65
-    },
-    {
-      "title": "地缘风险引爆债市：特朗普强硬表态推升油价，美债收益率升至一个半月高位 - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxOVFlqREZ5X3FSSUN4M1ZibVBuVEtkeWg5RnVSRDZhVF9KQlFkT1FfdEdZbWoyZ3FISHJXMUtIVFZ0X0s0V01WM244V1hDVTJtcVlGd1ExNTllWHZQVmxoX2x1T2JUdENyS1NEdjVOZFVfWUc3NmFVb2ZuczlnNWk0TUlJM1J0ZXBSMTE3bG9VbktjLUswNDFmUm1TX2lEbFN0ZTBUYllVS2p1aWN4RDNnR2R4Nmo2czJra3BZVzdVZzItNDByRHpyWkxCeG1xNk1TTE0xb0xEZk8zXzBia2Zv?oc=5",
-      "source": "新浪财经",
-      "published_at": "Thu, 09 Jul 2026 02:42:00 GMT",
       "content": "",
       "weight": 1.0,
       "age_days": 1,
@@ -295,40 +375,19 @@
       "confidence": 0.65
     },
     {
-      "title": "金十数据全球财经早餐| 2026年7月9日-市场参考 - 金十数据",
-      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBPVmt4Z1ZpaTdXRjM4QzZIcG1YbF9lOU1tSUlLUG4ycV9yNXdmRFZoN0haUUtreVAxRHlvQmJvMHMzZndjMTFIeDZFVjdMcFk?oc=5",
-      "source": "金十数据",
-      "published_at": "Wed, 08 Jul 2026 22:58:08 GMT",
+      "title": "地缘风险引爆债市：特朗普强硬表态推升油价，美债收益率升至一个半月高位 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNV1JMZHhmb09ONFVsekZZMmpnVmwtTVRoZ2hWRHlueVRaZ2dsczQ5dUNlNU5keHpLZlhRTldLbkMxS1ZGX0xCZEZFTHBsdm02REhrdnlJZmdvM3ZfUm52U3dCVEhsYWlZVEpLQldQVzNIYkxtRGR5cTdhbG5Jak12STVnQXMwMmhHcFQ2Skc3M2FYTFVMRmRmajZxNVk?oc=5",
+      "source": "新浪财经",
+      "published_at": "Wed, 08 Jul 2026 07:00:00 GMT",
       "content": "",
       "weight": 0.8705505632961241,
       "age_days": 2,
       "scope": "macro",
-      "sentiment": "neutral",
-      "confidence": 0.5393204214719303
-    },
-    {
-      "title": "原油脱离战争阴影，买家减少 - TMGM",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPSzNRc2p5Y05hTHk2QmdDNllLUGpLZjgxQ2FpZklPREFPNWhXVVBid2Z0RjVLTEFDRlU5LVJQbGNvZnlJVDh1MWRMQ1UzOVNHNE13cFJLXzhKTVlFc2VjTG5vSzh3alJRUlV3TU1JeUVNcG10MFFfTHlGY2k4cXNNOUpFVFo1YlhvQ1N0Q1NRTVlwUW91V0dtQ3J4cDRuUHFDX0x0RDdhZE15RWRDOHJDOUJ1b09VUW82bXA1cw?oc=5",
-      "source": "TMGM",
-      "published_at": "Tue, 07 Jul 2026 08:44:40 GMT",
-      "content": "",
-      "weight": 0.8122523963562356,
-      "age_days": 3,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5345108226993895
+      "sentiment": "bear",
+      "confidence": 0.6373786799213721
     }
   ],
   "kline": [
-    {
-      "date": "2025-10-14",
-      "open": 451.7,
-      "high": 456.1,
-      "low": 447.6,
-      "close": 449.6,
-      "volume": 43565,
-      "open_interest": 30951
-    },
     {
       "date": "2025-10-15",
       "open": 443.3,
@@ -1939,11 +1998,20 @@
       "close": 473.6,
       "volume": 147207,
       "open_interest": 38464
+    },
+    {
+      "date": "2026-07-10",
+      "open": 481.6,
+      "high": 484.0,
+      "low": 466.2,
+      "close": 471.2,
+      "volume": 51443,
+      "open_interest": 40689
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-07-09",
+    "asof": "2026-07-10",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1976,18 +2044,18 @@
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 -0.11599165745313963",
+        "summary": "展期收益率 -0.11772327300056704",
         "items": [
           {
-            "date": "20260709",
+            "date": "20260710",
             "var": "SC",
-            "roll_yield": -0.11599165745313963,
+            "roll_yield": -0.11772327300056704,
             "near_by": "SC2608",
             "deferred": "SC2609"
           }
         ],
         "params": {
-          "date": "20260709",
+          "date": "20260710",
           "var": "SC"
         }
       },
@@ -1996,7 +2064,7 @@
         "hint": "会员持仓/成交排名（AKShare get_rank_sum_daily）",
         "items": [],
         "params": {
-          "date": "20260709",
+          "date": "20260710",
           "var": "SC"
         }
       }
