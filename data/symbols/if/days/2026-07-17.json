@@ -4,8 +4,8 @@
     "name": "沪深300股指"
   },
   "date": "2026-07-17",
-  "updated_at": "2026-07-17 08:59",
-  "is_stale": true,
+  "updated_at": "2026-07-17 17:13",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -19,80 +19,135 @@
       "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "美联储加息预期升温与鹰派言论推高长期利率和美元，压制风险资产情绪",
-        "地缘政治风险（伊朗制裁）推升油价，但油价暴跌新闻显示市场对通胀前景分歧加剧",
-        "美债收益率升至高位，反映避险情绪与流动性收紧压力",
-        "黄金价格回升至4050美元，部分对冲通胀与地缘风险，但整体市场情绪偏谨慎"
+        "美国通胀降温但美联储加息概率升至约50%，鹰派言论推升利率和美元，压制风险情绪。",
+        "特朗普对伊朗重新制裁推高原油价格，地缘风险加剧，但油价随后暴跌显示市场波动。",
+        "美债收益率升至一个半月高位，反映避险情绪和利率预期，对风险资产不利。",
+        "中国外贸数据超预期提供部分支撑，但全球宏观压力主导情绪偏负面。"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": -0.2,
+      "index": 0.2,
       "band": "neutral",
-      "confidence": 0.65,
+      "confidence": 0.75,
       "mode": "llm",
       "rationale": [
-        "美联储鹰派警告加息可能，压制市场情绪，对股指构成利空。",
-        "A股高股息板块防御性走强，反映市场避险情绪升温。",
-        "股指期货深度贴水现象再现，显示市场对短期走势偏悲观。",
-        "外资看多与政策面利好部分对冲了负面情绪，但整体仍偏弱。",
-        "地缘冲突风险（美军袭伊朗）增加不确定性，压制风险偏好。"
+        "新闻中既有'沪指盘中跌破3800点'等负面信号，也有'外资看多中国资产'、'沪深300期货强势持续'等正面信号，整体情绪偏中性但略偏正面。",
+        "多个机构提及'震荡整固'、'高低切'，显示市场短期缺乏明确方向，但长期配置价值被认可。",
+        "股指期货全线收涨、沪深300期货强势持续，直接利好品种情绪。",
+        "政策面宏观面共振、总市值突破120万亿元等消息提供支撑，但'深度贴水'和'科技主线不确定性'带来谨慎。"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.3,
+      "band": "bear",
+      "confidence": 0.65,
+      "mode": "llm",
+      "rationale": [
+        "收盘价4473.80低于MA20(4750.43)和MA60(4784.20)，技术面偏空",
+        "ATR14为104.54，波动率较高，市场情绪不稳定",
+        "成交量比率1.40高于1，显示放量但价格下跌，可能为恐慌性抛售",
+        "现货基差率为5.30%，升水较大，但现货价格723.67远低于期货，存在矛盾",
+        "展期收益率为7.24%，远月升水结构，但基本面库存数据缺失，降低信号可信度"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.15,
+      "band": "neutral",
+      "confidence": 0.71,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-07-17",
+    "symbol": {
+      "id": "if",
+      "name": "沪深300股指"
+    },
+    "short_term": {
+      "direction": "neutral",
+      "entry_zone": [
+        4421.53,
+        4526.07
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "neutral",
+      "entry_zone": [
+        4369.26,
+        4578.34
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "neutral",
+      "entry_zone": [
+        4316.99,
+        4630.61
+      ],
+      "stop": null,
+      "target1": null,
+      "target2": null,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.06485983467146686,
+    "index": -0.032359834671466844,
     "band": "neutral",
     "counts": {
       "bull": 2,
-      "bear": 4,
-      "neutral": 14
+      "bear": 3,
+      "neutral": 15
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 4677.0,
-    "high": 4712.6,
-    "low": 4618.0,
-    "close": 4645.6,
-    "volume": 86023,
-    "open_interest": 160153,
+    "open": 4615.8,
+    "high": 4633.8,
+    "low": 4441.4,
+    "close": 4473.8,
+    "volume": 121503,
+    "open_interest": 174134,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-07-16",
-    "is_stale": true,
-    "pct_change": -1.52
+    "date": "2026-07-17",
+    "is_stale": false,
+    "pct_change": -3.7
   },
   "news": [
     {
-      "title": "市场刚松一口气，美联储两大鹰派又发警告：通胀远未结束，支持适度加息 美国通胀数据降温推动市场大举押注美联储暂缓加息，但政策制定者正在释放截然不同的信号。达拉斯联储主席洛根、堪萨斯联储主席施密德相继警告，单月通胀改善不足以证明胜利，若物价无法持续回落，进一步收紧政策仍可能成为选项。 HOT 精选 2小时前 来自： 订阅华尔街热议",
-      "url": "https://xnews.jin10.com/details/224781",
+      "title": "A股每日市场要闻回顾（2026-07-17） 原创 2小时前",
+      "url": "https://xnews.jin10.com/details/224846",
       "source": "金十数据",
-      "published_at": "2026-07-17",
-      "content": "",
-      "weight": 1.0,
-      "age_days": 0,
-      "scope": "symbol",
-      "sentiment": "bear",
-      "confidence": 0.65
-    },
-    {
-      "title": "美联储副主席杰斐逊称目前货币政策状态良好 如有...",
-      "url": "https://finance.eastmoney.com/a/202607173809647178.html",
-      "source": "东方财富期货",
       "published_at": "2026-07-17",
       "content": "",
       "weight": 1.0,
@@ -104,6 +159,18 @@
     {
       "title": "政策底已现！猪价后期走势关注三个指标",
       "url": "https://finance.eastmoney.com/a/202605253747577388.html",
+      "source": "东方财富期货",
+      "published_at": "2026-07-17",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
+    {
+      "title": "沪指盘中跌破3800点 A股怎么了？",
+      "url": "https://finance.eastmoney.com/a/202607173810971633.html",
       "source": "东方财富期货",
       "published_at": "2026-07-17",
       "content": "",
@@ -162,8 +229,20 @@
       "confidence": 0.55
     },
     {
-      "title": "关于股指期货实施梯度申报费有关事项的通知",
-      "url": "https://finance.eastmoney.com/a/202604303726555989.html",
+      "title": "关于股指期货和股指期权合约交割的通知",
+      "url": "https://finance.eastmoney.com/a/202607173811075054.html",
+      "source": "东方财富期货",
+      "published_at": "2026-07-17",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
+    {
+      "title": "股指期货和股指期权新合约上市通知",
+      "url": "https://finance.eastmoney.com/a/202607173811073720.html",
       "source": "东方财富期货",
       "published_at": "2026-07-17",
       "content": "",
@@ -182,6 +261,18 @@
       "weight": 1.0,
       "age_days": 1,
       "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
+    {
+      "title": "[东证期货]：综合晨报：美股9月非农超预期，50余城出台优化政策 - 发现报告",
+      "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1uQURQM09KMG4zWGI1RFoyOGM3SDBxM3Y2ZTYyeFFIOXU3cktyVnNYLXhlTW1KQ1pwT1NJTnRLTTNUUDZGbFZMT2xFWQ?oc=5",
+      "source": "发现报告",
+      "published_at": "Thu, 16 Jul 2026 02:34:57 GMT",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 1,
+      "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.55
     },
@@ -222,10 +313,10 @@
       "confidence": 0.5345108226993895
     },
     {
-      "title": "美联储本月近五成概率加息！全球市场这回真慌了？ - 腾讯新闻",
-      "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5XRE42S2YwazBWRWxmdFlLclRzdmFQakpUdDRMY0tERnJpYjU3aGUtdGtjSDVTYU8yMjlpWHMwZ0tabnpUSFI3c3dqRHBhcXg3YkZwZjVB?oc=5",
-      "source": "腾讯新闻",
-      "published_at": "Tue, 14 Jul 2026 00:56:00 GMT",
+      "title": "7月14日外盘头条：美国重启对伊朗封锁 俄罗斯原油产量降至两年半来最低 美联储本月加息概率升至约50% - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMikARBVV95cUxOZnNhSm80cDA5MkFtaEVCRHUzQTVLS3dsNENQQlhhNEt5eWJmbGM1N2lIdlF5RVVuTEF5R2ZJLUxnQVhXdF9XUURlTFIzdFZQVHlIcEVkUHFnaV93am5JZGdxQjRvVnNuMFJaOHZacDlsQWZTRGM5NDRPTnE3OFdkVmZVZVF1ODBtSC1oalZJcHpFeXBaeERfMFRXU3ptY0NwNVkyck1LVG42akxHRXNhQkRpR1RpbE1ybWhnSjVST25kYlVMYVJuOWdQbnczMFNSMW9EX1h5ZUExLXhWalBtdm5qNFRIUTBKQ2lLTFo2ZnotMHR2VDZEdzFVcndmQnlySWdValBzdDd1WVVkM1FIYnhoMkYzRDd3YVd5NXRqODU5MHJSY1Q1MXpIZHN4MFkyYUNod0ROOHh3b0hkVm1FcXJvNmRFSlJFdlA1Q1JxeElQUXRkTVhMT3FIM0VDZmwtOG9rdmF0NXFkZjZ0MF9pQWxiM3dscDhPV0QyQ0RHT0JHM19VZGVNUjAyWnhPN1pOdXJWc0g1Wk9lTmktSHh4SzRkdF9QQzNGdUlMdHVUclhieU5CV3ByNUJFVERfanRiTUJMQ2x4eWp0bmFYdTVhb2N4UWk3R084SzI4Ynp3ak1UYnhZMEJlUnQyV2lUQTJYel9TakV1c2tBOHd5Q29fY0JnWDM0NGJrZDQtTV9QNDc?oc=5",
+      "source": "新浪财经",
+      "published_at": "Tue, 14 Jul 2026 21:50:52 GMT",
       "content": "",
       "weight": 0.8122523963562356,
       "age_days": 3,
@@ -259,7 +350,7 @@
     },
     {
       "title": "地缘风险引爆债市：特朗普强硬表态推升油价，美债收益率升至一个半月高位 - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxOUTlaSHhWaGFNamhVZmwydGgzeURDS1pfbTAtc0VnMTBqY3RkTFB6X0RUVUxSUkNhdFhOMEFCMHJjYlVFN1Mya2g5RHk1eTFPMmpwb1M3YzdjRHMxXzFXTUI4bHFaTUZFYkQ4UkxXM1RUZ1dqX2JDWEpGT1pzZGtTSVVTVVlwV2l4VkVRc2E1RzBnMjNWZlpNUE5OME41NlB3NGhwN3N0c0tMTXdDWjl5bFpqWWlIbFZ1V1BnZU1nNk0zSnpZaWJHUVoteFA2U0lsUkJsRGNSdi1rdWhXM2o0?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQVFhjZXlISUh4YVFRMUs1MW1GbVhRcXF1T3EtREJpS1c0V0ZtY3RlVHc4ejJHeGs0RV9zeEZsc3dhT2dLbUZPTjF5Nkg3TURhbHdFSFcyVTYtcXAzM1UtemFmWWhzQU9LM0tNRnJVMU1vbTFxY1dhWUhSSlYyWDRmSk5saERUYWV1MU00djZCWDNRT2owMGxXN2tTS0F6QlZibnp1eXBMZUNXMmN0bDNrMTRhOUlGZUV2a25fVEJlYk9NQTZqNXNTTDc1aVlqUnl3SEh5a1RkNVJJRXo3ZHk0?oc=5",
       "source": "新浪财经",
       "published_at": "Thu, 09 Jul 2026 02:42:00 GMT",
       "content": "",
@@ -268,18 +359,6 @@
       "scope": "macro",
       "sentiment": "bear",
       "confidence": 0.6084990448061054
-    },
-    {
-      "title": "全线杀跌！超11万人爆仓！刚刚，美军再袭伊朗！伊朗：将大规模打击！美联储，传来新消息！A股怎么走？ - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNZUtaelBJMnBra0Y1MnBKU25kWWFFenowZTNtSFp3a3JfU254SmVLZlZFM0tDanAwOGFFX1FUQ3BrU2M4SWlGVDBfUTBSWm95R254MVphVVV3cjhTY0p1REFwNGlHSlVrRk4zVHFvMVk4R2Y4RkpzaUpmWjJUcGY2SHVBVVFvQ2pJbGw5ZA?oc=5",
-      "source": "新浪财经",
-      "published_at": "Wed, 08 Jul 2026 23:10:00 GMT",
-      "content": "",
-      "weight": 0.5358867312681466,
-      "age_days": 9,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5117106553296221
     },
     {
       "title": "事关利率政策，沃什讲话要点来了！股指期货冲高回落，科技主线还能走多远？ - 证券时报",
@@ -304,30 +383,9 @@
       "scope": "symbol",
       "sentiment": "bull",
       "confidence": 0.5535772329869638
-    },
-    {
-      "title": "股指期货全线收涨，中小盘“更胜一筹” - 证券时报",
-      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1mXzdaUHFQdUIxSG9uenp0MnV4VHBRcFRzS0Nkb3lENWNzU3Z2UkxZM2pjNGNiT1FTQjJIb1VVUVoweG9xNGNrWWJTd2Y0OXV6emFTRlRVV21GWjVr?oc=5",
-      "source": "证券时报",
-      "published_at": "Thu, 07 May 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.00728932024638131,
-      "age_days": 71,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
     }
   ],
   "kline": [
-    {
-      "date": "2025-10-21",
-      "open": 4528.2,
-      "high": 4599.2,
-      "low": 4521.0,
-      "close": 4577.6,
-      "volume": 77133,
-      "open_interest": 157558
-    },
     {
       "date": "2025-10-22",
       "open": 4559.0,
@@ -1938,11 +1996,20 @@
       "close": 4645.6,
       "volume": 86023,
       "open_interest": 160153
+    },
+    {
+      "date": "2026-07-17",
+      "open": 4615.8,
+      "high": 4633.8,
+      "low": 4441.4,
+      "close": 4473.8,
+      "volume": 121503,
+      "open_interest": 174134
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-07-16",
+    "asof": "2026-07-17",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1952,41 +2019,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 722.33 · 主力基差 37.16999999999996",
+        "summary": "现货 723.67 · 主力基差 38.33000000000004",
         "items": [
           {
-            "date": "20260716",
+            "date": "20260717",
             "symbol": "IF",
-            "spot_price": 722.33,
+            "spot_price": 723.67,
             "near_contract": "i2608",
-            "near_contract_price": 759.5,
+            "near_contract_price": 759.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": 37.16999999999996,
-            "dom_basis": 37.16999999999996,
-            "near_basis_rate": 0.051458474658397035,
-            "dom_basis_rate": 0.051458474658397035
+            "near_basis": 35.33000000000004,
+            "dom_basis": 38.33000000000004,
+            "near_basis_rate": 0.04882059502259328,
+            "dom_basis_rate": 0.05296613097129921
           }
         ],
         "params": {
-          "date": "20260716"
+          "date": "20260717"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 0.0693071597693131",
+        "summary": "展期收益率 0.07235689100143963",
         "items": [
           {
-            "date": "20260716",
+            "date": "20260717",
             "var": "IF",
-            "roll_yield": 0.0693071597693131,
+            "roll_yield": 0.07235689100143963,
             "near_by": "IF2609",
             "deferred": "IF2612"
           }
         ],
         "params": {
-          "date": "20260716",
+          "date": "20260717",
           "var": "IF"
         }
       },
@@ -1996,153 +2063,153 @@
         "summary": "5 条汇总记录",
         "items": [
           {
-            "symbol": "IF2612",
-            "variety": "IF",
-            "vol_top5": 15863,
-            "vol_chg_top5": 896,
-            "long_open_interest_top5": 18861,
-            "long_open_interest_chg_top5": 94,
-            "short_open_interest_top5": 29269,
-            "short_open_interest_chg_top5": 353,
-            "vol_top10": 19217,
-            "vol_chg_top10": 1381,
-            "long_open_interest_top10": 29275,
-            "long_open_interest_chg_top10": 367,
-            "short_open_interest_top10": 39474,
-            "short_open_interest_chg_top10": 327,
-            "vol_top15": 21251,
-            "vol_chg_top15": 1788,
-            "long_open_interest_top15": 36665,
-            "long_open_interest_chg_top15": -248,
-            "short_open_interest_top15": 45116,
-            "short_open_interest_chg_top15": 309,
-            "vol_top20": 22881,
-            "vol_chg_top20": 2330,
-            "long_open_interest_top20": 40875,
-            "long_open_interest_chg_top20": -378,
-            "short_open_interest_top20": 48974,
-            "short_open_interest_chg_top20": 242,
-            "date": "20260716"
-          },
-          {
             "symbol": "IF2609",
             "variety": "IF",
-            "vol_top5": 83454,
-            "vol_chg_top5": 7119,
-            "long_open_interest_top5": 64538,
-            "long_open_interest_chg_top5": 2802,
-            "short_open_interest_top5": 76299,
-            "short_open_interest_chg_top5": 3842,
-            "vol_top10": 106383,
-            "vol_chg_top10": 9623,
-            "long_open_interest_top10": 89791,
-            "long_open_interest_chg_top10": 3527,
-            "short_open_interest_top10": 102481,
-            "short_open_interest_chg_top10": 4520,
-            "vol_top15": 120517,
-            "vol_chg_top15": 13327,
-            "long_open_interest_top15": 103319,
-            "long_open_interest_chg_top15": 4277,
-            "short_open_interest_top15": 119524,
-            "short_open_interest_chg_top15": 5283,
-            "vol_top20": 129709,
-            "vol_chg_top20": 15159,
-            "long_open_interest_top20": 114569,
-            "long_open_interest_chg_top20": 4893,
-            "short_open_interest_top20": 131297,
-            "short_open_interest_chg_top20": 6985,
-            "date": "20260716"
+            "vol_top5": 116816,
+            "vol_chg_top5": 34459,
+            "long_open_interest_top5": 70164,
+            "long_open_interest_chg_top5": 5626,
+            "short_open_interest_top5": 84597,
+            "short_open_interest_chg_top5": 8462,
+            "vol_top10": 150486,
+            "vol_chg_top10": 44103,
+            "long_open_interest_top10": 96746,
+            "long_open_interest_chg_top10": 6955,
+            "short_open_interest_top10": 113311,
+            "short_open_interest_chg_top10": 10830,
+            "vol_top15": 170096,
+            "vol_chg_top15": 49929,
+            "long_open_interest_top15": 112537,
+            "long_open_interest_chg_top15": 9379,
+            "short_open_interest_top15": 130884,
+            "short_open_interest_chg_top15": 11360,
+            "vol_top20": 182712,
+            "vol_chg_top20": 53479,
+            "long_open_interest_top20": 124709,
+            "long_open_interest_chg_top20": 11485,
+            "short_open_interest_top20": 143753,
+            "short_open_interest_chg_top20": 12456,
+            "date": "20260717"
           },
           {
             "symbol": "IF2608",
             "variety": "IF",
-            "vol_top5": 27401,
-            "vol_chg_top5": 7967,
-            "long_open_interest_top5": 17749,
-            "long_open_interest_chg_top5": 3779,
-            "short_open_interest_top5": 20565,
-            "short_open_interest_chg_top5": 5409,
-            "vol_top10": 33015,
-            "vol_chg_top10": 11427,
-            "long_open_interest_top10": 24496,
-            "long_open_interest_chg_top10": 5636,
-            "short_open_interest_top10": 28483,
-            "short_open_interest_chg_top10": 7109,
-            "vol_top15": 36592,
-            "vol_chg_top15": 12676,
-            "long_open_interest_top15": 28481,
-            "long_open_interest_chg_top15": 6820,
-            "short_open_interest_top15": 31691,
-            "short_open_interest_chg_top15": 8093,
-            "vol_top20": 39177,
-            "vol_chg_top20": 13569,
-            "long_open_interest_top20": 30993,
-            "long_open_interest_chg_top20": 7575,
-            "short_open_interest_top20": 33900,
-            "short_open_interest_chg_top20": 8658,
-            "date": "20260716"
+            "vol_top5": 45708,
+            "vol_chg_top5": 18780,
+            "long_open_interest_top5": 23968,
+            "long_open_interest_chg_top5": 6938,
+            "short_open_interest_top5": 26182,
+            "short_open_interest_chg_top5": 5617,
+            "vol_top10": 57205,
+            "vol_chg_top10": 24804,
+            "long_open_interest_top10": 32713,
+            "long_open_interest_chg_top10": 8386,
+            "short_open_interest_top10": 35924,
+            "short_open_interest_chg_top10": 7770,
+            "vol_top15": 63059,
+            "vol_chg_top15": 27689,
+            "long_open_interest_top15": 37550,
+            "long_open_interest_chg_top15": 9407,
+            "short_open_interest_top15": 41166,
+            "short_open_interest_chg_top15": 10233,
+            "vol_top20": 67482,
+            "vol_chg_top20": 29945,
+            "long_open_interest_top20": 41113,
+            "long_open_interest_chg_top20": 10228,
+            "short_open_interest_top20": 44874,
+            "short_open_interest_chg_top20": 11221,
+            "date": "20260717"
+          },
+          {
+            "symbol": "IF2612",
+            "variety": "IF",
+            "vol_top5": 26858,
+            "vol_chg_top5": 11528,
+            "long_open_interest_top5": 20133,
+            "long_open_interest_chg_top5": 1272,
+            "short_open_interest_top5": 31681,
+            "short_open_interest_chg_top5": 2412,
+            "vol_top10": 33417,
+            "vol_chg_top10": 14605,
+            "long_open_interest_top10": 30794,
+            "long_open_interest_chg_top10": 1519,
+            "short_open_interest_top10": 42507,
+            "short_open_interest_chg_top10": 3033,
+            "vol_top15": 36909,
+            "vol_chg_top15": 16380,
+            "long_open_interest_top15": 38240,
+            "long_open_interest_chg_top15": 1575,
+            "short_open_interest_top15": 48587,
+            "short_open_interest_chg_top15": 3471,
+            "vol_top20": 39702,
+            "vol_chg_top20": 17710,
+            "long_open_interest_top20": 43438,
+            "long_open_interest_chg_top20": 2993,
+            "short_open_interest_top20": 52741,
+            "short_open_interest_chg_top20": 3767,
+            "date": "20260717"
           },
           {
             "symbol": "IF2607",
             "variety": "IF",
-            "vol_top5": 33955,
-            "vol_chg_top5": -154,
-            "long_open_interest_top5": 12628,
-            "long_open_interest_chg_top5": -3605,
-            "short_open_interest_top5": 12275,
-            "short_open_interest_chg_top5": -2679,
-            "vol_top10": 43429,
-            "vol_chg_top10": 1509,
-            "long_open_interest_top10": 15777,
-            "long_open_interest_chg_top10": -5287,
-            "short_open_interest_top10": 15643,
-            "short_open_interest_chg_top10": -4109,
-            "vol_top15": 49430,
-            "vol_chg_top15": 2227,
-            "long_open_interest_top15": 17792,
-            "long_open_interest_chg_top15": -5706,
-            "short_open_interest_top15": 17717,
-            "short_open_interest_chg_top15": -6084,
-            "vol_top20": 53147,
-            "vol_chg_top20": 3029,
-            "long_open_interest_top20": 18749,
-            "long_open_interest_chg_top20": -6028,
-            "short_open_interest_top20": 18806,
-            "short_open_interest_chg_top20": -6358,
-            "date": "20260716"
+            "vol_top5": 19867,
+            "vol_chg_top5": -13662,
+            "long_open_interest_top5": 0,
+            "long_open_interest_chg_top5": -4921,
+            "short_open_interest_top5": 0,
+            "short_open_interest_chg_top5": -6573,
+            "vol_top10": 25466,
+            "vol_chg_top10": -17708,
+            "long_open_interest_top10": 0,
+            "long_open_interest_chg_top10": -7528,
+            "short_open_interest_top10": 0,
+            "short_open_interest_chg_top10": -7944,
+            "vol_top15": 28321,
+            "vol_chg_top15": -19139,
+            "long_open_interest_top15": 0,
+            "long_open_interest_chg_top15": -12595,
+            "short_open_interest_top15": 0,
+            "short_open_interest_chg_top15": -12788,
+            "vol_top20": 29901,
+            "vol_chg_top20": -20769,
+            "long_open_interest_top20": 0,
+            "long_open_interest_chg_top20": -13177,
+            "short_open_interest_top20": 0,
+            "short_open_interest_chg_top20": -13163,
+            "date": "20260717"
           },
           {
             "symbol": "IF",
             "variety": "IF",
-            "vol_top5": 160673,
-            "vol_chg_top5": 15828,
-            "long_open_interest_top5": 113776,
-            "long_open_interest_chg_top5": 3070,
-            "short_open_interest_top5": 138408,
-            "short_open_interest_chg_top5": 6925,
-            "vol_top10": 202044,
-            "vol_chg_top10": 23940,
-            "long_open_interest_top10": 159339,
-            "long_open_interest_chg_top10": 4243,
-            "short_open_interest_top10": 186081,
-            "short_open_interest_chg_top10": 7847,
-            "vol_top15": 227790,
-            "vol_chg_top15": 30018,
-            "long_open_interest_top15": 186257,
-            "long_open_interest_chg_top15": 5143,
-            "short_open_interest_top15": 214048,
-            "short_open_interest_chg_top15": 7601,
-            "vol_top20": 244914,
-            "vol_chg_top20": 34087,
-            "long_open_interest_top20": 205186,
-            "long_open_interest_chg_top20": 6062,
-            "short_open_interest_top20": 232977,
-            "short_open_interest_chg_top20": 9527,
-            "date": "20260716"
+            "vol_top5": 209249,
+            "vol_chg_top5": 51105,
+            "long_open_interest_top5": 114265,
+            "long_open_interest_chg_top5": 8915,
+            "short_open_interest_top5": 142460,
+            "short_open_interest_chg_top5": 9918,
+            "vol_top10": 266574,
+            "vol_chg_top10": 65804,
+            "long_open_interest_top10": 160253,
+            "long_open_interest_chg_top10": 9332,
+            "short_open_interest_top10": 191742,
+            "short_open_interest_chg_top10": 13689,
+            "vol_top15": 298385,
+            "vol_chg_top15": 74859,
+            "long_open_interest_top15": 188327,
+            "long_open_interest_chg_top15": 7766,
+            "short_open_interest_top15": 220637,
+            "short_open_interest_chg_top15": 12276,
+            "vol_top20": 319797,
+            "vol_chg_top20": 80365,
+            "long_open_interest_top20": 209260,
+            "long_open_interest_chg_top20": 11529,
+            "short_open_interest_top20": 241368,
+            "short_open_interest_chg_top20": 14281,
+            "date": "20260717"
           }
         ],
         "params": {
-          "date": "20260716",
+          "date": "20260717",
           "var": "IF"
         }
       }
