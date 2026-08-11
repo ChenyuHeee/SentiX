@@ -4,8 +4,8 @@
     "name": "原油"
   },
   "date": "2026-08-11",
-  "updated_at": "2026-08-11 08:46",
-  "is_stale": true,
+  "updated_at": "2026-08-11 16:45",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -16,67 +16,160 @@
       "status": "ok",
       "index": -0.6,
       "band": "bear",
-      "confidence": 0.85,
+      "confidence": 0.8,
       "mode": "llm",
       "rationale": [
-        "美联储新主席沃什上任及沃勒鹰派言论强化加息预期，美元走强压制黄金等风险资产",
-        "特朗普对伊朗制裁推高原油价格，但取消打击缓和地缘风险，避险需求减弱",
-        "特朗普施压石油巨头可能引发供应端不确定性，但整体通胀担忧推升加息押注",
-        "金价延续跌势且美元兑日元升至162.48，显示市场风险偏好承压但美元主导",
-        "多重利空叠加（加息、美元强、地缘缓和）指向宏观情绪偏空"
+        "美联储新主席沃什上任，市场预期其偏鹰派，加息押注升温，压制风险资产和黄金",
+        "特朗普关税措施引发通胀担忧，美元走强，黄金延续跌势，避险需求减弱",
+        "特朗普对伊朗重新实施制裁推高原油，但随后美股、黄金、白银、原油集体大跌，显示风险偏好恶化",
+        "美元兑日元升至162.48，显示美元强势，对新兴市场和商品构成压力",
+        "特朗普施压石油巨头，叠加原油跳空低开，能源板块波动加剧，整体宏观情绪偏空"
       ]
     },
     "symbol": {
       "status": "ok",
       "index": -0.6,
       "band": "bear",
-      "confidence": 0.75,
+      "confidence": 0.8,
       "mode": "llm",
       "rationale": [
-        "OPEC+增产及阿联酋退出OPEC等消息加剧供应端不确定性，施压油价。",
-        "WTI原油跌破70美元，显示市场对需求前景和供应过剩的担忧。",
-        "地缘扰动（霍尔木兹海峡）虽短期支撑，但整体新闻偏空，油价承压。",
-        "高盛预测油价先抑后扬，短期承压，强化看空情绪。"
+        "OPEC+同意增产，且霍尔木兹海峡流量恢复，供应压力增加",
+        "WTI原油跌破70美元，显示市场对供应担忧缓解",
+        "阿联酋退出OPEC的旧闻与当前增产消息叠加，加剧供应不确定性",
+        "高盛预测油价先抑后扬，短期承压",
+        "部分新闻标题显示原油系品种走弱，成本坍塌"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.2,
+      "band": "neutral",
+      "confidence": 0.55,
+      "mode": "llm",
+      "rationale": [
+        "技术面收盘价563.8高于MA20(539.81)和MA60(539.61)，显示短期偏多趋势。",
+        "ATR14为28.59，波动率中等，但成交量比0.80低于1，显示市场参与度不足，动能有限。",
+        "基本面中库存状态为unavailable，无法评估供需压力，降低信号可靠性。",
+        "现货升水率1.27%为正，且展期收益0.154为正，显示近月偏强，对价格有支撑。",
+        "持仓排名数据为空，缺乏资金面确认，整体信号偏中性，故指数仅小幅偏多。"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.27999999999999997,
+      "band": "bear",
+      "confidence": 0.7,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-08-11",
+    "symbol": {
+      "id": "crude",
+      "name": "原油"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        549.51,
+        578.09
+      ],
+      "stop": 606.68,
+      "target1": 535.21,
+      "target2": 506.63,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        535.21,
+        592.39
+      ],
+      "stop": 635.26,
+      "target1": 506.63,
+      "target2": 449.46,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        520.92,
+        606.68
+      ],
+      "stop": 663.85,
+      "target1": 478.04,
+      "target2": 392.29,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.06245939744329273,
+    "index": -0.027209699898807903,
     "band": "neutral",
     "counts": {
-      "bull": 1,
+      "bull": 2,
       "bear": 3,
-      "neutral": 16
+      "neutral": 15
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 522.0,
-    "high": 539.7,
-    "low": 521.3,
-    "close": 531.1,
-    "volume": 106018,
-    "open_interest": 29606,
+    "open": 540.0,
+    "high": 564.7,
+    "low": 537.9,
+    "close": 563.8,
+    "volume": 111132,
+    "open_interest": 30094,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-08-10",
-    "is_stale": true,
-    "pct_change": -0.06
+    "date": "2026-08-11",
+    "is_stale": false,
+    "pct_change": 6.16
   },
   "news": [
+    {
+      "title": "布伦特原油期货突破90美元/桶 日内涨超2.6%",
+      "url": "https://finance.eastmoney.com/a/202608113837880831.html",
+      "source": "东方财富期货",
+      "published_at": "2026-08-11",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "bull",
+      "confidence": 0.65
+    },
+    {
+      "title": "伦铜库存减少3750吨",
+      "url": "https://finance.eastmoney.com/a/202608113837862821.html",
+      "source": "东方财富期货",
+      "published_at": "2026-08-11",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.55
+    },
     {
       "title": "大幅拉升！霍尔木兹海峡新变数！原油暗盘集体异动",
       "url": "https://finance.eastmoney.com/a/202608093835903433.html",
@@ -174,40 +267,28 @@
       "confidence": 0.5182847070504778
     },
     {
-      "title": "特朗普取消打击提振黄金，伊朗否认“新谎言”与美联储加息预期构成双重压制_金市直播 - 黄金网",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0tTHRFWEdHNWZoM3dRVC1mWk5zQzM4WWU4Y2p2ODRnUzhKbHp6Rlh6OW41RFFnYzg2eVY2Z3VpVm1jTm9jMHZ1TkFrTXp2OGlQeFRXaWpnanduTkJBekRsZ2s1REhvR2xi?oc=5",
-      "source": "黄金网",
-      "published_at": "Mon, 03 Aug 2026 03:22:01 GMT",
-      "content": "",
-      "weight": 0.5743491774985174,
-      "age_days": 8,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.6084990448061054
-    },
-    {
       "title": "OPEC+同意将9月产量提高18.8万桶/日 - tmgm.com",
       "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPamFhclRkTXo4al9CcFlRNlBSUHJnVWZXcExabWczVXB3STlBUEZZU2dDNXE4NFRnSTIwVVRIbUdWVlpDWXdVT21YaS16VVdxSEE2VTRqVmJlYUV0S3NoQlBKYWhFTExkQTBvZmVGSWpmZE9hVm5aeHBsOGJaWWt2ZW9aZHlETXM5ME40RFRoVDNiWms4WUpva2VlYTRwelVVQXQ2SXFtWkJGTnBsQU1tdDJLSnlkdmZuX3ljNDRFam5rb2h1S2RxcUtYODc2MzYxa1A0Qnd3?oc=5",
       "source": "tmgm.com",
-      "published_at": "Mon, 03 Aug 2026 10:10:56 GMT",
+      "published_at": "Sun, 02 Aug 2026 07:00:00 GMT",
       "content": "",
-      "weight": 0.5743491774985174,
-      "age_days": 8,
+      "weight": 0.5358867312681466,
+      "age_days": 9,
       "scope": "symbol",
       "sentiment": "neutral",
-      "confidence": 0.5148838071436277
+      "confidence": 0.5117106553296221
     },
     {
       "title": "杨德龙：新一任美联储主席沃什正式上任 可能带来哪些冲击？ - 新浪财经",
-      "url": "https://news.google.com/rss/articles/CBMixAJBVV95cUxNWGhZNHlseGt6Z3JNZzdwYjI4Q1dVQTVnaWNvWkZuNkUyWEFqMHRSWWJsdkI0dVJCUG5uM2daUHo0NWRKQjhTUmF5RzNmQmY4SFBWazRNQ1BqNWpkZ2VIX3A2WkRaT0FGQ2M5bVNDbXpQeDRvcUFhc1Vha281NHRfQVJJWXBIZlZTNjJSUWpXeGZMQk1TTW5uTjlDNjFsdk1KVFhzZlVLeWFQTnRWOThIbS1qSXR5cVk2dklYVGZfZkJQWnhtNHhtYVVvYlVvWG5fM3Itd0NDa1loTFFhcTZMdzNxZGdTRHBkbWVsNGhoeHVreUEtWHI3TElXVl9BWGNjMUNoSHFENWtVdlFtOFVwVVZQTG5sNGRLd2s2Y3FtWFBkLUVnOHVZZThuaU9qQzZVRFU0SFZiZXNDOW5TWWdIdE5kUUw?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi1AJBVV95cUxPemd2UVVBYW5aR2tGNVJ4dTJEby1PMG00OGI4b0hTS00yV09IeklpTGtYejJFVC1jM3duZ19wUWU5RkxxcHV3TkU0SlI1cVFUekxjbnpHUUxpLWQ3dXhQQXZwQjlhRkkxUjZ3SFBrcm56UFQyWnJFbTl1cDQ1ckRJck1tbzduaklteHNGTzJXdC03d3RFa0FtZEVJcHVJNmllRkd2Y0xSRFpQVlc4X0poeWh1QkRaQkhzb0JRa19qb2dNZ0c3a1Q0bWZ6OWZVaGY4ZmExdHVUSWNSbzNsd2lSUVhUc3kzV1pIMTl0SW1MOWJJLTRrQlgtYThDOEFVRl9ZYlFtby1pR3ZsR2pOTk53N0cwaVpJdnU5QjhCYUZPai1WbEUzeEsxX1BMb2tyNEpURDRQRUYzRTM3X3lhTV93VFMtbmRlNml1ektNSW9XellHaVBx?oc=5",
       "source": "新浪财经",
-      "published_at": "Mon, 27 Jul 2026 20:11:14 GMT",
+      "published_at": "Fri, 31 Jul 2026 05:04:40 GMT",
       "content": "",
-      "weight": 0.3535533905932738,
-      "age_days": 15,
+      "weight": 0.4665164957684037,
+      "age_days": 11,
       "scope": "macro",
       "sentiment": "neutral",
-      "confidence": 0.5
+      "confidence": 0.5059876109008934
     },
     {
       "title": "7月27日财经早餐：金价4100静待美联储决议，特朗普对伊外交努力“留出一定回旋空间”，美原油跳空低开超6% - 手机网易网",
@@ -294,40 +375,19 @@
       "confidence": 0.5562511431344103
     },
     {
-      "title": "众议院通过战争权力决议，终止特朗普在伊朗的权力 - tmgm.com",
-      "url": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxQUUdNMEUyVGQ0X2V1QXNaYlZLaVlyckJ1ZzZ1MVNUU25pMlRTSmFxSEFhRl9LOHFXbXVFLUtGNVdGRGZxNFlrSnZjNzVTTXN0MVQwNUxYVTFqN1BMY0V4bzc5WkNpVEt4ZXdKWVFjcGcyb2ctTEFUNUhJcjA0Q2pqcWh4TFpheTl1REtDa3l3SmYzMElwY0hoNThKLS1vNi1DOE53MHBsa3d4N1RBMlk4YUxZdE9McERyUWtPNjFTQkJpM3h2Z2FLaEo3RmZLaDlhY1NmOS01c1Bzc3FtUGZnMEJoQTVLbWhNcmpJMl82cw?oc=5",
-      "source": "tmgm.com",
-      "published_at": "Thu, 04 Jun 2026 07:00:00 GMT",
+      "title": "美联储，加息大消息！特朗普，最新发声！美股、黄金、白银、原油集体大跌 - 新浪财经",
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQWUl2WXFGT2xRV1dGTGx2SVNLU0pQVmZqWllFV2daVU9uSTQzZ2Nab2NkUUp6V3hsS3hPZzRlOGxKbm1NX1lqLU91aEJwa0o2UkUtWDZNYzZKSG5Cd2tUaFBfcWRBRUk0ODNZeTBrUzJvSEhDWDh0QXdFZ3VGcWdaZA?oc=5",
+      "source": "新浪财经",
+      "published_at": "Sat, 06 Jun 2026 07:00:00 GMT",
       "content": "",
-      "weight": 0.008974205898414337,
-      "age_days": 68,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
-    },
-    {
-      "title": "美伊僵持国际油价冲破114美元 阿联酋退出OPEC - 早晨报",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1pU0VKVHJmNTJ3SXdNN0FJMFVYOWJXa19MSEx5WGxXdi1HLXFVOGQ5enFTNlhGbmQxY3RsZEM1Qkk4SGZDelVuampfRmZqYXlNWHZwVk8yZFNTOF84WllCNUswa0MtWExET3JTaQ?oc=5",
-      "source": "早晨报",
-      "published_at": "Thu, 30 Apr 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.0007932152308166359,
-      "age_days": 103,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
+      "weight": 0.01030865555291324,
+      "age_days": 66,
+      "scope": "macro",
+      "sentiment": "bear",
+      "confidence": 0.553505093916409
     }
   ],
   "kline": [
-    {
-      "date": "2025-11-13",
-      "open": 466.9,
-      "high": 467.0,
-      "low": 450.0,
-      "close": 452.9,
-      "volume": 74343,
-      "open_interest": 34266
-    },
     {
       "date": "2025-11-14",
       "open": 455.5,
@@ -1938,11 +1998,20 @@
       "close": 531.1,
       "volume": 106018,
       "open_interest": 29606
+    },
+    {
+      "date": "2026-08-11",
+      "open": 540.0,
+      "high": 564.7,
+      "low": 537.9,
+      "close": 563.8,
+      "volume": 111132,
+      "open_interest": 30094
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-08-10",
+    "asof": "2026-08-11",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1952,41 +2021,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2238.57 · 主力基差 27.429999999999836",
+        "summary": "现货 2238.57 · 主力基差 28.429999999999836",
         "items": [
           {
-            "date": "20260810",
+            "date": "20260811",
             "symbol": "SC",
             "spot_price": 2238.57,
             "near_contract": "c2609",
-            "near_contract_price": 2266.0,
+            "near_contract_price": 2267.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": 27.429999999999836,
-            "dom_basis": 27.429999999999836,
-            "near_basis_rate": 0.012253358170617679,
-            "dom_basis_rate": 0.012253358170617679
+            "near_basis": 28.429999999999836,
+            "dom_basis": 28.429999999999836,
+            "near_basis_rate": 0.012700071920913825,
+            "dom_basis_rate": 0.012700071920913825
           }
         ],
         "params": {
-          "date": "20260810"
+          "date": "20260811"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 0.17525204798769722",
+        "summary": "展期收益率 0.15423275505865947",
         "items": [
           {
-            "date": "20260810",
+            "date": "20260811",
             "var": "SC",
-            "roll_yield": 0.17525204798769722,
+            "roll_yield": 0.15423275505865947,
             "near_by": "SC2609",
             "deferred": "SC2610"
           }
         ],
         "params": {
-          "date": "20260810",
+          "date": "20260811",
           "var": "SC"
         }
       },
@@ -1995,7 +2064,7 @@
         "hint": "会员持仓/成交排名（AKShare get_rank_sum_daily）",
         "items": [],
         "params": {
-          "date": "20260810",
+          "date": "20260811",
           "var": "SC"
         }
       }
