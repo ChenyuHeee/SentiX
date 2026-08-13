@@ -4,8 +4,8 @@
     "name": "原油"
   },
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 08:46",
-  "is_stale": true,
+  "updated_at": "2026-08-13 16:53",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -16,45 +16,112 @@
       "status": "ok",
       "index": -0.6,
       "band": "bear",
-      "confidence": 0.75,
+      "confidence": 0.85,
       "mode": "llm",
       "rationale": [
-        "地缘危机与战略储备见底推升通胀重启风险，利空风险资产",
-        "特朗普施压石油巨头但油价仍受地缘支撑，通胀预期升温",
-        "美债收益率升至一个半月高位，反映避险与紧缩预期交织",
-        "新美联储主席沃什上任可能带来政策不确定性，压制风险偏好",
-        "欧佩克下调需求增长预期，但地缘供给风险主导短期情绪"
+        "特朗普施压石油巨头并强硬表态，地缘风险推升油价，美债收益率上行，风险资产承压，道指暴跌900点，情绪明显转空",
+        "新美联储主席沃什上任带来政策不确定性，市场对紧缩或政策转向的担忧加剧，压制风险偏好",
+        "黄金失守4000美元、美元守住101，显示避险与流动性紧张并存，但股市暴跌主导短期情绪",
+        "欧佩克下调全球石油需求增长预期，叠加油价暴涨，滞胀担忧升温，进一步利空风险资产",
+        "尽管部分报道显示股油同涨、黄金持稳，但整体新闻以恐慌性抛售和地缘冲突为主，情绪偏空"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": -0.7,
+      "index": -0.6,
       "band": "bear",
-      "confidence": 0.85,
+      "confidence": 0.8,
       "mode": "llm",
       "rationale": [
-        "OPEC+增产及阿联酋退出OPEC等消息构成明确供应增加压力，直接利空油价",
-        "WTI跌破70美元、原油系品种全线走弱等标题显示市场已进入下跌趋势",
-        "霍尔木兹海峡流量恢复、地缘冲突缓和削弱了此前支撑油价的风险溢价",
-        "沙特绕道埃及管道虽增加成本，但整体供应保障增强，对冲了部分利多影响",
-        "多家机构预测油价或跌至60美元，空头情绪占据主导"
+        "OPEC+增产及阿联酋退出OPEC等消息加剧供应宽松预期，压制油价",
+        "WTI原油跌破70美元，市场情绪偏空，多家机构预测油价可能进一步下行",
+        "地缘冲突虽有扰动，但霍尔木兹海峡流量恢复和冲突缓和削弱风险溢价",
+        "需求破坏迹象显现，高油价抑制消费，进一步施压价格"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.2,
+      "band": "neutral",
+      "confidence": 0.55,
+      "mode": "llm",
+      "rationale": [
+        "技术面显示收盘价553.5高于MA20(543.5)和MA60(535.58)，短期趋势偏多，但ATR14为27.2，波动较大。",
+        "成交量比率vol_ratio20为0.3425，明显低于1，显示市场参与度低，动能不足，可能限制上涨空间。",
+        "基本面中库存状态为unavailable，无法评估供需压力，增加不确定性。",
+        "现货基差为-10.43，基差率为-0.00465，现货略低于期货，显示近月承压，但幅度较小。",
+        "展期收益为0.0864，正向市场结构，对持有近月合约有利，但整体信号强度有限。"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.27999999999999997,
+      "band": "bear",
+      "confidence": 0.7150000000000001,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-08-13",
+    "symbol": {
+      "id": "crude",
+      "name": "原油"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        539.9,
+        567.1
+      ],
+      "stop": 594.3,
+      "target1": 526.3,
+      "target2": 499.1,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        526.3,
+        580.7
+      ],
+      "stop": 621.5,
+      "target1": 499.1,
+      "target2": 444.7,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        512.7,
+        594.3
+      ],
+      "stop": 648.7,
+      "target1": 471.9,
+      "target2": 390.3,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.1202131051792874,
+    "index": -0.12084417118321882,
     "band": "neutral",
     "counts": {
       "bull": 0,
@@ -65,22 +132,22 @@
   },
   "price": {
     "status": "ok",
-    "open": 558.3,
-    "high": 558.5,
-    "low": 545.1,
-    "close": 556.1,
-    "volume": 102790,
-    "open_interest": 27655,
+    "open": 547.0,
+    "high": 557.9,
+    "low": 543.6,
+    "close": 553.5,
+    "volume": 46990,
+    "open_interest": 31188,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-08-12",
-    "is_stale": true,
-    "pct_change": -1.37
+    "date": "2026-08-13",
+    "is_stale": false,
+    "pct_change": -0.47
   },
   "news": [
     {
-      "title": "沙特原油转战地中海，红海航线开启“隐身模式” 为保供应，沙特大幅增加埃及管道的石油出口力度，并让大批油轮开启“隐身模式”。这一战略转型不仅让油路成本飙升，更引发了全球原油流向的剧烈置换。 NEW 精选 13分钟前 来自： 跟踪中东局势动态",
-      "url": "https://xnews.jin10.com/details/227312",
+      "title": "油价没有破百，是因为需求破坏已出现？｜投行油评 需求破坏压住了油价，但IEA数据显示三季度缺口仍高达180万桶/日，库存还在快速消耗。小摩指出，若没有抑制，油价起码被低估30美元，点击查看详情>> NEW VIP 22分钟前 来自： 订阅原油市场资讯",
+      "url": "https://xnews.jin10.com/details/227394",
       "source": "金十数据",
       "published_at": "2026-08-13",
       "content": "",
@@ -91,8 +158,20 @@
       "confidence": 0.55
     },
     {
-      "title": "EIA报告显示：美国墨西哥湾沿岸最新一周原油库存...",
-      "url": "https://finance.eastmoney.com/a/202608123839487242.html",
+      "title": "黑海正沦为第二个霍尔木兹！俄乌互轰港口商船，运粮船、油轮都成“活靶子” 乌克兰持续打击俄罗斯油轮及能源设施，俄军更开始直接打击装载谷物的散货船。随着乌克兰进入粮食出口旺季，黑海航运风险可能进一步传导至全球粮价与粮食供应。 精选 3小时前 来自： 订阅原油市场资讯",
+      "url": "https://xnews.jin10.com/details/227359",
+      "source": "金十数据",
+      "published_at": "2026-08-13",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "bear",
+      "confidence": 0.65
+    },
+    {
+      "title": "伦敦金属交易所铜库存减少4400吨",
+      "url": "https://finance.eastmoney.com/a/202608133840443668.html",
       "source": "东方财富期货",
       "published_at": "2026-08-13",
       "content": "",
@@ -175,21 +254,9 @@
       "confidence": 0.55
     },
     {
-      "title": "战略储备见底叠加地缘危机，全球通胀重启风险升温 - 汇通网 Fx678",
-      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFAxNnFfZlVSbWFleTdiS1ZJXzJCNFBfWV9PSEtaS1R0T3ZOSEF0a0xkODVvYjd4UGh4LWVwOGt6TEZyOGZYX0xsVy1uaEQ1VzN4dzR1ZURoSWtBdDA?oc=5",
-      "source": "汇通网 Fx678",
-      "published_at": "Tue, 11 Aug 2026 17:58:00 GMT",
-      "content": "",
-      "weight": 0.8705505632961241,
-      "age_days": 2,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.6373786799213721
-    },
-    {
-      "title": "杨德龙：新一任美联储主席沃什正式上任 可能带来哪些冲击？ - 新浪网",
+      "title": "杨德龙：新一任美联储主席沃什正式上任 可能带来哪些冲击？ - 新浪财经",
       "url": "https://news.google.com/rss/articles/CBMixwJBVV95cUxNdENJTFBkZXNnVVZicm9vbFJmMTEyR0hQa3NxUjg0Z05fc01QLU4wSld2b1JGT1RZdmQ3WWNjdDVTX2x2cy1GcTFLOTZvSHdQT3I2UVNUQkZyWGlvaXdoRmNJX0xGamowQldZTzBabmpUdUJMekx5V2dVTHktQmQyOUlJTkxCcE1lM1NJVTc2OHdsZ3ozOTJsVDRRQUNPdEl3MHBGTFUyRVNQczRzVGt2QXdwNlk4enBFRDMySDBKNWpOODFOenl3LW80X2R3S0pYZE1YSVBoMHotZ2M2dUlJVG5MblF1eHU1dlk4WG5WUUx0WHdaM2Y3QkFHRHpzYmRpVUktZ01Jb3gwX2piX0k0dXlwMmNhQ0VFYnB4Rm1CeDk1c3pxMGhJUWRnMEhtMDFJV0dob3ZINjVmUGstZ0hXb2Y0UUhDRzA?oc=5",
-      "source": "新浪网",
+      "source": "新浪财经",
       "published_at": "Fri, 07 Aug 2026 10:45:56 GMT",
       "content": "",
       "weight": 0.6597539553864471,
@@ -223,13 +290,13 @@
       "confidence": 0.5059876109008934
     },
     {
-      "title": "7月27日财经早餐：金价4100静待美联储决议，特朗普对伊外交努力“留出一定回旋空间”，美原油跳空低开超6% - 手机网易网",
-      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9teTJNZlpEcXhablFLWUpNa2p0bDdMS3BIYVJsclZsV1N5Qzl6dXFHYVhRNlFLZVpTU3Y0bkNyZlcwb1dRM1FYaGM4S1hYUmExVnpqMEtoWDllbkdCcWRUZGV3?oc=5",
-      "source": "手机网易网",
-      "published_at": "Mon, 27 Jul 2026 07:00:00 GMT",
+      "title": "特朗普一句话引爆市场！道指狂泻900点、原油暴涨超7%、黄金失守4000美元、美元守住101、比特币涨破6.4万美元 - FX168财经",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNMDhjYWZ4OUtHejYtUC1hVFVCOUhONjdGbGZpSlZJOVc4MXBBMWd0SVl6WlpvUnNLM3FyaXRnbWZ5UnpNSGw4X1JSVHFQN2hLdjE4SDZWbFd2TEk2ZFJmQ2pGQWlQaVE2Rmk2QmphLUdkY2dyeTFzNFVsa3U4dHlOaVJmMm4?oc=5",
+      "source": "FX168财经",
+      "published_at": "Wed, 29 Jul 2026 07:00:00 GMT",
       "content": "",
-      "weight": 0.3077861033362291,
-      "age_days": 17,
+      "weight": 0.3535533905932738,
+      "age_days": 15,
       "scope": "macro",
       "sentiment": "neutral",
       "confidence": 0.5
@@ -247,9 +314,9 @@
       "confidence": 0.5
     },
     {
-      "title": "地缘风险引爆债市：特朗普强硬表态推升油价，美债收益率升至一个半月高位 - 新浪网",
+      "title": "地缘风险引爆债市：特朗普强硬表态推升油价，美债收益率升至一个半月高位 - 新浪财经",
       "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQcU5SS3UxWTBocThTTnZsdWRoMm1oXzFzNUhEdUJmZXRCS2tLelpucGw2TVExY1laVVhuWjV1OHJ2cS1mSThwNTZBU2VYS1VOUGFBbDN5enRXeWtodDBBc09uemlsUFlCbXZYOHBGMG0wS25nRnFKOEpmZWMwLWZHRk81b1FiY1RvZldYbkMtSzhJdGJjOHVWajA4WGtzSlFwMTdwUENadmhqRGJVMzJOMy0tdG8ybGdzOGFNZk5iZmljSTloMlNaTmN4aVBuS0tNNUNfUHVDTVR6aXFxSHJV?oc=5",
-      "source": "新浪网",
+      "source": "新浪财经",
       "published_at": "Thu, 09 Jul 2026 07:00:00 GMT",
       "content": "",
       "weight": 0.08838834764831845,
@@ -295,9 +362,9 @@
       "confidence": 0.5
     },
     {
-      "title": "WTI原油价格走势预测：OPEC增产叠加霍尔木兹海峡通航，油价或将跌至60美元 - tradingkey.com",
+      "title": "WTI原油价格走势预测：OPEC增产叠加霍尔木兹海峡通航，油价或将跌至60美元 - TradingKey",
       "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxNc05FTjJUS0VHS3FHZDBqcUZiYklxQ2VwUWFCVUp5NVBOMThUM00ySTdTejBiRGhnY2ZQYzFhdHhpU1dadnp4LUdwN2FsTWgtbjhmWVJBeVpDbzNldHB3OGNVckl5dV85c3VWWmdyWjdFN01kYU5IdERoaG1jQnNMZUJZWm9aVVhzc1RscHUtWGI1SksxZlFzczZiMWVKZHBTSlFXejdXekxZSjhIemJ3aC14Rml6RXhBNjd1UXNyT0llQXdvMGR1UVZEYnU5d0NRSWZIczhvLW5VMFN5QmJxWWFiZkJ6em42LVNYVjZR?oc=5",
-      "source": "tradingkey.com",
+      "source": "TradingKey",
       "published_at": "Mon, 06 Jul 2026 07:00:00 GMT",
       "content": "",
       "weight": 0.0717936471873147,
@@ -307,9 +374,9 @@
       "confidence": 0.5
     },
     {
-      "title": "WTI原油跌破70美元！伊拉克\"以退为进\"施压OPEC，解体风险骤升 - tradingkey.com",
+      "title": "WTI原油跌破70美元！伊拉克\"以退为进\"施压OPEC，解体风险骤升 - TradingKey",
       "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPT1RNXzJna0RrR2lqV3RKdmUwbW9sVGlKMjdlaW9DZVBTNHJqVTZpRlgzeHJHUUxiMnA2bDgtYTdJVkoyRWZ4dW9JLXE5T0dSdTZpeERYREF6WUJtV0FrVGo3WW5Ycl81MnZDeS1UdUZmLWlsY1c2YjNZbmtOckVVdFkzSUtoX2ZGQW90andoWkE3SDNSVXhycm5WaS11eDMyV1BmbndRZVFDSXhW?oc=5",
-      "source": "tradingkey.com",
+      "source": "TradingKey",
       "published_at": "Thu, 25 Jun 2026 07:00:00 GMT",
       "content": "",
       "weight": 0.03349292070425915,
@@ -320,15 +387,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-11-17",
-      "open": 459.4,
-      "high": 464.8,
-      "low": 458.2,
-      "close": 459.2,
-      "volume": 60902,
-      "open_interest": 37714
-    },
     {
       "date": "2025-11-18",
       "open": 462.8,
@@ -1939,11 +1997,20 @@
       "close": 556.1,
       "volume": 102790,
       "open_interest": 27655
+    },
+    {
+      "date": "2026-08-13",
+      "open": 547.0,
+      "high": 557.9,
+      "low": 543.6,
+      "close": 553.5,
+      "volume": 46990,
+      "open_interest": 31188
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-08-12",
+    "asof": "2026-08-13",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1953,41 +2020,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2238.57 · 主力基差 -12.570000000000164",
+        "summary": "现货 2241.43 · 主力基差 -10.429999999999836",
         "items": [
           {
-            "date": "20260812",
+            "date": "20260813",
             "symbol": "SC",
-            "spot_price": 2238.57,
+            "spot_price": 2241.43,
             "near_contract": "c2609",
-            "near_contract_price": 2263.0,
+            "near_contract_price": 2259.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": 24.429999999999836,
-            "dom_basis": -12.570000000000164,
-            "near_basis_rate": 0.010913216919729907,
-            "dom_basis_rate": -0.0056151918412201685
+            "near_basis": 17.570000000000164,
+            "dom_basis": -10.429999999999836,
+            "near_basis_rate": 0.007838745800671898,
+            "dom_basis_rate": -0.00465327937968163
           }
         ],
         "params": {
-          "date": "20260812"
+          "date": "20260813"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 0.08662733884223364",
+        "summary": "展期收益率 0.08640901422698577",
         "items": [
           {
-            "date": "20260812",
+            "date": "20260813",
             "var": "SC",
-            "roll_yield": 0.08662733884223364,
+            "roll_yield": 0.08640901422698577,
             "near_by": "SC2609",
             "deferred": "SC2610"
           }
         ],
         "params": {
-          "date": "20260812",
+          "date": "20260813",
           "var": "SC"
         }
       },
@@ -1996,7 +2063,7 @@
         "hint": "会员持仓/成交排名（AKShare get_rank_sum_daily）",
         "items": [],
         "params": {
-          "date": "20260812",
+          "date": "20260813",
           "var": "SC"
         }
       }
