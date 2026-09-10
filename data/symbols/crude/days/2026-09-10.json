@@ -4,8 +4,8 @@
     "name": "原油"
   },
   "date": "2026-09-10",
-  "updated_at": "2026-09-10 09:03",
-  "is_stale": true,
+  "updated_at": "2026-09-10 16:38",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -14,81 +14,149 @@
     },
     "macro": {
       "status": "ok",
-      "index": -0.35,
-      "band": "bear",
+      "index": -0.15,
+      "band": "neutral",
       "confidence": 0.62,
       "mode": "llm",
       "rationale": [
-        "美联储沃什、沃勒接连鹰派表态，加息押注升温，美元走强至兑日元162.48，全球流动性收紧预期压制风险资产",
-        "现货黄金单日跌近3%，美股芯片股下跌，避险与成长资产同步承压，显示市场情绪偏防御",
-        "特朗普对伊朗重新制裁、委内瑞拉石油协议及海峡领土论推升原油地缘溢价，但供过于求担忧与关税威胁又施压油价，能源端信号混乱加剧不确定性",
-        "鲍威尔'最后一舞'暗示美联储领导层过渡期政策路径不明，市场对利率前景分歧加大",
-        "美国再提关税威胁，贸易摩擦风险回升，压制全球风险偏好"
+        "美联储沃什、沃勒接连鹰派表态推升加息押注，美元走强、黄金跌近3%，风险资产承压",
+        "特朗普对伊朗重启制裁与委内瑞拉石油协议等地缘消息交织，原油方向不明但整体偏空（供过于求担忧、关税威胁）",
+        "美股芯片股下跌，权益市场情绪偏弱，避险与紧缩预期并存",
+        "地缘政治噪音（海峡领土论、美伊敌对行动）增加不确定性，压制风险偏好",
+        "缺乏明确利多催化，宏观情绪略偏负面但未形成趋势性恐慌"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": 0.45,
+      "index": 0.35,
       "band": "bull",
-      "confidence": 0.72,
+      "confidence": 0.62,
       "mode": "llm",
       "rationale": [
-        "海湾运输统计失准推高风险溢价，多家机构上调油价预测，供应不确定性主导短期情绪",
-        "布伦特结算价101.21美元涨3.29%，WTI涨至93-94美元区间，上期所原油夜盘涨1.11%，价格信号一致偏多",
-        "地缘扰动叠加低库存支撑，OPEC风险上升，ING等机构看涨油价",
-        "部分新闻提及美伊停火协议、霍尔木兹流量恢复及OPEC增产，构成下行扰动，限制看多强度",
-        "存在WTI跌破70美元等偏空旧闻，但时效性较弱，未主导当前情绪"
+        "布伦特结算价101.21美元涨3.29%、WTI涨至93-94美元区间，近期价格信号偏多",
+        "上期所原油夜盘收涨1.11%，国内盘面同步走强",
+        "OPEC+维持10月产量政策不变，供给端短期无增量压力",
+        "新加坡燃料油库存减少9.8万桶，区域去库对油品情绪有支撑",
+        "但新闻中同时存在美伊停火、霍尔木兹海峡恢复、WTI跌破70美元等旧标题，多空信号混杂，限制看多置信度"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.6,
+      "band": "bull",
+      "confidence": 0.62,
+      "mode": "llm",
+      "rationale": [
+        "收盘价769.0000显著高于ma20=631.4750与ma60=550.1017，技术面呈明显多头排列",
+        "vol_ratio20=1.4880显示成交量较20日均值放大，配合价格上行",
+        "现货升水结构：spot_price=2232.86，dom_basis=30.14，dom_basis_rate=0.0135，近月相对偏强",
+        "roll_yield=0.7318850812092657为正，近月SC2610强于远月SC2611，展期收益利于多头",
+        "库存inventory与持仓positions_rank状态为unavailable/empty，基本面确认不足，故confidence未取高值"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": 0.3,
+      "band": "bull",
+      "confidence": 0.62,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-09-10",
+    "symbol": {
+      "id": "crude",
+      "name": "原油"
+    },
+    "short_term": {
+      "direction": "long",
+      "entry_zone": [
+        751.35,
+        786.65
+      ],
+      "stop": 716.04,
+      "target1": 804.31,
+      "target2": 839.61,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "long",
+      "entry_zone": [
+        733.69,
+        804.31
+      ],
+      "stop": 680.73,
+      "target1": 839.61,
+      "target2": 910.23,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "long",
+      "entry_zone": [
+        716.04,
+        821.96
+      ],
+      "stop": 645.42,
+      "target1": 874.92,
+      "target2": 980.84,
+      "position": "轻仓",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.044116784465053724,
+    "index": -0.006616784465053716,
     "band": "neutral",
     "counts": {
       "bull": 1,
-      "bear": 2,
-      "neutral": 17
+      "bear": 1,
+      "neutral": 18
     },
     "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 716.2,
-    "high": 743.1,
-    "low": 705.2,
-    "close": 741.5,
-    "volume": 181904,
-    "open_interest": 39217,
+    "open": 753.5,
+    "high": 791.6,
+    "low": 752.4,
+    "close": 769.0,
+    "volume": 231041,
+    "open_interest": 34489,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-09-09",
-    "is_stale": true,
-    "pct_change": 2.9
+    "date": "2026-09-10",
+    "is_stale": false,
+    "pct_change": 3.71
   },
   "news": [
     {
-      "title": "海湾石油运输量统计失准，不确定性推高油价风险溢价 综合多家机构交叉验证，当前海湾原油出口大致恢复到战前水平的三分之二，但实际运输规模根本没法精准统计，多家金融机构开始上调油价预测。 NEW 精选 8分钟前 来自： 订阅华尔街热议",
-      "url": "https://xnews.jin10.com/details/229712",
-      "source": "金十数据",
-      "published_at": "2026-09-10",
+      "title": "8月17日财经早餐：黄金“通胀劫”后蓄势，特朗普的“海峡领土论”正在为原油“点火” - 新浪网",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNeVlVczRDMDBrRGNlQ1VEaWdla0ZzTFdxYlRuZlp5WmtlbEYwMEV5SW5HLUkwcWozMjdmdlpoVzFZMnBSUkF1YkJGOFZJc2k1aHhwMWt4VHdNV0tWQVVPcnB1QnQ2ME9iNVNkVDZSaVNIZDNBSGpUU0xPM3czekVFZGJNRQ?oc=5",
+      "source": "新浪网",
+      "published_at": "Thu, 10 Sep 2026 00:27:17 GMT",
       "content": "",
       "weight": 1.0,
       "age_days": 0,
-      "scope": "symbol",
-      "sentiment": "bear",
-      "confidence": 0.75
+      "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.55
     },
     {
       "title": "非美区域低库存格局凸显 沪铜价格重心将持续上移",
@@ -103,8 +171,8 @@
       "confidence": 0.55
     },
     {
-      "title": "五矿期货：在海外隐性库存显性化之前 单边做空锌...",
-      "url": "https://finance.eastmoney.com/a/202609103869954553.html",
+      "title": "截至9月9日当周 新加坡燃料油库存减少9.8万桶至20...",
+      "url": "https://finance.eastmoney.com/a/202609103870588536.html",
       "source": "东方财富期货",
       "published_at": "2026-09-10",
       "content": "",
@@ -199,18 +267,6 @@
       "confidence": 0.55
     },
     {
-      "title": "有色/贵金属 | 碳酸锂：机构本身统计的样本库存存...",
-      "url": "https://finance.eastmoney.com/a/202609093868949256.html",
-      "source": "东方财富期货",
-      "published_at": "2026-09-10",
-      "content": "",
-      "weight": 1.0,
-      "age_days": 0,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.55
-    },
-    {
       "title": "图解期货 | 第三方库存数据 为何牵动碳酸锂神经",
       "url": "https://finance.eastmoney.com/a/202609083868080611.html",
       "source": "东方财富期货",
@@ -235,16 +291,16 @@
       "confidence": 0.55
     },
     {
-      "title": "8月17日财经早餐：黄金“通胀劫”后蓄势，特朗普的“海峡领土论”正在为原油“点火” - 新浪网",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE81SFJUY0JkanhQZFdoSndsaGdJNTMwX0dwbDlEQWFhZ1pZeVpaRUw5T0hOTk00RndoRFJjbldkdzVwTE1TeXoweDdLdFpxZ01faEU2cGNuUmxBUjBzdHBpdG5LNUpadUNpRzJRazdaOWtBUQ?oc=5",
-      "source": "新浪网",
-      "published_at": "Wed, 09 Sep 2026 16:13:57 GMT",
+      "title": "OPEC+同意维持10月份石油产量政策不变 - tmgm.com",
+      "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOc1JhRlAzdXB1QUcwVHdGS2dRZ2l4UEttS3d1d2hXVkY1TEREb0lWWGpVR0QyRU80ODNCMlhOQVZ5YV9DVEc5MVFtaXZwSk9weEExMmlXTkRlSU91WlNjblJwN3ZaamJwbWJDODJqODBHd3k0SU02UXNHSlI5Y1o0NWtLUTBKU3Z4TFBkVWhfempXSlR6dzhTZ0JEMHZ6QlZFa2x6Mzh5MnJOUXh5QkVScWU5UjUwcDZueGtBM09aNzFjWHgxdUVMWERn?oc=5",
+      "source": "tmgm.com",
+      "published_at": "Mon, 07 Sep 2026 00:59:30 GMT",
       "content": "",
-      "weight": 1.0,
-      "age_days": 1,
-      "scope": "macro",
+      "weight": 0.8122523963562356,
+      "age_days": 3,
+      "scope": "symbol",
       "sentiment": "neutral",
-      "confidence": 0.55
+      "confidence": 0.5345108226993895
     },
     {
       "title": "美股芯片股下跌，现货黄金跌近3%，美联储沃什鹰派表态推升加息押注，特朗普：与委内瑞拉达成石油协议 - chnfund.com",
@@ -279,6 +335,18 @@
       "weight": 0.32987697769322355,
       "age_days": 16,
       "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
+      "title": "印度进口俄罗斯原油创新高！国际油价下挫，黄金走高 - 证券时报",
+      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9uLXloblJuZWQ5T0tFWnB6VXA0eFdrcHNpR2NrRUZHSm43MDlTZDFhWldqdHd1UW44ZWMzSHE1bmJuRzQ0TkJCVEYyUW9ZTVhPNTd6UEFXLTM2cFN5?oc=5",
+      "source": "证券时报",
+      "published_at": "Mon, 24 Aug 2026 05:21:15 GMT",
+      "content": "",
+      "weight": 0.3077861033362291,
+      "age_days": 17,
+      "scope": "macro",
       "sentiment": "neutral",
       "confidence": 0.5
     },
@@ -320,15 +388,6 @@
     }
   ],
   "kline": [
-    {
-      "date": "2025-12-15",
-      "open": 436.6,
-      "high": 438.5,
-      "low": 435.0,
-      "close": 437.3,
-      "volume": 32989,
-      "open_interest": 31767
-    },
     {
       "date": "2025-12-16",
       "open": 434.5,
@@ -1939,11 +1998,20 @@
       "close": 741.5,
       "volume": 181904,
       "open_interest": 39217
+    },
+    {
+      "date": "2026-09-10",
+      "open": 753.5,
+      "high": 791.6,
+      "low": 752.4,
+      "close": 769.0,
+      "volume": 231041,
+      "open_interest": 34489
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-09-09",
+    "asof": "2026-09-10",
     "modules": {
       "inventory": {
         "status": "unavailable",
@@ -1953,41 +2021,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 2234.29 · 主力基差 47.710000000000036",
+        "summary": "现货 2232.86 · 主力基差 30.139999999999873",
         "items": [
           {
-            "date": "20260909",
+            "date": "20260910",
             "symbol": "SC",
-            "spot_price": 2234.29,
+            "spot_price": 2232.86,
             "near_contract": "c2609",
             "near_contract_price": 2265.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": 30.710000000000036,
-            "dom_basis": 47.710000000000036,
-            "near_basis_rate": 0.01374485854566787,
-            "dom_basis_rate": 0.02135353960318498
+            "near_basis": 32.13999999999987,
+            "dom_basis": 30.139999999999873,
+            "near_basis_rate": 0.014394095465009027,
+            "dom_basis_rate": 0.013498383239432865
           }
         ],
         "params": {
-          "date": "20260909"
+          "date": "20260910"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 0.701428043384536",
+        "summary": "展期收益率 0.7318850812092657",
         "items": [
           {
-            "date": "20260909",
+            "date": "20260910",
             "var": "SC",
-            "roll_yield": 0.701428043384536,
+            "roll_yield": 0.7318850812092657,
             "near_by": "SC2610",
             "deferred": "SC2611"
           }
         ],
         "params": {
-          "date": "20260909",
+          "date": "20260910",
           "var": "SC"
         }
       },
@@ -1996,7 +2064,7 @@
         "hint": "会员持仓/成交排名（AKShare get_rank_sum_daily）",
         "items": [],
         "params": {
-          "date": "20260909",
+          "date": "20260910",
           "var": "SC"
         }
       }
