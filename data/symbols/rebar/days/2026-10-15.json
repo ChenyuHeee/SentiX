@@ -4,8 +4,8 @@
     "name": "螺纹钢"
   },
   "date": "2026-10-15",
-  "updated_at": "2026-10-15 09:01",
-  "is_stale": true,
+  "updated_at": "2026-10-15 16:41",
+  "is_stale": false,
   "agents": {
     "weights": {
       "macro": 0.3,
@@ -14,66 +14,150 @@
     },
     "macro": {
       "status": "ok",
-      "index": -0.40208492821261227,
+      "index": -0.65,
       "band": "bear",
-      "confidence": 0.5833553521857715,
-      "mode": "heuristic",
+      "confidence": 0.82,
+      "mode": "llm",
       "rationale": [
-        "10月14日财经早餐：胡塞冲突升级，沙特阿美总部遇袭，金价承压等待通胀数据，地缘风险助推原油上行 - 汇通网 Fx678",
-        "美国9月CPI前瞻：能源冲击核心通胀与美联储定价的三重逻辑_汇市观察 - 中金在线外汇",
-        "金银集体杀跌！高油价与美联储高加息预期持续压制贵金属 - 华尔街见闻"
+        "美联储时隔3年多重启加息，鹰派信号超预期，全球风险资产承压",
+        "美股、原油、黄金全线跳水，避险与风险资产同步下跌显示流动性收紧恐慌",
+        "高油价叠加加息预期形成滞胀压力，压制贵金属与权益估值",
+        "地缘冲突升级（沙特阿美遇袭）推升原油但未能提振整体风险偏好",
+        "特朗普施压降息反映政策分歧加剧，市场不确定性上升"
       ]
     },
     "symbol": {
       "status": "ok",
-      "index": 0.024670312438264366,
+      "index": 0.05,
       "band": "neutral",
-      "confidence": 0.5341755352052309,
-      "mode": "heuristic",
+      "confidence": 0.62,
+      "mode": "llm",
       "rationale": [
-        "钢材板块 从“赌周期”到“练内功”",
-        "宝钢2026年11月内销价格持平 - 煤炭资源网",
-        "月度跟踪：9月钢铁产业链数据全景及传导逻辑分析 - 新浪财经"
+        "宝钢11月内销价格持平，龙头稳价信号中性偏稳，对螺纹钢现货形成一定托底预期",
+        "制造业用钢反超建筑业，需求结构切换长期利好板材但削弱建筑钢材需求支撑，对螺纹钢偏空",
+        "建筑钢材三季度价格重心下移、四季度或先涨后跌，短期存在反弹预期但中期承压",
+        "均和集团、德龙系等钢贸及钢铁企业信用风险事件频发，压制市场情绪与贸易商信心",
+        "AI泡沫担忧引发避险资金回流美债，宏观风险偏好下降，对大宗商品包括螺纹钢偏空"
       ]
     },
     "market": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.25,
+      "band": "bear",
+      "confidence": 0.6,
+      "mode": "llm",
+      "rationale": [
+        "收盘价3071低于MA20(3102.6)与MA60(3080.05)，价格位于均线下方，技术面偏空",
+        "现货价3171高于期货，dom_basis=-100、dom_basis_rate=-0.0315，期货贴水现货，基差结构对期价有一定支撑",
+        "roll_yield=-0.00586为负，近月RB2701相对远月RB2703偏弱，展期收益不利多头",
+        "vol_ratio20=1.1095，成交温和放量，但方向信号有限",
+        "库存82947及持仓多空数据缺失(change=null, long/short/net=null)，基本面确认不足，故confidence受限"
+      ]
     },
     "final": {
-      "status": "skipped",
-      "reason": "market closed / non-trading day"
+      "status": "ok",
+      "index": -0.28,
+      "band": "bear",
+      "confidence": 0.6719999999999999,
+      "mode": "heuristic",
+      "rationale": [
+        "宏观+品种新闻+市场数据加权"
+      ]
     }
   },
   "plans": {
-    "status": "skipped",
-    "reason": "market closed / non-trading day"
+    "status": "ok",
+    "asof": "2026-10-15",
+    "symbol": {
+      "id": "rebar",
+      "name": "螺纹钢"
+    },
+    "short_term": {
+      "direction": "short",
+      "entry_zone": [
+        3056.57,
+        3085.43
+      ],
+      "stop": 3114.29,
+      "target1": 3042.14,
+      "target2": 3013.29,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "swing": {
+      "direction": "short",
+      "entry_zone": [
+        3042.14,
+        3099.86
+      ],
+      "stop": 3143.14,
+      "target1": 3013.29,
+      "target2": 2955.57,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "mid_term": {
+      "direction": "short",
+      "entry_zone": [
+        3027.71,
+        3114.29
+      ],
+      "stop": 3172.0,
+      "target1": 2984.43,
+      "target2": 2897.86,
+      "position": "中等仓位",
+      "triggers": [
+        "若价格突破入场区间并放量，则执行",
+        "若触发止损则严格离场"
+      ]
+    },
+    "notes": [
+      "该计划为基于历史波动(ATR)的结构化模板，非投资建议"
+    ]
   },
   "sentiment": {
-    "index": -0.1528782750628059,
+    "index": -0.15866556570356577,
     "band": "neutral",
     "counts": {
       "bull": 1,
       "bear": 6,
-      "neutral": 12
+      "neutral": 13
     },
-    "news_total": 19
+    "news_total": 20
   },
   "price": {
     "status": "ok",
-    "open": 3089.0,
-    "high": 3091.0,
-    "low": 3070.0,
-    "close": 3073.0,
-    "volume": 580359,
-    "open_interest": 1703241,
+    "open": 3073.0,
+    "high": 3084.0,
+    "low": 3053.0,
+    "close": 3071.0,
+    "volume": 763513,
+    "open_interest": 1732254,
     "amount": null,
     "turnover_rate": null,
-    "date": "2026-10-14",
-    "is_stale": true,
-    "pct_change": -0.52
+    "date": "2026-10-15",
+    "is_stale": false,
+    "pct_change": -0.07
   },
   "news": [
+    {
+      "title": "AI泡沫担忧引发资金回流，美债正在重新找回“避险资产”角色 面对走热的美国通胀数据，美债不跌反涨。AI科技股重挫叠加基建信用风险压过了加息担忧，避险买盘大举倒流债市，沉寂已久的“股债跷跷板”效应正反常复苏。 NEW 精选 8分钟前 来自： 订阅华尔街热议",
+      "url": "https://xnews.jin10.com/details/232593",
+      "source": "金十数据",
+      "published_at": "2026-10-15",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 0,
+      "scope": "symbol",
+      "sentiment": "bear",
+      "confidence": 0.75
+    },
     {
       "title": "钢材板块 从“赌周期”到“练内功”",
       "url": "https://finance.eastmoney.com/a/202608273858236434.html",
@@ -85,6 +169,18 @@
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.55
+    },
+    {
+      "title": "【早报】时隔3年多，美联储重启加息；美股、原油、黄金全线跳水；多家A股公司，披露回购进展 - 财联社",
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE12X0hfdVBhZnVZUi1rTGtDMGh2cHFDbUc2SnowY0ZMWmFqTl85eGpsQm8yVGsxaUNpZG93LXA4QmVUWC12YWxtbA?oc=5",
+      "source": "财联社",
+      "published_at": "Wed, 14 Oct 2026 13:53:31 GMT",
+      "content": "",
+      "weight": 1.0,
+      "age_days": 1,
+      "scope": "macro",
+      "sentiment": "bear",
+      "confidence": 0.65
     },
     {
       "title": "10月14日财经早餐：胡塞冲突升级，沙特阿美总部遇袭，金价承压等待通胀数据，地缘风险助推原油上行 - 汇通网 Fx678",
@@ -123,6 +219,18 @@
       "confidence": 0.5345108226993895
     },
     {
+      "title": "南方财经全媒体集团 - 南方财经",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE52Qm8wMkdkSDNfbzk3dmhPNHFmQW1rdEJZelBzVmhJZy13STB2ZzB3MjZTWHVUWXJ4cHZ2b084M191V1dQRG5QbU5sUXZJNjJVUWI5NVJHZ2JRRWtuaXVvM05POTR6UQ?oc=5",
+      "source": "南方财经",
+      "published_at": "Thu, 08 Oct 2026 14:51:29 GMT",
+      "content": "",
+      "weight": 0.6155722066724582,
+      "age_days": 7,
+      "scope": "macro",
+      "sentiment": "neutral",
+      "confidence": 0.5182847070504778
+    },
+    {
       "title": "月度跟踪：9月钢铁产业链数据全景及传导逻辑分析 - 新浪财经",
       "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPM0tmT2szaEZMTGg5aVBGWTlsSW1oZERyaEphajVncWwwbzdqa2dscUFVcDNheXV6ODdPbDhndldxd0ZMUC1TYVVmaHF3SW1NUVYwaHJEbC05WDA0TmRLZlhfaEVjaTdDYVVudWtSWjFRN0FuRjJjWFNMcVhHb3oxQndnTTdZVVB2a0J2ZExPNHJnVVk4d1pqSk44NmVDVmFBRjExZFdTRGJfelc3bV9zT2ViMEtTajFydl9Vc19VOUJ6TlhYVm50eWJBRENlRWQ3a2dtYlJZM3JaUQ?oc=5",
       "source": "新浪财经",
@@ -159,18 +267,6 @@
       "confidence": 0.5
     },
     {
-      "title": "美联储加息25个基点，代价是什么？ - 京报网",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1aWnYtLXZDb0tCbFJlRXptdEVVeVZYeDFnNnNHdzQ2Z2dPX0JYSlQzZUdzd094b2hqcTNyWG9jOEdHckFsWUZ1QUxsZEwwM19uSVpya3p5YzU4XzZNRHlEOXRmMjBuTVNESXJyellMeldyUQ?oc=5",
-      "source": "京报网",
-      "published_at": "Fri, 18 Sep 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.1538930516681145,
-      "age_days": 27,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.5675045725376412
-    },
-    {
       "title": "深夜暴跌！鹰派加息“吓坏”美股，黄金白银原油齐跳水，特朗普急了：降低利率，而且要快 - 东方财富",
       "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE01ZUwtUkN2NTBqWXdrUjEwZmdkNnNfd0k0aTlPMm5XZ2dwMFdiakpOMUdXUW5oWHRJWkZDMWVPaWtLUkI5TGRjNzhibHZCOTBwR3BnaVl5MWZBTFlfUmRZOQ?oc=5",
       "source": "东方财富",
@@ -193,18 +289,6 @@
       "scope": "symbol",
       "sentiment": "bull",
       "confidence": 0.5646875
-    },
-    {
-      "title": "二十年一遇！美欧日三大央行将同步加息 这意味着什么？ - 财联社电报",
-      "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE82OFpvU1VlM0sxdHg3QTJENHdyZlY1WWFMR0xYVlpPY0RqcDVrMXBFQ1AyNGhpbXVpaV9rVnFJX2FORkIxQkE?oc=5",
-      "source": "财联社电报",
-      "published_at": "Mon, 14 Sep 2026 07:00:00 GMT",
-      "content": "",
-      "weight": 0.11662912394210093,
-      "age_days": 31,
-      "scope": "macro",
-      "sentiment": "bear",
-      "confidence": 0.5638713395843549
     },
     {
       "title": "2500亿与246亿：均和集团与何旗的空转帝国崩塌丨【思维深潜】 - 搜狐网",
@@ -238,6 +322,18 @@
       "content": "",
       "weight": 0.0005,
       "age_days": 142,
+      "scope": "symbol",
+      "sentiment": "neutral",
+      "confidence": 0.5
+    },
+    {
+      "title": "2026年4月钢铁PMI显示：钢铁行业有所波动供需两端增势放缓- 中国金融信息网 - 中国金融信息网",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9oMlNodG5OOEUwQWhlSlhTeFMzTGVGLTdHTWl4dkxYNFp4cXhIQmM5YkdxVDJjcWg3dWstVW8taWQzbXlQZFVfT1BTTkEyZldWU09jWXdZTkRwYXRYUUFGcU1ad0xiYkhzX3c?oc=5",
+      "source": "中国金融信息网",
+      "published_at": "Thu, 30 Apr 2026 07:00:00 GMT",
+      "content": "",
+      "weight": 0.0005,
+      "age_days": 168,
       "scope": "symbol",
       "sentiment": "neutral",
       "confidence": 0.5
@@ -289,30 +385,9 @@
       "scope": "symbol",
       "sentiment": "bear",
       "confidence": 0.55254875
-    },
-    {
-      "title": "钢铁业正崩溃 是楼市崩盘前奏 - 阿波罗新闻网",
-      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFA2U0M1YUtjbmNhc0p4ZjNkX2p3UDVlR2c4c25LZ3kzTTRvZ1F4Si1MbTBRamFmS0d6cnRDOVcyNlRKb1RQa0F2RkVOdjBQXzVNSkFPYVBuUmlyQ3Fi0gFiQVVfeXFMTWhwaDUxM0tHUDliMjFVWTA0TEkwZjh5OU9kcVdycU52enNpUEpvNUNaSnBLdU4xT1lITTQ3cHhPRzB1VnZDc0pxZWZzY2QtTUVleW1zdUVCWHZzNnNnRkluMHc?oc=5",
-      "source": "阿波罗新闻网",
-      "published_at": "Thu, 25 Sep 2014 07:00:00 GMT",
-      "content": "",
-      "weight": 0.0005,
-      "age_days": 4403,
-      "scope": "symbol",
-      "sentiment": "neutral",
-      "confidence": 0.5
     }
   ],
   "kline": [
-    {
-      "date": "2026-01-13",
-      "open": 3169.0,
-      "high": 3173.0,
-      "low": 3150.0,
-      "close": 3158.0,
-      "volume": 837879,
-      "open_interest": 1687943
-    },
     {
       "date": "2026-01-14",
       "open": 3158.0,
@@ -1923,22 +1998,26 @@
       "close": 3073.0,
       "volume": 580359,
       "open_interest": 1703241
+    },
+    {
+      "date": "2026-10-15",
+      "open": 3073.0,
+      "high": 3084.0,
+      "low": 3053.0,
+      "close": 3071.0,
+      "volume": 763513,
+      "open_interest": 1732254
     }
   ],
   "extras": {
     "status": "ok",
-    "asof": "2026-10-14",
+    "asof": "2026-10-15",
     "modules": {
       "inventory": {
         "status": "ok",
         "hint": "仓单/库存（AKShare futures_inventory_em）",
         "summary": "最新库存 82947.0，增减 None",
         "items": [
-          {
-            "date": "2026-07-15",
-            "inventory": 50410.0,
-            "change": -1199.0
-          },
           {
             "date": "2026-07-16",
             "inventory": 51306.0,
@@ -2233,6 +2312,11 @@
             "date": "2026-10-14",
             "inventory": 82947.0,
             "change": null
+          },
+          {
+            "date": "2026-10-15",
+            "inventory": 82947.0,
+            "change": null
           }
         ],
         "params": {
@@ -2242,41 +2326,41 @@
       "spot_basis": {
         "status": "ok",
         "hint": "现货/基差（AKShare futures_spot_price）",
-        "summary": "现货 3175.0 · 主力基差 -102.0",
+        "summary": "现货 3171.0 · 主力基差 -100.0",
         "items": [
           {
-            "date": "20261014",
+            "date": "20261015",
             "symbol": "RB",
-            "spot_price": 3175.0,
+            "spot_price": 3171.0,
             "near_contract": "rb2610",
-            "near_contract_price": 3003.0,
+            "near_contract_price": 2990.0,
             "dom_contract": null,
             "dom_contract_price": null,
-            "near_basis": -172.0,
-            "dom_basis": -102.0,
-            "near_basis_rate": -0.05417322834645666,
-            "dom_basis_rate": -0.03212598425196855
+            "near_basis": -181.0,
+            "dom_basis": -100.0,
+            "near_basis_rate": -0.057079785556606755,
+            "dom_basis_rate": -0.031535793125197054
           }
         ],
         "params": {
-          "date": "20261014"
+          "date": "20261015"
         }
       },
       "roll_yield": {
         "status": "ok",
         "hint": "展期收益率（AKShare get_roll_yield）",
-        "summary": "展期收益率 -0.011703514764094869",
+        "summary": "展期收益率 -0.0058584219463129975",
         "items": [
           {
-            "date": "20261014",
+            "date": "20261015",
             "var": "RB",
-            "roll_yield": -0.011703514764094869,
+            "roll_yield": -0.0058584219463129975,
             "near_by": "RB2701",
             "deferred": "RB2703"
           }
         ],
         "params": {
-          "date": "20261014",
+          "date": "20261015",
           "var": "RB"
         }
       },
@@ -2286,182 +2370,182 @@
         "summary": "6 条汇总记录",
         "items": [
           {
-            "symbol": "RB2610",
-            "variety": "RB",
-            "vol_top5": 180.0,
-            "vol_chg_top5": -1890.0,
-            "long_open_interest_top5": 3150.0,
-            "long_open_interest_chg_top5": 30.0,
-            "short_open_interest_top5": 3120.0,
-            "short_open_interest_chg_top5": 0.0,
-            "vol_top10": 240.0,
-            "vol_chg_top10": -2280.0,
-            "long_open_interest_top10": 4050.0,
-            "long_open_interest_chg_top10": 0.0,
-            "short_open_interest_top10": 4050.0,
-            "short_open_interest_chg_top10": -30.0,
-            "vol_top15": 240.0,
-            "vol_chg_top15": -2280.0,
-            "long_open_interest_top15": 4050.0,
-            "long_open_interest_chg_top15": 0.0,
-            "short_open_interest_top15": 4050.0,
-            "short_open_interest_chg_top15": -30.0,
-            "vol_top20": 240.0,
-            "vol_chg_top20": -2280.0,
-            "long_open_interest_top20": 4050.0,
-            "long_open_interest_chg_top20": 0.0,
-            "short_open_interest_top20": 4050.0,
-            "short_open_interest_chg_top20": -30.0,
-            "date": "20261014"
-          },
-          {
-            "symbol": "RB2611",
-            "variety": "RB",
-            "vol_top5": 10786.0,
-            "vol_chg_top5": -14445.0,
-            "long_open_interest_top5": 17408.0,
-            "long_open_interest_chg_top5": 308.0,
-            "short_open_interest_top5": 11675.0,
-            "short_open_interest_chg_top5": -1046.0,
-            "vol_top10": 13941.0,
-            "vol_chg_top10": -21326.0,
-            "long_open_interest_top10": 24568.0,
-            "long_open_interest_chg_top10": -243.0,
-            "short_open_interest_top10": 18246.0,
-            "short_open_interest_chg_top10": -809.0,
-            "vol_top15": 16258.0,
-            "vol_chg_top15": -29811.0,
-            "long_open_interest_top15": 28623.0,
-            "long_open_interest_chg_top15": -161.0,
-            "short_open_interest_top15": 22842.0,
-            "short_open_interest_chg_top15": -994.0,
-            "vol_top20": 17156.0,
-            "vol_chg_top20": -29894.0,
-            "long_open_interest_top20": 30387.0,
-            "long_open_interest_chg_top20": -613.0,
-            "short_open_interest_top20": 26158.0,
-            "short_open_interest_chg_top20": -613.0,
-            "date": "20261014"
-          },
-          {
             "symbol": "RB2705",
             "variety": "RB",
-            "vol_top5": 23428.0,
-            "vol_chg_top5": -7184.0,
-            "long_open_interest_top5": 36620.0,
-            "long_open_interest_chg_top5": 2376.0,
-            "short_open_interest_top5": 55577.0,
-            "short_open_interest_chg_top5": 2485.0,
-            "vol_top10": 29608.0,
-            "vol_chg_top10": -9332.0,
-            "long_open_interest_top10": 56376.0,
-            "long_open_interest_chg_top10": 2216.0,
-            "short_open_interest_top10": 76531.0,
-            "short_open_interest_chg_top10": 2670.0,
-            "vol_top15": 32820.0,
-            "vol_chg_top15": -9915.0,
-            "long_open_interest_top15": 70402.0,
-            "long_open_interest_chg_top15": 2553.0,
-            "short_open_interest_top15": 90669.0,
-            "short_open_interest_chg_top15": 2555.0,
-            "vol_top20": 35007.0,
-            "vol_chg_top20": -9940.0,
-            "long_open_interest_top20": 80475.0,
-            "long_open_interest_chg_top20": 2527.0,
-            "short_open_interest_top20": 98848.0,
-            "short_open_interest_chg_top20": 2545.0,
-            "date": "20261014"
-          },
-          {
-            "symbol": "RB2701",
-            "variety": "RB",
-            "vol_top5": 595435.0,
-            "vol_chg_top5": -2429.0,
-            "long_open_interest_top5": 693539.0,
-            "long_open_interest_chg_top5": -18581.0,
-            "short_open_interest_top5": 507732.0,
-            "short_open_interest_chg_top5": 2784.0,
-            "vol_top10": 737965.0,
-            "vol_chg_top10": -4390.0,
-            "long_open_interest_top10": 928236.0,
-            "long_open_interest_chg_top10": -11599.0,
-            "short_open_interest_top10": 764110.0,
-            "short_open_interest_chg_top10": -1678.0,
-            "vol_top15": 834937.0,
-            "vol_chg_top15": -9283.0,
-            "long_open_interest_top15": 1060341.0,
-            "long_open_interest_chg_top15": -8422.0,
-            "short_open_interest_top15": 969127.0,
-            "short_open_interest_chg_top15": -1077.0,
-            "vol_top20": 889392.0,
-            "vol_chg_top20": -23021.0,
-            "long_open_interest_top20": 1159065.0,
-            "long_open_interest_chg_top20": -9553.0,
-            "short_open_interest_top20": 1126126.0,
-            "short_open_interest_chg_top20": 6171.0,
-            "date": "20261014"
+            "vol_top5": 28716.0,
+            "vol_chg_top5": 5288.0,
+            "long_open_interest_top5": 38595.0,
+            "long_open_interest_chg_top5": 1975.0,
+            "short_open_interest_top5": 57773.0,
+            "short_open_interest_chg_top5": 2196.0,
+            "vol_top10": 36908.0,
+            "vol_chg_top10": 8522.0,
+            "long_open_interest_top10": 59166.0,
+            "long_open_interest_chg_top10": 2961.0,
+            "short_open_interest_top10": 79331.0,
+            "short_open_interest_chg_top10": 2800.0,
+            "vol_top15": 41319.0,
+            "vol_chg_top15": 10173.0,
+            "long_open_interest_top15": 73446.0,
+            "long_open_interest_chg_top15": 3796.0,
+            "short_open_interest_top15": 93343.0,
+            "short_open_interest_chg_top15": 2674.0,
+            "vol_top20": 44548.0,
+            "vol_chg_top20": 12253.0,
+            "long_open_interest_top20": 83949.0,
+            "long_open_interest_chg_top20": 3933.0,
+            "short_open_interest_top20": 102098.0,
+            "short_open_interest_chg_top20": 3898.0,
+            "date": "20261015"
           },
           {
             "symbol": "RB2703",
             "variety": "RB",
-            "vol_top5": 52933.0,
-            "vol_chg_top5": 13030.0,
-            "long_open_interest_top5": 155256.0,
-            "long_open_interest_chg_top5": 3930.0,
-            "short_open_interest_top5": 158893.0,
-            "short_open_interest_chg_top5": 4401.0,
-            "vol_top10": 70224.0,
-            "vol_chg_top10": 10566.0,
-            "long_open_interest_top10": 255394.0,
-            "long_open_interest_chg_top10": 7214.0,
-            "short_open_interest_top10": 258938.0,
-            "short_open_interest_chg_top10": 6629.0,
-            "vol_top15": 80559.0,
-            "vol_chg_top15": 8282.0,
-            "long_open_interest_top15": 331184.0,
-            "long_open_interest_chg_top15": 9449.0,
-            "short_open_interest_top15": 332998.0,
-            "short_open_interest_chg_top15": 8656.0,
-            "vol_top20": 85446.0,
-            "vol_chg_top20": 7336.0,
-            "long_open_interest_top20": 364028.0,
-            "long_open_interest_chg_top20": 10993.0,
-            "short_open_interest_top20": 364488.0,
-            "short_open_interest_chg_top20": 9715.0,
-            "date": "20261014"
+            "vol_top5": 92048.0,
+            "vol_chg_top5": 46957.0,
+            "long_open_interest_top5": 160841.0,
+            "long_open_interest_chg_top5": 5585.0,
+            "short_open_interest_top5": 163347.0,
+            "short_open_interest_chg_top5": 4454.0,
+            "vol_top10": 117532.0,
+            "vol_chg_top10": 52762.0,
+            "long_open_interest_top10": 262211.0,
+            "long_open_interest_chg_top10": 6817.0,
+            "short_open_interest_top10": 264697.0,
+            "short_open_interest_chg_top10": 5759.0,
+            "vol_top15": 128922.0,
+            "vol_chg_top15": 49562.0,
+            "long_open_interest_top15": 338529.0,
+            "long_open_interest_chg_top15": 7345.0,
+            "short_open_interest_top15": 339843.0,
+            "short_open_interest_chg_top15": 6845.0,
+            "vol_top20": 133811.0,
+            "vol_chg_top20": 50449.0,
+            "long_open_interest_top20": 371503.0,
+            "long_open_interest_chg_top20": 7475.0,
+            "short_open_interest_top20": 371494.0,
+            "short_open_interest_chg_top20": 7006.0,
+            "date": "20261015"
+          },
+          {
+            "symbol": "RB2611",
+            "variety": "RB",
+            "vol_top5": 23390.0,
+            "vol_chg_top5": 14707.0,
+            "long_open_interest_top5": 15737.0,
+            "long_open_interest_chg_top5": -536.0,
+            "short_open_interest_top5": 10034.0,
+            "short_open_interest_chg_top5": -568.0,
+            "vol_top10": 31562.0,
+            "vol_chg_top10": 19126.0,
+            "long_open_interest_top10": 22133.0,
+            "long_open_interest_chg_top10": -2102.0,
+            "short_open_interest_top10": 16146.0,
+            "short_open_interest_chg_top10": -1299.0,
+            "vol_top15": 36517.0,
+            "vol_chg_top15": 21284.0,
+            "long_open_interest_top15": 25442.0,
+            "long_open_interest_chg_top15": -3181.0,
+            "short_open_interest_top15": 19901.0,
+            "short_open_interest_chg_top15": -1329.0,
+            "vol_top20": 39190.0,
+            "vol_chg_top20": 22631.0,
+            "long_open_interest_top20": 26799.0,
+            "long_open_interest_chg_top20": -3455.0,
+            "short_open_interest_top20": 22588.0,
+            "short_open_interest_chg_top20": -1527.0,
+            "date": "20261015"
+          },
+          {
+            "symbol": "RB2610",
+            "variety": "RB",
+            "vol_top5": 300.0,
+            "vol_chg_top5": 270.0,
+            "long_open_interest_top5": 3300.0,
+            "long_open_interest_chg_top5": 150.0,
+            "short_open_interest_top5": 3120.0,
+            "short_open_interest_chg_top5": 0.0,
+            "vol_top10": 300.0,
+            "vol_chg_top10": 270.0,
+            "long_open_interest_top10": 4050.0,
+            "long_open_interest_chg_top10": 90.0,
+            "short_open_interest_top10": 4050.0,
+            "short_open_interest_chg_top10": 0.0,
+            "vol_top15": 300.0,
+            "vol_chg_top15": 270.0,
+            "long_open_interest_top15": 4050.0,
+            "long_open_interest_chg_top15": 90.0,
+            "short_open_interest_top15": 4050.0,
+            "short_open_interest_chg_top15": 0.0,
+            "vol_top20": 300.0,
+            "vol_chg_top20": 270.0,
+            "long_open_interest_top20": 4050.0,
+            "long_open_interest_chg_top20": 90.0,
+            "short_open_interest_top20": 4050.0,
+            "short_open_interest_chg_top20": 0.0,
+            "date": "20261015"
+          },
+          {
+            "symbol": "RB2701",
+            "variety": "RB",
+            "vol_top5": 760339.0,
+            "vol_chg_top5": 164904.0,
+            "long_open_interest_top5": 685646.0,
+            "long_open_interest_chg_top5": -7893.0,
+            "short_open_interest_top5": 527644.0,
+            "short_open_interest_chg_top5": 19912.0,
+            "vol_top10": 932480.0,
+            "vol_chg_top10": 220308.0,
+            "long_open_interest_top10": 938774.0,
+            "long_open_interest_chg_top10": 10538.0,
+            "short_open_interest_top10": 783592.0,
+            "short_open_interest_chg_top10": 23673.0,
+            "vol_top15": 1061146.0,
+            "vol_chg_top15": 238261.0,
+            "long_open_interest_top15": 1072738.0,
+            "long_open_interest_chg_top15": 17430.0,
+            "short_open_interest_top15": 989156.0,
+            "short_open_interest_chg_top15": 21168.0,
+            "vol_top20": 1140182.0,
+            "vol_chg_top20": 267339.0,
+            "long_open_interest_top20": 1174381.0,
+            "long_open_interest_chg_top20": 18768.0,
+            "short_open_interest_top20": 1145221.0,
+            "short_open_interest_chg_top20": 19095.0,
+            "date": "20261015"
           },
           {
             "symbol": "RB",
             "variety": "RB",
-            "vol_top5": 682762.0,
-            "vol_chg_top5": -12918.0,
-            "long_open_interest_top5": 905973.0,
-            "long_open_interest_chg_top5": -11937.0,
-            "short_open_interest_top5": 736997.0,
-            "short_open_interest_chg_top5": 8624.0,
-            "vol_top10": 851978.0,
-            "vol_chg_top10": -26762.0,
-            "long_open_interest_top10": 1268624.0,
-            "long_open_interest_chg_top10": -2412.0,
-            "short_open_interest_top10": 1121875.0,
-            "short_open_interest_chg_top10": 6782.0,
-            "vol_top15": 964814.0,
-            "vol_chg_top15": -43007.0,
-            "long_open_interest_top15": 1494600.0,
-            "long_open_interest_chg_top15": 3419.0,
-            "short_open_interest_top15": 1419686.0,
-            "short_open_interest_chg_top15": 9110.0,
-            "vol_top20": 1027241.0,
-            "vol_chg_top20": -57799.0,
-            "long_open_interest_top20": 1638005.0,
-            "long_open_interest_chg_top20": 3354.0,
-            "short_open_interest_top20": 1619670.0,
-            "short_open_interest_chg_top20": 17788.0,
-            "date": "20261014"
+            "vol_top5": 904793.0,
+            "vol_chg_top5": 232126.0,
+            "long_open_interest_top5": 904119.0,
+            "long_open_interest_chg_top5": -719.0,
+            "short_open_interest_top5": 761918.0,
+            "short_open_interest_chg_top5": 25994.0,
+            "vol_top10": 1118782.0,
+            "vol_chg_top10": 300988.0,
+            "long_open_interest_top10": 1286334.0,
+            "long_open_interest_chg_top10": 18304.0,
+            "short_open_interest_top10": 1147816.0,
+            "short_open_interest_chg_top10": 30933.0,
+            "vol_top15": 1268204.0,
+            "vol_chg_top15": 319550.0,
+            "long_open_interest_top15": 1514205.0,
+            "long_open_interest_chg_top15": 25480.0,
+            "short_open_interest_top15": 1446293.0,
+            "short_open_interest_chg_top15": 29358.0,
+            "vol_top20": 1358031.0,
+            "vol_chg_top20": 352942.0,
+            "long_open_interest_top20": 1660682.0,
+            "long_open_interest_chg_top20": 26811.0,
+            "short_open_interest_top20": 1645451.0,
+            "short_open_interest_chg_top20": 28472.0,
+            "date": "20261015"
           }
         ],
         "params": {
-          "date": "20261014",
+          "date": "20261015",
           "var": "RB"
         }
       }
